@@ -15,47 +15,47 @@ class RoleSeeder extends Seeder
     {
         \DB::table('roles')->delete();
         
-        \DB::table('roles')->insert(array (
-            0 => 
-            array (
-                'id' => 1,
-                'name' => 'Admin',
-                'show_status' => '0',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ),
-            1 => 
-            array (
-                'id' => 2,
-                'name' => 'Super Stockiest',
-                'show_status' => '1',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ),
-            2 => 
-            array (
-                'id' => 3,
-                'name' => 'C & F',
-                'show_status' => '1',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ),
-            3 => 
-            array (
-                'id' => 4,
-                'name' => 'Mother Depo',
-                'show_status' => '1',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ),
-            4=>
-            array (
-                'id' => 5,
-                'name' => 'Distributor',
-                'show_status' => '1',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ),
-        ));
+        // \DB::table('roles')->insert(array (
+        //     0 => 
+        //     array (
+        //         'id' => 1,
+        //         'name' => 'Admin',
+        //         'guard_name' => 'admin',
+        //         'created_at' => date('Y-m-d H:i:s'),
+        //         'updated_at' => date('Y-m-d H:i:s'),
+        //     ),
+        //     1 => 
+        //     array (
+        //         'id' => 2,
+        //         'name' => 'Super Stockiest',
+        //         'guard_name' => 'super_stockist',
+        //         'created_at' => date('Y-m-d H:i:s'),
+        //         'updated_at' => date('Y-m-d H:i:s'),
+        //     ),
+        //     2 => 
+        //     array (
+        //         'id' => 3,
+        //         'name' => 'C & F',
+        //         'guard_name' => 'c_and_f',
+        //         'created_at' => date('Y-m-d H:i:s'),
+        //         'updated_at' => date('Y-m-d H:i:s'),
+        //     ),
+        //     3 => 
+        //     array (
+        //         'id' => 4,
+        //         'name' => 'Mother Depo',
+        //         'guard_name' => 'mother_depo',
+        //         'created_at' => date('Y-m-d H:i:s'),
+        //         'updated_at' => date('Y-m-d H:i:s'),
+        //     ),
+        //     4=>
+        //     array (
+        //         'id' => 5,
+        //         'name' => 'Distributor',
+        //         'guard_name' => 'distributor',
+        //         'created_at' => date('Y-m-d H:i:s'),
+        //         'updated_at' => date('Y-m-d H:i:s'),
+        //     ),
+        // ));
     }
 }

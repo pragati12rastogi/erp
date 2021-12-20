@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,9 +20,11 @@ use App\Http\Controllers\UserController;
 Route::get('/', [HomeController::class, 'index']);
 
 Auth::routes();
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth','has_permission']], function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::resource('/users', UserController::class);
     Route::post('quickupdate/user/status/{id}',[UserController::class,'status_update'])->name('user.status.update');
 
+    Route::resource('roles', RoleController::class);
+    
 });

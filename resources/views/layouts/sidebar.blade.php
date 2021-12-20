@@ -24,17 +24,28 @@
         
       </div>
     </li>
+
     <li class="nav-item {{ active_class(['/']) }}">
       <a class="nav-link" href="{{ url('/') }}">
         <i class="menu-icon mdi mdi-television"></i>
         <span class="menu-title">Dashboard</span>
       </a>
     </li>
+    @if(Auth::user()->hasPermissionTo('users.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
     <li class="nav-item {{ active_class(['users','users/create']) }}">
       <a class="nav-link" href="{{ url('/users') }}">
         <i class="menu-icon mdi mdi-human"></i>
         <span class="menu-title">Users</span>
       </a>
     </li>
+    @endif
+    @if(Auth::user()->hasPermissionTo('roles.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+    <li class="nav-item {{ active_class(['roles','roles/create']) }}">
+      <a class="nav-link" href="{{ url('/roles') }}">
+        <i class="menu-icon mdi mdi-wall-sconce-flat"></i>
+        <span class="menu-title">Roles</span>
+      </a>
+    </li>
+    @endif
   </ul>
 </nav>

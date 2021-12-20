@@ -89,14 +89,14 @@
                             <label class="control-label" for="first-name">
                                 User Role: <span class="required">*</span>
                             </label>
-                            <select name="role_id" class="form-control select2">
+                            <select name="role" class="form-control select2">
                                 <option value="">Select Role</option>
                                 @foreach($roles as $r)
-                                <option value="{{$r->id}}" {{(old('role_id')==$r->id)?'selected':''}}>{{$r->name}}</option>
+                                <option value="{{$r->name}}" {{(old('role')==$r->name)?'selected':''}}>{{$r->name}}</option>
                                 @endforeach
                             </select>
                             <small class="txt-desc">(Please Choose User Role)</small>
-                            @error('role_id')
+                            @error('role')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

@@ -29,6 +29,7 @@
 <div class="row">
   <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
+    @include('flash-msg')
       <div class="card-body">
         <div class="border-bottom mb-3 row">
             <div class="col-md-10">
@@ -57,7 +58,7 @@
               @foreach($users as $user)
               <tr>
                   <td>{{$user->name}}</td>
-                  <td>{{$user->role->name}}</td>
+                  <td></td>
                   <td>{{$user->firm_name}}</td>
                   <td>{{$user->email}}</td>
                   <td>{{$user->mobile}}</td>
@@ -71,7 +72,7 @@
                     </form>
                   </td>
                   <td>
-                    <a data-toggle="modal" data-target="#{{$user->id}}_user"  class="btn btn-danger text-white">
+                    <a onclick='return $("#{{$user->id}}_user").modal("show");' class="btn btn-danger text-white">
                         <i class=" mdi mdi-delete-forever"></i>
                     </a>
                     <a  href="{{url('users/'.$user->id.'/edit')}}" class="btn btn-success ">

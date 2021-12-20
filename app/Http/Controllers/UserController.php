@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\State;
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 use App\Custom\Constants;
 use Illuminate\Support\Facades\Hash;
 use Auth;
@@ -38,12 +38,7 @@ class UserController extends Controller
      */
     public function create()
     {   
-        
-        if(!is_admin(Auth::user()->role_id)){
-            return abort('401', 'Not Aurthorized');
-        }
-
-        $roles = Role::where('show_status',1)->get();
+        $roles = Role::where('name','<>',Constants::ROLE_ADMIN)->get();
         $states = State::all();
         return view('user.add',compact('roles','states'));
     }
@@ -60,7 +55,7 @@ class UserController extends Controller
             $input = $request->all();
                 
             $validation = Validator::make($input,[
-                'role_id'          => ['required'],
+                'role'          => ['required'],
                 'name'             => ['required', 'string', 'max:255'],
                 'email'            => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'mobile'           => ['required','unique:users'],
@@ -70,7 +65,7 @@ class UserController extends Controller
                 'district'         => ['required'],
                 'image'            => ['mimes:jpeg,png,jpg,gif']
             ],[
-                'role_id.required'       => 'This field is required',
+                'role.required'       => 'This field is required',
                 'name.required'          => 'This field is required',
                 'name.string'            => 'This field can only accept string',
                 'name.max'               => 'This field max length is 255',
@@ -90,6 +85,10 @@ class UserController extends Controller
                 return back()->withErrors($errors)->withInput();
             }
 
+            $role = Role::where('name',$request->input('role'))->first();
+            
+            $input['role_id'] = $role->id;
+
             DB::beginTransaction();
             $users = new User();
     
@@ -106,11 +105,11 @@ class UserController extends Controller
                 $input['profile'] = $image;
     
             }
-            
+            $input['status'] =1;
             $dummy_password = str::random(8);
             $input['password'] = Hash::make($dummy_password);
             $users->create($input);
-
+            $users->assignRole($request->input('role'));
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollback();
@@ -150,16 +149,14 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        if(!is_admin(Auth::user()->role_id)){
-            return abort('401', 'Not Aurthorized');
-        }
-
+        
         $user = User::findOrFail($id);
 
-        $roles = Role::where('show_status',1)->get();
+        $roles = Role::get();
         $states = State::all();
-        
-        return view('user.edit',compact('roles','states','user'));
+        $userRole = $user->roles->pluck('name','name')->first();
+
+        return view('user.edit',compact('roles','states','user','userRole'));
     }
 
     /**
@@ -176,7 +173,7 @@ class UserController extends Controller
             
             
             $validation = Validator::make($input,[
-                'role_id'          => ['required'],
+                'role'          => ['required'],
                 'name'             => ['required', 'string', 'max:255'],
                 // 'email'            => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'mobile'           => ['required','unique:users,mobile,'.$id.',id'],
@@ -186,7 +183,7 @@ class UserController extends Controller
                 'district'         => ['required'],
                 'image'            => ['mimes:jpeg,png,jpg,gif']
             ],[
-                'role_id.required'       => 'This field is required',
+                'role.required'       => 'This field is required',
                 'name.required'          => 'This field is required',
                 'name.string'            => 'This field can only accept string',
                 'name.max'               => 'This field max length is 255',
@@ -206,6 +203,10 @@ class UserController extends Controller
                 return back()->withErrors($errors)->withInput();
             }
 
+            $role = Role::where('name',$request->input('role'))->first();
+            
+            $input['role_id'] = $role->id;
+            
             DB::beginTransaction();
             $users = User::findOrFail($id);
     
@@ -228,6 +229,8 @@ class UserController extends Controller
             }
             
             $users->update($input);
+            DB::table('model_has_roles')->where('model_id',$id)->delete();
+            $users->assignRole($request->input('role'));
 
 
         } catch (\Illuminate\Database\QueryException $ex) {
@@ -248,9 +251,9 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        if(!is_admin(Auth::user()->role_id)){
-            return abort('401', 'Not Aurthorized');
-        }
+        // if(!is_admin(Auth::user()->role_id)){
+        //     return abort('401', 'Not Aurthorized');
+        // }
 
         $user = User::find($id);
 
@@ -267,9 +270,9 @@ class UserController extends Controller
 
     public function status_update($id){
         
-        if(!is_admin(Auth::user()->role_id)){
-            return abort('401', 'Not Aurthorized');
-        }
+        // if(!is_admin(Auth::user()->role_id)){
+        //     return abort('401', 'Not Aurthorized');
+        // }
 
         $f = User::findorfail($id);
 

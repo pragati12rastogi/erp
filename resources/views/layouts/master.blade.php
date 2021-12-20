@@ -10,12 +10,13 @@
   <meta name="_token" content="{{ csrf_token() }}">
   
   <link rel="shortcut icon" href="{{ asset('/favicon.ico') }}">
-
+  
   <!-- plugin css -->
   {!! Html::style('assets/plugins/@mdi/font/css/materialdesignicons.min.css') !!}
   {!! Html::style('assets/plugins/perfect-scrollbar/perfect-scrollbar.css') !!}
   <!-- end plugin css -->
-
+  
+  
   {!! Html::style('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')!!}
   {!! Html::style('plugins/datatables-responsive/css/responsive.bootstrap4.min.css')!!}
   {!! Html::style('plugins/datatables-responsive/css/responsive.bootstrap4.css')!!}
@@ -55,15 +56,19 @@
 
   <!-- jQuery -->
   {!! Html::script('plugins/jquery/jquery.min.js') !!}
+  <!-- JQuery -->
+
   <!-- jQuery UI 1.11.4 -->
   {!! Html::script('plugins/jquery-ui/jquery-ui.min.js') !!}
   <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
   <script>
     $.widget.bridge('uibutton', $.ui.button)
   </script>
+
+
   <!-- Bootstrap 4 -->
   {!! Html::script('/plugins/bootstrap/js/bootstrap.bundle.min.js') !!}
-
+  
   <!-- DataTables  & Plugins -->
   {!! Html::script('plugins/datatables/jquery.dataTables.min.js') !!}
   {!! Html::script('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') !!}
@@ -88,9 +93,6 @@
   <script src="https://cdn.ckeditor.com/4.16.0/full/ckeditor.js"></script>
 
   {!! Html::script('plugins/bootstrap-tagsinput-latest/src/bootstrap-tagsinput.js') !!}
-
-
-
   <!-- base js -->
   <!-- {!! Html::script('js/app.js') !!} -->
   {!! Html::script('assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') !!}
@@ -111,10 +113,10 @@
   <!-- jquery-validation -->
   {!! Html::script('/plugins/jquery-validation/jquery.validate.min.js') !!}
   {!! Html::script('/plugins/jquery-validation/additional-methods.min.js') !!}
-
+  
   <script>
     $(function() {
-      
+      // $.noConflict();
       $('.select2').select2();
 
       $('.select2bs4').select2({
