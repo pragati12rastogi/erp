@@ -47,5 +47,37 @@
       </a>
     </li>
     @endif
+    @if(Auth::user()->hasPermissionTo('category.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+    <li class="nav-item {{ active_class(['category','category/create']) }}">
+      <a class="nav-link" href="{{ url('/category') }}">
+        <i class="menu-icon mdi mdi-widgets"></i>
+        <span class="menu-title">Category</span>
+      </a>
+    </li>
+    @endif
+    @if(Auth::user()->hasPermissionTo('hsn.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+    <li class="nav-item {{ active_class(['hsn','hsn/create']) }}">
+      <a class="nav-link" href="{{ url('/hsn') }}">
+        <i class="menu-icon mdi mdi-air-purifier"></i>
+        <span class="menu-title">Hsn</span>
+      </a>
+    </li>
+    @endif
+    @if(Auth::user()->hasPermissionTo('gst.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+    <li class="nav-item {{ active_class(['gst','category/create']) }}">
+      <a class="nav-link" href="{{ url('/gst') }}">
+        <i class="menu-icon mdi mdi-gamepad-circle-left"></i>
+        <span class="menu-title">GST</span>
+      </a>
+    </li>
+    @endif
+    @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+    <li class="nav-item {{ active_class(['item','category/create']) }}">
+      <a class="nav-link" href="{{ url('/item') }}">
+        <i class="menu-icon mdi mdi-image-auto-adjust"></i>
+        <span class="menu-title">Item</span>
+      </a>
+    </li>
+    @endif
   </ul>
 </nav>
