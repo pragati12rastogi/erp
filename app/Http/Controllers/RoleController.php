@@ -31,7 +31,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $permission = Permission::get();
+        $permission = Permission::select(DB::raw('GROUP_CONCAT(id) as sub_permission_id'), DB::raw('GROUP_CONCAT(name) as sub_permission_name'),'guard_name','master_name')->groupBy('master_name','guard_name')->get();
+        
         return view('roles.add',compact('permission'));
     }
 
@@ -75,7 +76,8 @@ class RoleController extends Controller
     public function edit($id)
     {
         $role = Role::find($id);
-        $permission = Permission::get();
+        $permission = Permission::select(DB::raw('GROUP_CONCAT(id) as sub_permission_id'), DB::raw('GROUP_CONCAT(name) as sub_permission_name'),'guard_name','master_name')->groupBy('master_name','guard_name')->get();
+        
         $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
             ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
             ->all();

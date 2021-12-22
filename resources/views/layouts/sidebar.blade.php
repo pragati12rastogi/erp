@@ -32,7 +32,7 @@
       </a>
     </li>
     @if(Auth::user()->hasPermissionTo('users.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['users','users/create']) }}">
+    <li class="nav-item {{ active_class(['users','users/*']) }}">
       <a class="nav-link" href="{{ url('/users') }}">
         <i class="menu-icon mdi mdi-human"></i>
         <span class="menu-title">Users</span>
@@ -40,7 +40,7 @@
     </li>
     @endif
     @if(Auth::user()->hasPermissionTo('roles.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['roles','roles/create']) }}">
+    <li class="nav-item {{ active_class(['roles','roles/*']) }}">
       <a class="nav-link" href="{{ url('/roles') }}">
         <i class="menu-icon mdi mdi-wall-sconce-flat"></i>
         <span class="menu-title">Roles</span>
@@ -48,7 +48,7 @@
     </li>
     @endif
     @if(Auth::user()->hasPermissionTo('category.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['category','category/create']) }}">
+    <li class="nav-item {{ active_class(['category','category/*']) }}">
       <a class="nav-link" href="{{ url('/category') }}">
         <i class="menu-icon mdi mdi-widgets"></i>
         <span class="menu-title">Category</span>
@@ -56,7 +56,7 @@
     </li>
     @endif
     @if(Auth::user()->hasPermissionTo('hsn.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['hsn','hsn/create']) }}">
+    <li class="nav-item {{ active_class(['hsn','hsn/*']) }}">
       <a class="nav-link" href="{{ url('/hsn') }}">
         <i class="menu-icon mdi mdi-air-purifier"></i>
         <span class="menu-title">Hsn</span>
@@ -64,19 +64,41 @@
     </li>
     @endif
     @if(Auth::user()->hasPermissionTo('gst.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['gst','category/create']) }}">
+    <li class="nav-item {{ active_class(['gst','gst/*']) }}">
       <a class="nav-link" href="{{ url('/gst') }}">
         <i class="menu-icon mdi mdi-gamepad-circle-left"></i>
         <span class="menu-title">GST</span>
       </a>
     </li>
     @endif
-    @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['item','category/create']) }}">
-      <a class="nav-link" href="{{ url('/item') }}">
+    
+    
+    @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*']) }}">
+      <a class="nav-link" data-toggle="collapse" href="#basic-ui" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*']) }}" aria-controls="basic-ui">
         <i class="menu-icon mdi mdi-image-auto-adjust"></i>
-        <span class="menu-title">Item</span>
+        <span class="menu-title">Inventory</span>
+        <i class="menu-arrow"></i>
       </a>
+      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*']) }}" id="basic-ui">
+        <ul class="nav flex-column sub-menu">
+          @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+          <li class="nav-item {{ active_class(['item','item/*']) }}">
+            <a class="nav-link" href="{{ url('/item') }}">
+              Item
+            </a>
+          </li>
+          @endif
+          @if(Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+          <li class="nav-item {{ active_class(['stocks','stocks/*']) }}">
+            <a class="nav-link" href="{{ url('/stocks') }}">
+              Stocks
+            </a>
+          </li>
+          @endif
+          
+        </ul>
+      </div>
     </li>
     @endif
   </ul>

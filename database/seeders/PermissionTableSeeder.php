@@ -139,7 +139,26 @@ class PermissionTableSeeder extends Seeder
             ],
             */
         $permissions = [
-
+            [
+                'name'=>'stocks.index',
+                'guard_name'=>'web',
+                'master_name'=>'stocks'
+            ],
+            [
+                'name'=>'stocks.create',
+                'guard_name'=>'web',
+                'master_name'=>'stocks'
+            ],
+            [
+                'name'=>'stocks.edit',
+                'guard_name'=>'web',
+                'master_name'=>'stocks'
+            ],
+            [
+                'name'=>'stocks.delete',
+                'guard_name'=>'web',
+                'master_name'=>'stocks'
+            ]
         ];
       
         foreach ($permissions as $permission) {

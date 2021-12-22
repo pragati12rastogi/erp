@@ -20,7 +20,27 @@
                 }
             });
 
-            
+            $(".all_select_permission").click(function(){
+                var check_status = this.checked;
+                var data_id = $(this).attr('id');
+                $("."+data_id).prop('checked', this.checked);
+            })
+
+            $(".sub_permission").click(function(){
+                var check_status = this.checked;
+                var get_class = $(this).attr('class');
+                var split_get_class = get_class.split(' ');
+                var sub_per_name = split_get_class[1];
+
+                var count_length = $('.'+sub_per_name).length;
+                var count_checked_length = $('.'+sub_per_name+':checked').length;
+
+                if(count_length == count_checked_length ){
+                    $('#'+sub_per_name).prop('checked', true);
+                }else{
+                    $('#'+sub_per_name).prop('checked', false);
+                }
+            }) 
         });
         
     </script>
@@ -58,9 +78,28 @@
                             <br/>
                             <div class="row">
                             @foreach($permission as $value)
-                                <label class="col-md-2">{{ Form::checkbox('permission[]', $value->id, in_array($value->id, $rolePermissions) ? true : false, array('class' => 'name')) }}
-                                {{ $value->name }}</label>
+                                @php 
+                                    $permission_ids = explode(',',$value->sub_permission_id);
+                                    $permission_name = explode(',',$value->sub_permission_name);
+                                    $sub_permissions = array_combine($permission_ids,$permission_name);
+
+                                    $per_intersect = array_intersect($permission_ids,$rolePermissions);
+
+                                @endphp
+                                <ul class="col-md-6 list-unstyled">
+                                    <li>
+                                        <label> <input type="checkbox" class="all_select_permission" id="all_{{ $value->master_name }}"  {{count($per_intersect) == count($permission_ids) ? 'checked':''}}> {{ $value->master_name }}</label>
+                                        <ul style="list-style: none;">
+                                            @foreach($sub_permissions as $p_id => $p_name)
+                                                <li><label >{{ Form::checkbox('permission[]', $p_id, in_array($p_id, $rolePermissions) ? true : false, array('class' => 'sub_permission all_'.$value->master_name)) }}
+                                                {{ $p_name }}</label></li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                </ul>
+                                
                             @endforeach
+                            
                             </div>
                         </div>
                     </div>
