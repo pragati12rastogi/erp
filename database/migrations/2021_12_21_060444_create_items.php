@@ -20,6 +20,9 @@ class CreateItems extends Migration
             $table->string('image');
             $table->integer('hsn_id');
             $table->integer('gst_percent_id');
+            $table->integer('created_by');
+            $table->integer('updated_by')->nullable();
+            
             $table->softDeletes();
             $table->timestamps();
              

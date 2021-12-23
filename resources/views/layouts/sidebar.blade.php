@@ -72,6 +72,14 @@
     </li>
     @endif
     
+    @if(Auth::user()->hasPermissionTo('vendors.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+    <li class="nav-item {{ active_class(['vendors','vendors/*']) }}">
+      <a class="nav-link" href="{{ url('/vendors') }}">
+        <i class="menu-icon mdi mdi-gamepad-circle-left"></i>
+        <span class="menu-title">Vendors</span>
+      </a>
+    </li>
+    @endif
     
     @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
     <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*']) }}">

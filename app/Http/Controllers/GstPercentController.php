@@ -52,6 +52,7 @@ class GstPercentController extends Controller
             ]);
             DB::beginTransaction();
             $gst = new GstPercent();
+            $input['created_by'] = Auth::id();
             $gst->create($input);
 
         } catch (\Illuminate\Database\QueryException $th) {
@@ -106,6 +107,7 @@ class GstPercentController extends Controller
             ]);
             DB::beginTransaction();
             $gst = GstPercent::findOrFail($id);
+            $input['updated_by'] = Auth::id();
             $gst->update($input);
 
         } catch (\Illuminate\Database\QueryException $th) {

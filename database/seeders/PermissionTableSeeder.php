@@ -137,8 +137,6 @@ class PermissionTableSeeder extends Seeder
                 'guard_name'=>'web',
                 'master_name'=>'item'
             ],
-            */
-        $permissions = [
             [
                 'name'=>'stocks.index',
                 'guard_name'=>'web',
@@ -158,6 +156,28 @@ class PermissionTableSeeder extends Seeder
                 'name'=>'stocks.delete',
                 'guard_name'=>'web',
                 'master_name'=>'stocks'
+            ]
+            */
+        $permissions = [
+            [
+                'name'=>'vendors.index',
+                'guard_name'=>'web',
+                'master_name'=>'vendors'
+            ],
+            [
+                'name'=>'vendors.create',
+                'guard_name'=>'web',
+                'master_name'=>'vendors'
+            ],
+            [
+                'name'=>'vendors.edit',
+                'guard_name'=>'web',
+                'master_name'=>'vendors'
+            ],
+            [
+                'name'=>'vendors.delete',
+                'guard_name'=>'web',
+                'master_name'=>'vendors'
             ]
         ];
       

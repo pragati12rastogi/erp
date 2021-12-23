@@ -50,6 +50,7 @@
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Created At</th>
+                <th>Created By/Updated By</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
@@ -63,6 +64,11 @@
                   <td>{{$user->email}}</td>
                   <td>{{$user->mobile}}</td>
                   <td>{{date('Y-m-d',strtotime($user->created_at))}}</td>
+
+                  <td>
+                    
+                    {{!empty($user->created_by)?$user->created_by_user->name:''}}{{!empty($user->updated_by)? '/'.$user->updated_by_user->name:'' }}</td>
+                    
                   <td>
                     <form action="{{ route('user.status.update',$user->id) }}" method="POST">
                         {{csrf_field()}}

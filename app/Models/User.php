@@ -56,4 +56,12 @@ class User extends Authenticatable
     public function role(){
         return $this->belongsTo('App\Models\Role','role_id','id');
     }
+
+    public function created_by_user(){
+        return $this->belongsTo(User::class,'created_by');
+    }
+
+    public function updated_by_user(){
+        return $this->belongsTo(User::class,'updated_by');
+    }
 }

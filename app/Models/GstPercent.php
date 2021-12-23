@@ -11,5 +11,13 @@ class GstPercent extends Model
     use HasFactory;
     use SoftDeletes;
     
-    protected $fillable= ['name','percent'];
+    protected $fillable= ['name','percent','created_by','updated_by'];
+
+    public function created_by_user(){
+        return $this->belongsTo('App\Models\User','created_by','id');
+    }
+
+    public function updated_by_user(){
+        return $this->belongsTo('App\Models\User','updated_by','id');
+    }
 }

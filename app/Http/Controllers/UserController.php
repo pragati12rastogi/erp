@@ -27,7 +27,7 @@ class UserController extends Controller
         $users = User::whereHas('role',function($query){
             $query->where('name','<>',Constants::ROLE_ADMIN);
         })->get();
-
+        
         return view('user.index',compact('users'));
     }
 
@@ -108,6 +108,7 @@ class UserController extends Controller
             $input['status'] =1;
             $dummy_password = str::random(8);
             $input['password'] = Hash::make($dummy_password);
+            $input['created_by'] = Auth::id();
             $users->create($input);
             $users->assignRole($request->input('role'));
 
@@ -227,7 +228,7 @@ class UserController extends Controller
                 $input['profile'] = $image;
     
             }
-            
+            $input['updated_by'] = Auth::id();
             $users->update($input);
             DB::table('model_has_roles')->where('model_id',$id)->delete();
             $users->assignRole($request->input('role'));

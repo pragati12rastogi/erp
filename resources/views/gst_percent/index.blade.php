@@ -38,6 +38,7 @@
                 <th>GST Name</th>
                 <th>Percentage</th>
                 <th>Created At</th>
+                <th>Created By/Updated By</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -49,6 +50,7 @@
                     <td>{{$h->percent}}</td>
                     
                     <td>{{date('d-m-Y',strtotime($h->created_at))}}</td>
+                    <td>{{!empty($h->created_by)?$h->created_by_user['name']:""}}  {{!empty($h->updated_by)?'/'.$h->updated_by_user->name :""}}</td>
                     
                     <td>
                         <a href="{{url('gst/'.$h->id.'/edit')}}" class="btn btn-success ">

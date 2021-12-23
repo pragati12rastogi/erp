@@ -11,6 +11,7 @@ use App\Http\Controllers\HsnController;
 use App\Http\Controllers\GstPercentController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\VendorController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,7 +27,7 @@ Route::get('/', [HomeController::class, 'index']);
 
 Auth::routes();
 Route::group(['middleware' => ['auth','has_permission']], function () {
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    
     Route::resource('/users', UserController::class);
     Route::post('quickupdate/user/status/{id}',[UserController::class,'status_update'])->name('user.status.update');
 
@@ -36,5 +37,14 @@ Route::group(['middleware' => ['auth','has_permission']], function () {
     Route::resource('gst', GstPercentController::class);
     Route::resource('item', ItemController::class);
     Route::resource('stocks', StockController::class);
-    
+    Route::resource('vendors', VendorController::class);  
+});
+
+// apis or not included in permission
+Route::group(['middleware' => ['auth']],function(){
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+    Route::get('/get/items/by/category',[StockController::class, 'get_items_by_category'])->name('category.items');
+    Route::get('/get/items/details',[StockController::class, 'get_items_details'])->name('item.details');
+
 });

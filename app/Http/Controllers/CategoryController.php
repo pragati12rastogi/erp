@@ -72,7 +72,7 @@ class CategoryController extends Controller
                 $input['image'] = $image;
     
             }
-    
+            $input['created_by'] = Auth::id();
             $category->create($input);
 
 
@@ -151,7 +151,7 @@ class CategoryController extends Controller
                 $input['image'] = $image;
     
             }
-    
+            $input['updated_by'] = Auth::id();
             $category->update($input);
 
 

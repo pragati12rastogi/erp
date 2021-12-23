@@ -17,6 +17,9 @@ class CreateGstPercents extends Migration
             $table->increments('id');
             $table->string('name');
             $table->double('percent');
+            $table->integer('created_by');
+            $table->integer('updated_by')->nullable();
+            
             $table->softDeletes();
             $table->timestamps();
         });

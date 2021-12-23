@@ -11,7 +11,7 @@ class Item extends Model
     use HasFactory;
     use SoftDeletes;
     
-    protected $fillable = ['name','category_id','image','gst_percent_id','hsn_id'];
+    protected $fillable = ['name','category_id','image','gst_percent_id','hsn_id','created_by','updated_by'];
 
     public function category(){
         return $this->belongsTo('App\Models\Category','category_id','id');
@@ -23,5 +23,13 @@ class Item extends Model
     
     public function hsn(){
         return $this->belongsTo('App\Models\Hsn','hsn_id','id');
+    }
+
+    public function created_by_user(){
+        return $this->belongsTo('App\Models\User','created_by','id');
+    }
+
+    public function updated_by_user(){
+        return $this->belongsTo('App\Models\User','updated_by','id');
     }
 }

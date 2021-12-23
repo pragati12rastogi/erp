@@ -38,6 +38,7 @@
                 <th>Name</th>
                 <th>Image</th>
                 <th>Created At</th>
+                <th>Created By/Updated By</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -54,6 +55,7 @@
                     </td>
                     
                     <td>{{date('d-m-Y',strtotime($cat->created_at))}}</td>
+                    <td>{{!empty($cat->created_by)?$cat->created_by_user['name']:""}}  {{!empty($cat->updated_by)? '/'.$cat->updated_by_user->name:"" }}</td>
                     
                     <td>
                         <a href="{{url('category/'.$cat->id.'/edit')}}" class="btn btn-success ">

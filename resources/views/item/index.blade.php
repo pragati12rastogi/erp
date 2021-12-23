@@ -41,6 +41,7 @@
                 <th>HSN</th>
                 <th>GST</th>
                 <th>Created At</th>
+                <th>Created By/Updated By</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -62,6 +63,7 @@
                         {{$item->gst_percent->name}}({{$item->gst_percent->percent}} %)
                     </td>
                     <td>{{date('d-m-Y',strtotime($item->created_at))}}</td>
+                    <td>{{!empty($item->created_by)?$item->created_by_user['name']:""}}{{!empty($item->updated_by)? '/'.$item->updated_by_user->name :'' }}</td>
                     
                     <td>
                         <a href="{{url('item/'.$item->id.'/edit')}}" class="btn btn-success ">

@@ -76,6 +76,7 @@ class ItemController extends Controller
                 $input['image'] = $image;
     
             }
+            $input['created_by'] = Auth::id();
             $item->create($input);
 
         } catch (\Illuminate\Database\QueryException $th) {
@@ -156,6 +157,7 @@ class ItemController extends Controller
                 $input['image'] = $image;
     
             }
+            $input['updated_by'] = Auth::id();
             $item->update($input);
 
         } catch (\Illuminate\Database\QueryException $th) {

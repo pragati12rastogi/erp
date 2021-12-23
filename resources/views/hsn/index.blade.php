@@ -37,6 +37,7 @@
                 <th>Sr.no.</th>
                 <th>Hsn No</th>
                 <th>Created At</th>
+                <th>Created By/Updated BY</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -47,6 +48,7 @@
                     <td>{{$h->hsn_no}}</td>
                     
                     <td>{{date('d-m-Y',strtotime($h->created_at))}}</td>
+                    <td>{{!empty($h->created_by)?$h->created_by_user['name']:""}}  {{!empty($h->updated_by)? '/'.$h->updated_by_user->name : ""}}</td>
                     
                     <td>
                         <a href="{{url('hsn/'.$h->id.'/edit')}}" class="btn btn-success ">

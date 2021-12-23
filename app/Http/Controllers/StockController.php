@@ -3,6 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Stock;
+use App\Models\Category;
+use App\Models\Hsn;
+use App\Models\Item;
+use App\Models\GstPercent;
+use App\Models\Vendor;
+use Validator;
+use DB;
+use Image;
+use Auth;
 
 class StockController extends Controller
 {
@@ -13,7 +23,8 @@ class StockController extends Controller
      */
     public function index()
     {
-        //
+        $stocks = Stock::all();
+        return view('stocks.index',compact('stocks'));
     }
 
     /**
@@ -23,7 +34,12 @@ class StockController extends Controller
      */
     public function create()
     {
-        //
+        $category = Category::all();
+        $hsn = Hsn::all();
+        $item = Item::all();
+        $gsts = GstPercent::all();
+        $vendor = Vendor::all();
+        return view('stocks.create',compact('category','hsn','item','gsts','vendor'));
     }
 
     /**
@@ -34,7 +50,56 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $input = $request->all();
+                
+            $validation = Validator::make($input,[
+                'item_id'          => ['required'],
+                'prod_quantity'    => ['required', 'numeric'],
+                'prod_price'       => ['required', 'numeric'],
+                'total_price'      => ['required','numeric'],
+                'per_freight_price'=> ['required'],
+                'user_percent'     => ['required'],
+                'final_price'      => ['required'],
+                'price_for_user'   => ['required'],
+                'date_of_purchase' => ['required'],
+                'vendor_id'        => ['required'],
+                
+
+            ],[
+                'item_id.required'          => 'This field is required',
+                'prod_quantity.required'    => 'This field is required',
+                'prod_quantity.numeric'     => 'This field can only accept number',
+                'prod_price.required'       => 'This field is required',
+                'prod_price.numeric'         => 'This field can only accept number',
+                'total_price.required'            => 'This field is required',
+                'total_price.numeric'               => 'This field can only accept number',
+                'per_freight_price.required'         => 'This field is required',
+                'user_percent.required'         => 'This field is required',
+                'final_price.required'         => 'This field is required',
+                'price_for_user.required'         => 'This field is required',
+                'date_of_purchase.required'         => 'This field is required',
+                'vendor_id.required'            => 'This field is required',
+            ]);
+
+            if($validation->fails()){
+                $errors = $validation->errors();
+                return back()->withErrors($errors)->withInput();
+            }
+
+            DB::beginTransaction();
+            $stock = new Stock();
+    
+            $input['created_by'] = Auth::id();
+            $stock->create($input);
+            
+        } catch (\Illuminate\Database\QueryException $ex) {
+            DB::rollback();
+            return back()->with('error','some error occurred'.$ex->getMessage());
+        }
+        
+        DB::commit();
+        return back()->with('success','Stock is created successfully');
     }
 
     /**
@@ -56,7 +121,13 @@ class StockController extends Controller
      */
     public function edit($id)
     {
-        //
+        $category = Category::all();
+        $hsn = Hsn::all();
+        $item = Item::all();
+        $gsts = GstPercent::all();
+        $vendor = Vendor::all();
+        $stock = Stock::findOrFAil($id);
+        return view('stocks.edit',compact('category','hsn','item','gsts','vendor','stock'));
     }
 
     /**
@@ -68,7 +139,71 @@ class StockController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            $input = $request->all();
+                
+            $validation = Validator::make($input,[
+                'item_id'          => ['required'],
+                'prod_quantity'    => ['required', 'numeric'],
+                'prod_price'       => ['required', 'numeric'],
+                'total_price'      => ['required','numeric'],
+                'per_freight_price'=> ['required'],
+                'user_percent'     => ['required'],
+                'final_price'      => ['required'],
+                'price_for_user'   => ['required'],
+                'date_of_purchase' => ['required'],
+                'vendor_id'        => ['required'],
+                
+
+            ],[
+                'item_id.required'          => 'This field is required',
+                'prod_quantity.required'    => 'This field is required',
+                'prod_quantity.numeric'     => 'This field can only accept number',
+                'prod_price.required'       => 'This field is required',
+                'prod_price.numeric'         => 'This field can only accept number',
+                'total_price.required'            => 'This field is required',
+                'total_price.numeric'               => 'This field can only accept number',
+                'per_freight_price.required'         => 'This field is required',
+                'user_percent.required'         => 'This field is required',
+                'final_price.required'         => 'This field is required',
+                'price_for_user.required'         => 'This field is required',
+                'date_of_purchase.required'         => 'This field is required',
+                'vendor_id.required'            => 'This field is required',
+            ]);
+
+            if($validation->fails()){
+                $errors = $validation->errors();
+                return back()->withErrors($errors)->withInput();
+            }
+
+            DB::beginTransaction();
+            $stock = Stock::findOrFail($id);
+            
+            $old_stock = $stock->prod_quantity;
+            $new_stock = $input['prod_quantity'];
+
+            $new_calculated_stock = $old_stock+$new_stock;
+            $input['prod_quantity'] = $new_calculated_stock;
+
+            $new_total = $new_calculated_stock * $input['prod_price'];
+            $input['total_price'] = $new_total ;
+
+            $new_freight_final_total = ($input['per_freight_price']*$new_calculated_stock)+$new_total;
+
+            $input['final_price'] = $new_freight_final_total;
+            
+
+
+            $input['updated_by'] = Auth::id();
+            $stock->update($input);
+            
+        } catch (\Illuminate\Database\QueryException $ex) {
+            DB::rollback();
+            return back()->with('error','some error occurred'.$ex->getMessage());
+        }
+        
+        DB::commit();
+        return back()->with('success','Stock is updated successfully');
     }
 
     /**
@@ -81,4 +216,33 @@ class StockController extends Controller
     {
         //
     }
+
+    public function get_items_by_category(Request $request){
+        $cat_id = $request->cat_id;
+        if(!empty($cat_id)){
+            $items = Item::where('category_id',$cat_id)->get()->toArray();
+
+            echo json_encode(['status'=>'success','data'=>$items]);
+        }else{
+            echo json_encode(['status'=>'error']);
+        }
+    }
+
+
+    public function get_items_details(Request $request){
+        $item_id = $request->item_id;
+        if(!empty($item_id)){
+            $items = Item::where('id',$item_id)->first();
+            $items['item_image'] = '';
+            if($items->image != '' && file_exists(public_path().'/uploads/items/'.$items->image) ){
+                $items['item_image'] = asset('/uploads/items/'.$items->image);
+            }
+            
+            echo json_encode(['status'=>'success','data'=>$items]);
+        }else{
+            echo json_encode(['status'=>'error']);
+        }
+    }
+
+
 }

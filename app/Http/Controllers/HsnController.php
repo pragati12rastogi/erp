@@ -49,6 +49,7 @@ class HsnController extends Controller
             ]);
             DB::beginTransaction();
             $hsn = new Hsn();
+            $input['created_by'] = Auth::id();
             $hsn->create($input);
 
         } catch (\Illuminate\Database\QueryException $th) {
@@ -101,6 +102,7 @@ class HsnController extends Controller
             ]);
             DB::beginTransaction();
             $hsn = Hsn::findOrFail($id);
+            $input['updated_by'] = Auth::id();
             $hsn->update($input);
 
         } catch (\Illuminate\Database\QueryException $th) {

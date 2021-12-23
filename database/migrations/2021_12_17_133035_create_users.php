@@ -29,6 +29,8 @@ class CreateUsers extends Migration
             $table->string('password');
             $table->boolean('status');
             $table->rememberToken();
+            $table->integer('created_by');
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
             
         });

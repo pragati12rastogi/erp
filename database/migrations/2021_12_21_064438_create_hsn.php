@@ -16,6 +16,9 @@ class CreateHsn extends Migration
         Schema::create('hsn', function (Blueprint $table) {
             $table->increments('id');
             $table->string('hsn_no');
+            $table->integer('created_by');
+            $table->integer('updated_by')->nullable();
+            
             $table->softDeletes();
             $table->timestamps();
         });
