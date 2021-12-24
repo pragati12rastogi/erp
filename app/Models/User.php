@@ -64,4 +64,8 @@ class User extends Authenticatable
     public function updated_by_user(){
         return $this->belongsTo(User::class,'updated_by');
     }
+
+    public function state(){
+        return $this->belongsTo(State::class,'state_id');
+    }
 }

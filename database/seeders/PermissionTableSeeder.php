@@ -32,7 +32,7 @@ class PermissionTableSeeder extends Seeder
                 'master_name'=>'roles'
             ],
             [
-                'name'=>'role.delete',
+                'name'=>'role.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'roles'
             ],
@@ -53,7 +53,7 @@ class PermissionTableSeeder extends Seeder
                 'master_name'=>'users'
             ],
             [
-                'name'=>'users.delete',
+                'name'=>'users.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'users'
             ],
@@ -73,7 +73,7 @@ class PermissionTableSeeder extends Seeder
                 'master_name'=>'category'
             ],
             [
-                'name'=>'category.delete',
+                'name'=>'category.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'category'
             ], 
@@ -93,7 +93,7 @@ class PermissionTableSeeder extends Seeder
                 'master_name'=>'hsn'
             ],
             [
-                'name'=>'hsn.delete',
+                'name'=>'hsn.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'hsn'
             ],
@@ -113,7 +113,7 @@ class PermissionTableSeeder extends Seeder
                 'master_name'=>'gst'
             ],
             [
-                'name'=>'gst.delete',
+                'name'=>'gst.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'gst'
             ],
@@ -133,7 +133,7 @@ class PermissionTableSeeder extends Seeder
                 'master_name'=>'item'
             ],
             [
-                'name'=>'item.delete',
+                'name'=>'item.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'item'
             ],
@@ -153,12 +153,10 @@ class PermissionTableSeeder extends Seeder
                 'master_name'=>'stocks'
             ],
             [
-                'name'=>'stocks.delete',
+                'name'=>'stocks.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'stocks'
-            ]
-            */
-        $permissions = [
+            ],
             [
                 'name'=>'vendors.index',
                 'guard_name'=>'web',
@@ -175,10 +173,39 @@ class PermissionTableSeeder extends Seeder
                 'master_name'=>'vendors'
             ],
             [
-                'name'=>'vendors.delete',
+                'name'=>'vendors.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'vendors'
             ]
+            ,[
+                'name'=>'invoice.master',
+                'guard_name'=>'web',
+                'master_name'=>'invoice master'
+            ]
+            */
+        $permissions = [
+            [
+                'name'=>'stock-distributions.index',
+                'guard_name'=>'web',
+                'master_name'=>'stock distribution'
+            ],
+            [
+                'name'=>'stock-distributions.create',
+                'guard_name'=>'web',
+                'master_name'=>'stock distribution'
+            ],
+            [
+                'name'=>'stock-distributions.view',
+                'guard_name'=>'web',
+                'master_name'=>'stock distribution'
+            ],
+            [
+                'name'=>'stock-distributions.destroy',
+                'guard_name'=>'web',
+                'master_name'=>'stock distribution'
+            ]
+
+            
         ];
       
         foreach ($permissions as $permission) {

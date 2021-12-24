@@ -32,4 +32,8 @@ class Item extends Model
     public function updated_by_user(){
         return $this->belongsTo('App\Models\User','updated_by','id');
     }
+
+    public function stock(){
+        return $this->belongsTo('App\Models\Stock','id','item_id');
+    }
 }

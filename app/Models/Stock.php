@@ -30,5 +30,6 @@ class Stock extends Model
         return $this->belongsTo('App\Models\Item','item_id','id');
     }
 
+    
 
 }

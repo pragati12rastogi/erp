@@ -87,12 +87,31 @@ class StockController extends Controller
                 return back()->withErrors($errors)->withInput();
             }
 
-            DB::beginTransaction();
-            $stock = new Stock();
-    
-            $input['created_by'] = Auth::id();
-            $stock->create($input);
-            
+                DB::beginTransaction();
+                $stock = Stock::where('item_id',$input['item_id'])->first();
+                if(empty($stock)){
+                    $stock = new Stock();
+        
+                    $input['created_by'] = Auth::id();
+                    $stock->create($input);
+                }else{
+                
+                    $old_stock = $stock->prod_quantity;
+                    $new_stock = $input['prod_quantity'];
+
+                    $new_calculated_stock = $old_stock+$new_stock;
+                    $input['prod_quantity'] = $new_calculated_stock;
+
+                    $new_total = $new_calculated_stock * $input['prod_price'];
+                    $input['total_price'] = $new_total ;
+
+                    $new_freight_final_total = ($input['per_freight_price']*$new_calculated_stock)+$new_total;
+
+                    $input['final_price'] = $new_freight_final_total;
+                    
+                    $input['updated_by'] = Auth::id();
+                    $stock->update($input);
+                }
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollback();
             return back()->with('error','some error occurred'.$ex->getMessage());
@@ -192,8 +211,6 @@ class StockController extends Controller
 
             $input['final_price'] = $new_freight_final_total;
             
-
-
             $input['updated_by'] = Auth::id();
             $stock->update($input);
             
@@ -214,7 +231,11 @@ class StockController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $stock = Stock::findOrFail($id);
+
+        $stock->delete();
+
+        return back()->with('success','Stock deleted successfully');
     }
 
     public function get_items_by_category(Request $request){
