@@ -26,7 +26,7 @@
                         required:true
                     },
                     
-                    state_id:{
+                    state:{
                         required:true
                     },
                     district:{
@@ -152,14 +152,10 @@
                             <label class="control-label" for="gst_no">
                                 State: <span class="required">*</span>
                             </label>
-                            <select name="state_id" class="form-control select2">
-                                <option value="">Select State</option>
-                                @foreach($states as $s)
-                                <option value="{{$s->id}}" {{ ($vendor->state_id==$s->id) ? 'selected':'' }}>{{$s->name}}</option>
-                                @endforeach
-                            </select>
-                            <small class="txt-desc">(Please Choose State)</small>
-                            @error('state_id')
+                            <input type="text" name="state" value="{{$vendor->state}}" class="form-control text-capitalize">
+                               
+                            <small class="txt-desc">(Please Enter State)</small>
+                            @error('state')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>

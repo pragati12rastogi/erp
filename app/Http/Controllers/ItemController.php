@@ -6,10 +6,12 @@ use Illuminate\Http\Request;
 use DB;
 use Auth;
 use App\Models\Item;
+use App\Models\ItemPhoto;
 use App\Models\GstPercent;
 use App\Models\Category;
 use App\Models\Hsn;
 use Image;
+use Illuminate\Support\Str;
 
 class ItemController extends Controller
 {
@@ -20,7 +22,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::all();
+        $items = Item::orderBy('id','Desc')->get();
         return view('item.index',compact('items'));
     }
 
@@ -51,33 +53,38 @@ class ItemController extends Controller
             $this->validate($request,[
                 'name' => 'required',
                 'category_id' => 'required',
-                'photo' => 'required|mimes:jpeg,jpg,png',
+                'photo.*' => 'required|mimes:jpeg,jpg,png',
                 'hsn_id' => 'required',
                 'gst_percent_id' => 'required'
             ],[
                 'name.required'=>'This is required',
                 'category_id.required'=>'This is required',
-                'photo.required'=>'This is required',
-                'photo.mimes'=>'Accept only jpeg,png,jpg extensions',
+                'photo.*.required'=>'This is required',
+                'photo.*.mimes'=>'Accept only jpeg,png,jpg extensions',
                 'hsn_id.required'=>'This is required',
                 'gst_percent_id.required'=>'This is required'
             ]);
-
+            
             DB::beginTransaction();
             $item = new Item();
-            if ($file = $request->file('photo')) {
+            
+            $input['created_by'] = Auth::id();
+            $getid = $item->create($input);
+            
+            foreach ($input['photo'] as $f => $file ) {
                 
                 $optimizeImage = Image::make($file);
                 $optimizePath = public_path() . '/uploads/items/';
-                $image = time() .'.'. $file->getClientOriginalExtension();
+                $image = Str::random(5).time() .'.'. $file->getClientOriginalExtension();
                 
                 $optimizeImage->save($optimizePath . $image, 90);
     
-                $input['image'] = $image;
-    
+                ItemPhoto::insert([
+                    'item_id'=>$getid->id,
+                    'photo' => $image
+                ]);
+                
             }
-            $input['created_by'] = Auth::id();
-            $item->create($input);
 
         } catch (\Illuminate\Database\QueryException $th) {
             DB::rollback();
@@ -128,35 +135,40 @@ class ItemController extends Controller
             $this->validate($request,[
                 'name' => 'required',
                 'category_id' => 'required',
-                'photo' => 'mimes:jpeg,jpg,png',
+                'photo.*' => 'mimes:jpeg,jpg,png',
                 'hsn_id' => 'required',
                 'gst_percent_id' => 'required'
             ],[
                 'name.required'=>'This is required',
                 'category_id.required'=>'This is required',
                 
-                'photo.mimes'=>'Accept only jpeg,png,jpg extensions',
+                'photo.*.mimes'=>'Accept only jpeg,png,jpg extensions',
                 'hsn_id.required'=>'This is required',
                 'gst_percent_id.required'=>'This is required'
             ]);
 
             DB::beginTransaction();
             $item = Item::findOrFail($id);
-            if ($file = $request->file('photo')) {
-                
-                if ($item->image != '' && file_exists(public_path() . '/uploads/items/' . $item->image)) {
-                    unlink(public_path() . '/uploads/items/' . $item->image);
-                }
+            
+            if(!isset($input['photo']) && count($item->images)<= 0){
+                return back()->with('error','Item image is required please select any product image');
+            }
 
+            foreach ($input['photo'] as $f => $file ) {
+                
                 $optimizeImage = Image::make($file);
                 $optimizePath = public_path() . '/uploads/items/';
-                $image = time() .'.'. $file->getClientOriginalExtension();
+                $image = Str::random(5).time() .'.'. $file->getClientOriginalExtension();
                 
                 $optimizeImage->save($optimizePath . $image, 90);
     
-                $input['image'] = $image;
-    
+                ItemPhoto::insert([
+                    'item_id' => $id,
+                    'photo' => $image
+                ]);
+                
             }
+
             $input['updated_by'] = Auth::id();
             $item->update($input);
 
@@ -177,10 +189,29 @@ class ItemController extends Controller
     public function destroy($id)
     {
         $item = Item::findOrFail($id);
-
+        if(count($item->images)>0){
+            foreach($item->images as $i => $photo){
+                if ($photo->photo != '' && file_exists(public_path() . '/uploads/items/' . $photo->photo)) {
+                    unlink(public_path() . '/uploads/items/' . $photo->photo);
+                }
+            }
+        }
+        ItemPhoto::where('item_id',$id)->delete();
         $value = $item->delete();
+
         if ($value) {
             return back()->with('success','Item is deleted successfully.');
         }
+    }
+
+    public function delete_item_photo($id){
+        $photo = ItemPhoto::find($id);
+
+        if ($photo->photo != '' && file_exists(public_path() . '/uploads/items/' . $photo->photo)) {
+            unlink(public_path() . '/uploads/items/' . $photo->photo);
+        }
+        
+        $photo->delete();
+        return back()->with('success','Image deleted successfully');
     }
 }

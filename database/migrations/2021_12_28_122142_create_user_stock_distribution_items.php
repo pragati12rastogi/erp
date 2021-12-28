@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDistributions extends Migration
+class CreateUserStockDistributionItems extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,15 @@ class CreateDistributions extends Migration
      */
     public function up()
     {
-        Schema::create('distributions', function (Blueprint $table) {
+        Schema::create('user_stock_distribution_items', function (Blueprint $table) {
             $table->id();
             $table->integer('order_id');
-            $table->integer('user_id');
             $table->integer('item_id');
             $table->double('product_price');
-            $table->double('igst')->nullable();
-            $table->double('scgst')->nullable();
+            $table->double('gst')->nullable();
             $table->integer('distributed_quantity');
             $table->double('product_total_price');
-            $table->boolean('is_cancelled')->default('0');
-            $table->integer('updated_by')->nullable();
-            $table->softDeletes();
+            $table->boolean('is_cancelled')->nullable();
             $table->timestamps();
         });
     }
@@ -37,6 +33,6 @@ class CreateDistributions extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('distributions');
+        Schema::dropIfExists('user_stock_distribution_items');
     }
 }

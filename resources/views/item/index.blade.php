@@ -52,15 +52,17 @@
                     <td>{{$item->name}}</td>
                     <td>{{$item->category->name}}</td>
                     <td>
-                        @if($item->image != '' && file_exists(public_path().'/uploads/items/'.$item->image) )
-                          <img class="img-thumbnail"  src="{{url('uploads/items/'.$item->image)}}" title="{{ $item->name }}">
+                      @if(count($item->images)>0)
+                        @if($item->images[0]['photo'] != '' && file_exists(public_path().'/uploads/items/'.$item->images[0]['photo']) )
+                          <img class="img-thumbnail"  src="{{url('uploads/items/'.$item->images[0]['photo'])}}" title="{{ $item->name }}">
                         @endif
+                      @endif
                     </td>
                     <td>
                         {{$item->hsn->hsn_no}}
                     </td>
                     <td>
-                        {{$item->gst_percent->name}}({{$item->gst_percent->percent}} %)
+                        {{$item->gst_percent->percent}} %
                     </td>
                     <td>{{date('d-m-Y',strtotime($item->created_at))}}</td>
                     <td>{{!empty($item->created_by)?$item->created_by_user['name']:""}}{{!empty($item->updated_by)? '/'.$item->updated_by_user->name :'' }}</td>

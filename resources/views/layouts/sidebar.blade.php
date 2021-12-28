@@ -39,56 +39,65 @@
       </a>
     </li>
     @endif
-    @if(Auth::user()->hasPermissionTo('roles.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['roles','roles/*']) }}">
-      <a class="nav-link" href="{{ url('/roles') }}">
-        <i class="menu-icon mdi mdi-wall-sconce-flat"></i>
-        <span class="menu-title">Roles</span>
-      </a>
-    </li>
-    @endif
-    @if(Auth::user()->hasPermissionTo('category.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['category','category/*']) }}">
-      <a class="nav-link" href="{{ url('/category') }}">
+
+    @if(Auth::user()->hasPermissionTo('roles.index') || Auth::user()->hasPermissionTo('category.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN) || Auth::user()->hasPermissionTo('hsn.index') || Auth::user()->hasPermissionTo('gst.index') || Auth::user()->hasPermissionTo('vendors.index') )
+    <li class="nav-item {{ active_class(['roles','roles/*','category','category/*','hsn','hsn/*','gst','gst/*','vendors','vendors/*']) }}">
+      <a class="nav-link" data-toggle="collapse" href="#basic-ui" aria-expanded="{{ is_active_route(['roles','roles/*','category','category/*','hsn','hsn/*','gst','gst/*','vendors','vendors/*']) }}" aria-controls="basic-ui">
         <i class="menu-icon mdi mdi-widgets"></i>
-        <span class="menu-title">Category</span>
+        <span class="menu-title">Master</span>
+        <i class="menu-arrow"></i>
       </a>
+      <div class="collapse {{ show_class(['roles','roles/*','category','category/*','hsn','hsn/*','gst','gst/*','vendors','vendors/*']) }}" id="basic-ui">
+        <ul class="nav flex-column sub-menu">
+          @if(Auth::user()->hasPermissionTo('roles.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+          <li class="nav-item {{ active_class(['roles','roles/*']) }}">
+            <a class="nav-link" href="{{ url('/roles') }}">
+              Roles
+            </a>
+          </li>
+          @endif
+          @if(Auth::user()->hasPermissionTo('category.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+          <li class="nav-item {{ active_class(['category','category/*']) }}">
+            <a class="nav-link" href="{{ url('/category') }}">
+              Category
+            </a>
+          </li>
+          @endif
+          @if(Auth::user()->hasPermissionTo('hsn.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+          <li class="nav-item {{ active_class(['hsn','hsn/*']) }}">
+            <a class="nav-link" href="{{ url('/hsn') }}">
+              Hsn
+            </a>
+          </li>
+          @endif
+          @if(Auth::user()->hasPermissionTo('gst.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+          <li class="nav-item {{ active_class(['gst','gst/*']) }}">
+            <a class="nav-link" href="{{ url('/gst') }}">
+              GST
+            </a>
+          </li>
+          @endif
+          
+          @if(Auth::user()->hasPermissionTo('vendors.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+          <li class="nav-item {{ active_class(['vendors','vendors/*']) }}">
+            <a class="nav-link" href="{{ url('/vendors') }}">
+              Vendors
+            </a>
+          </li>
+          @endif
+        </ul>
+      </div>
     </li>
     @endif
-    @if(Auth::user()->hasPermissionTo('hsn.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['hsn','hsn/*']) }}">
-      <a class="nav-link" href="{{ url('/hsn') }}">
-        <i class="menu-icon mdi mdi-air-purifier"></i>
-        <span class="menu-title">Hsn</span>
-      </a>
-    </li>
-    @endif
-    @if(Auth::user()->hasPermissionTo('gst.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['gst','gst/*']) }}">
-      <a class="nav-link" href="{{ url('/gst') }}">
-        <i class="menu-icon mdi mdi-gamepad-circle-left"></i>
-        <span class="menu-title">GST</span>
-      </a>
-    </li>
-    @endif
-    
-    @if(Auth::user()->hasPermissionTo('vendors.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-    <li class="nav-item {{ active_class(['vendors','vendors/*']) }}">
-      <a class="nav-link" href="{{ url('/vendors') }}">
-        <i class="menu-icon mdi mdi-gamepad-circle-left"></i>
-        <span class="menu-title">Vendors</span>
-      </a>
-    </li>
-    @endif
-    
-    @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN) || Auth::user()->hasPermissionTo('invoice.master') || Auth::user()->hasPermissionTo('stock-distributions.index'))
-    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*']) }}">
-      <a class="nav-link" data-toggle="collapse" href="#basic-ui" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*']) }}" aria-controls="basic-ui">
+
+    @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN) || Auth::user()->hasPermissionTo('invoice.master') || Auth::user()->hasPermissionTo('stock-distributions.index') || Auth::user()->hasPermissionTo('users-stock.list'))
+    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','user-stock-distribution','user-stock-distribution/*','users-stock/list']) }}">
+      <a class="nav-link" data-toggle="collapse" href="#basic-ui" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','user-stock-distribution','user-stock-distribution/*','users-stock/list']) }}" aria-controls="basic-ui">
         <i class="menu-icon mdi mdi-image-auto-adjust"></i>
         <span class="menu-title">Inventory</span>
         <i class="menu-arrow"></i>
       </a>
-      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*']) }}" id="basic-ui">
+      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','user-stock-distribution','user-stock-distribution/*','users-stock/list']) }}" id="basic-ui">
         <ul class="nav flex-column sub-menu">
           @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
           <li class="nav-item {{ active_class(['item','item/*']) }}">
@@ -115,6 +124,22 @@
           <li class="nav-item {{ active_class(['stock-distributions','stock-distributions/*']) }}">
             <a class="nav-link" href="{{ url('stock-distributions') }}">
               Stock Distribution
+            </a>
+          </li>
+          @endif
+
+          @if(Auth::user()->hasPermissionTo('users-stock.list') )
+          <li class="nav-item {{ active_class(['users-stock/list']) }}">
+            <a class="nav-link" href="{{ url('users-stock/list') }}">
+              User Stock List
+            </a>
+          </li>
+          @endif
+
+          @if(Auth::user()->hasPermissionTo('user-stock-distribution.index') )
+          <li class="nav-item {{ active_class(['user-stock-distribution','user-stock-distribution/*']) }}">
+            <a class="nav-link" href="{{ url('user-stock-distribution') }}">
+              User Stock Distribution
             </a>
           </li>
           @endif

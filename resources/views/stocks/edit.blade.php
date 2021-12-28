@@ -6,6 +6,10 @@
 @endpush
 
 @push('custom-scripts')
+    <script>
+        var gst_percent = {{$stock->item->gst_percent->percent}};
+
+    </script>
     {!! Html::script('/js/common.js') !!}
     <script>
         $(function() {
@@ -15,10 +19,13 @@
 
             jQuery('#gst_form').validate({ // initialize the plugin
                 rules: {
-                    item_id:{
+                    prod_quantity:{
                         required:true,
                     },
-                    percent:{
+                    prod_price:{
+                        required:true,
+                    },
+                    total_price:{
                         required:true,
                     }
                     
@@ -45,66 +52,8 @@
         });
         
         
-        
-        $("#prod_quantity, #prod_price, #total_price").keyup(function(){
-            calculate_product();
-        })
-        function calculate_product(){
-            var prod_quantity = $("#prod_quantity").val();
-            var prod_price = $("#prod_price").val();
-
-            var calc_total = parseInt(prod_quantity)*parseFloat(prod_price);
-            
-            var total_price = $("#total_price").val(calc_total);
-
-        }
-
-        $("#per_freight_price").change(function(){
-            calculate_final_price();
-
-            // var = '<div id="myModal" class="modal fade" role="dialog">'+
-            //         '<div class="modal-dialog">'+
-            //             '<div class="modal-content">'+
-            //                 '<div class="modal-header">'+
-            //                     '<button type="button" class="close" data-dismiss="modal">&times;</button>'+
-            //                     '<h4 class="modal-title">Modal Header</h4>'+
-            //                 '</div>'+
-            //                 '<div class="modal-body">'+
-            //                     '<table class="table">'+
-            //                         '<tr>'+
-            //                             '<th></th>'
-            //                         '</tr>'+
-            //                         '<tr></tr>'+
-            //                     '</table>'+
-            //                 '</div>'+
-            //                 '<div class="modal-footer">'+
-            //                     '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
-            //                 '</div>'+
-            //             '</div>'+
-
-            //         '</div>'+
-            //     '</div>';
-        })
-        function calculate_final_price (){
-            var per_freight_price = $("#per_freight_price").val();
-            var prod_quantity = $("#prod_quantity").val();
-            var total_price = $("#total_price").val();
-            var total_price = $("#total_price").val();
-
-            var calc_total = (parseInt(per_freight_price)*parseInt(prod_quantity))+parseInt(total_price);
-            
-            var final_price = $("#final_price").val(calc_total);
-        }
-
-        $("#user_percent").change(function(){
-            var prod_price = $("#prod_price").val();
-            var get_percent = parseFloat(prod_price)*(5/100);
-
-            var user_price = (parseFloat(prod_price)+parseFloat(get_percent)).toFixed(2);
-            $("#price_for_user").val(user_price);
-        })
-        
     </script>
+    {!! Html::script('/js/stock.js') !!}
 @endpush
 
 @section('content')
@@ -137,7 +86,7 @@
                             <label class="control-label" for="first-name">
                                 Category: <span class="required">*</span>
                             </label>
-                            <select name="category_id" class="form-control select2" id="category_id">
+                            <select disabled class="form-control select2" id="category_id">
                                 <option>Select Category</option>
                                 @foreach($category as $cat_i => $cat)
                                     <option value="{{$cat->id}}" {{($stock->item->category['id'] == $cat->id) ? 'selected':'' }}>{{$cat->name}}</option>
@@ -155,7 +104,7 @@
                             <label class="control-label" for="first-name">
                                 Items: <span class="required">*</span>
                             </label>
-                            <select name="item_id" class="form-control select2" id="item_id">
+                            <select disabled class="form-control select2" id="item_id">
                                 <option>Select Items</option>
                                 @foreach($item as $i_ind => $i)
                                 <option value="{{$i->id}}" {{($stock->item_id == $i->id) ? 'selected':'' }}>{{$i->name}}</option>
@@ -171,10 +120,15 @@
                     <div class="col-md-12" id="item_details" >
                         <div class="row">
                             <div class="col-md-2" id="img_div">
+                                
                                 <center>
-                                @if($stock->item->image != '' && file_exists(public_path().'/uploads/items/'.$stock->item->image) )
-                
-                                    <img src="{{asset('/uploads/items/'.$stock->item->image)}}" id="item_img" class="img-lg img-thumbnail" >
+                                @if(count($stock->item->images)>0)
+                                    @if($stock->item->images[0]['photo'] != '' && file_exists(public_path().'/uploads/items/'.$stock->item->images[0]['photo']) )
+                    
+                                        <img src="{{asset('/uploads/items/'.$stock->item->images[0]['photo'])}}" id="item_img" class="img-lg img-thumbnail" >
+                                    @else
+                                        <img src="{{asset('images/no-image.jpg')}}" id="item_img" class="img-lg img-thumbnail" >
+                                    @endif
                                 @else
                                     <img src="{{asset('images/no-image.jpg')}}" id="item_img" class="img-lg img-thumbnail" >
                                 @endif
@@ -187,7 +141,7 @@
                                 <select name="gst_id" id="gst_id" disabled class="form-control select2">
                                     <option value="">Select GST</option>
                                     @foreach($gsts as $gst_i => $gst)
-                                    <option value="{{$gst->id}}" {{($stock->item->gst_percent_id == $gst->id) ? 'selected':'' }}>{{$gst->name}}({{$gst->percent}}%)</option>
+                                    <option value="{{$gst->id}}" {{($stock->item->gst_percent_id == $gst->id) ? 'selected':'' }}>{{$gst->percent}}%</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -235,6 +189,7 @@
                                 Total Price: <span class="required">*</span>
                             </label>
                             <input type="number" readonly value="{{$stock->total_price}}" min="0" name="total_price" id="total_price" class="form-control">
+                            <small id="total_price_span">Note: gst of {{$stock->item->gst_percent->percent}}% is added.</small>
                             @error('total_price')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -245,7 +200,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label" for="first-name">
-                                Per Freight Charge: <span class="required">*</span>
+                                Per Fright Charge: <span class="required">*</span>
                             </label>
                             <input type="number" value="{{$stock->per_freight_price}}" min="0" name="per_freight_price" id="per_freight_price" class="form-control">
                             @error('per_freight_price')
@@ -294,6 +249,7 @@
                                 Price For User: <span class="required">*</span>
                             </label>
                             <input type="number" value="{{$stock->price_for_user}}" min="0"  name="price_for_user" id="price_for_user" class="form-control">
+                            <small id="user_price_span"></small>
                             @error('price_for_user')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -320,7 +276,7 @@
                                 Select Vendor: <span class="required">*</span>
                             </label>
                             <select name="vendor_id" class="form-control select2" id="vendor_id">
-                                <option>Select Vendor</option>
+                                <option value="">Select Vendor</option>
                                 @foreach($vendor as $v_id => $v)
                                     <option value="{{$v->id}}" {{($stock->vendor_id == $v->id) ? 'selected':'' }}>{{$v->name}}</option>
                                 @endforeach

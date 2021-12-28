@@ -12,7 +12,7 @@ class Vendor extends Model
     use HasFactory;
     use SoftDeletes;
     
-    protected $fillable = ['name','email','phone','gst_no','state_id','district','address','firm_name','created_by','updated_by'];
+    protected $fillable = ['name','email','phone','gst_no','state','district','address','firm_name','created_by','updated_by'];
 
     public function created_by_user(){
         return $this->belongsTo(User::class,'created_by');

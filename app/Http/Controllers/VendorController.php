@@ -54,7 +54,7 @@ class VendorController extends Controller
                 'phone'           => ['required','unique:vendors'],
                 'firm_name'        => ['required'],
                 
-                'state_id'         => ['required'],
+                'state'            => ['required'],
                 'district'         => ['required'],
                 
             ],[
@@ -68,7 +68,7 @@ class VendorController extends Controller
                 'mobile.required'         => 'This field is required',
                 'firm_name.required'         => 'This field is required',
                 'gst_no.required'         => 'This field is required',
-                'state_id.required'         => 'This field is required',
+                'state.required'         => 'This field is required',
                 'district.required'         => 'This field is required',
                 
             ]);
@@ -135,7 +135,7 @@ class VendorController extends Controller
                 'phone'           => ['required','unique:vendors,phone,'.$id.',id'],
                 'firm_name'        => ['required'],
                 
-                'state_id'         => ['required'],
+                'state'         => ['required'],
                 'district'         => ['required'],
                 
             ],[
@@ -149,7 +149,7 @@ class VendorController extends Controller
                 'mobile.required'         => 'This field is required',
                 'firm_name.required'         => 'This field is required',
                 'gst_no.required'         => 'This field is required',
-                'state_id.required'         => 'This field is required',
+                'state.required'         => 'This field is required',
                 'district.required'         => 'This field is required',
                 
             ]);

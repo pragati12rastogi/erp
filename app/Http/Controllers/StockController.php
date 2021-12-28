@@ -23,7 +23,7 @@ class StockController extends Controller
      */
     public function index()
     {
-        $stocks = Stock::all();
+        $stocks = Stock::orderBy('id','Desc')->get();
         return view('stocks.index',compact('stocks'));
     }
 
@@ -96,19 +96,24 @@ class StockController extends Controller
                     $stock->create($input);
                 }else{
                 
+                    $item = Item::findOrFail($stock->item_id);
+                    $gst = $item->gst_percent->percent;
+
+
                     $old_stock = $stock->prod_quantity;
                     $new_stock = $input['prod_quantity'];
 
                     $new_calculated_stock = $old_stock+$new_stock;
                     $input['prod_quantity'] = $new_calculated_stock;
 
-                    $new_total = $new_calculated_stock * $input['prod_price'];
+                    $gst_calc = ($input['prod_price'] * $stock->item->gst_percent->percent)/100;
+                    $new_total = $new_calculated_stock * ( $input['prod_price'] + $gst_calc );
                     $input['total_price'] = $new_total ;
 
                     $new_freight_final_total = ($input['per_freight_price']*$new_calculated_stock)+$new_total;
 
                     $input['final_price'] = $new_freight_final_total;
-                    
+            
                     $input['updated_by'] = Auth::id();
                     $stock->update($input);
                 }
@@ -198,13 +203,18 @@ class StockController extends Controller
             DB::beginTransaction();
             $stock = Stock::findOrFail($id);
             
+            $item = Item::findOrFail($stock->item_id);
+            $gst = $item->gst_percent->percent;
+
+
             $old_stock = $stock->prod_quantity;
             $new_stock = $input['prod_quantity'];
 
             $new_calculated_stock = $old_stock+$new_stock;
             $input['prod_quantity'] = $new_calculated_stock;
 
-            $new_total = $new_calculated_stock * $input['prod_price'];
+            $gst_calc = ($input['prod_price'] * $stock->item->gst_percent->percent)/100;
+            $new_total = $new_calculated_stock * ( $input['prod_price'] + $gst_calc );
             $input['total_price'] = $new_total ;
 
             $new_freight_final_total = ($input['per_freight_price']*$new_calculated_stock)+$new_total;
@@ -255,15 +265,17 @@ class StockController extends Controller
         if(!empty($item_id)){
             $items = Item::where('id',$item_id)->first();
             $items['item_image'] = '';
-            if($items->image != '' && file_exists(public_path().'/uploads/items/'.$items->image) ){
-                $items['item_image'] = asset('/uploads/items/'.$items->image);
+            if(count($items->images)>0){
+                if($items->images[0]['photo'] != '' && file_exists(public_path().'/uploads/items/'.$items->images[0]['photo']) ){
+                    $items['item_image'] = asset('/uploads/items/'.$items->images[0]['photo']);
+                }
             }
-            
+            $items['gst_percent'] = GstPercent::where('id',$items->gst_percent_id)->first()['percent'];
             echo json_encode(['status'=>'success','data'=>$items]);
         }else{
             echo json_encode(['status'=>'error']);
         }
     }
 
-
+    
 }

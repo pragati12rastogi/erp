@@ -39,6 +39,7 @@ class UserController extends Controller
     public function create()
     {   
         $roles = Role::where('name','<>',Constants::ROLE_ADMIN)->get();
+        
         $states = State::all();
         return view('user.add',compact('roles','states'));
     }
@@ -153,7 +154,7 @@ class UserController extends Controller
         
         $user = User::findOrFail($id);
 
-        $roles = Role::get();
+        $roles = Role::where('name','<>',Constants::ROLE_ADMIN)->get();
         $states = State::all();
         $userRole = $user->roles->pluck('name','name')->first();
 

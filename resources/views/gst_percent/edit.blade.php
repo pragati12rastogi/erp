@@ -75,19 +75,7 @@
                 {{ method_field('PUT') }}
                 <div class="row">
                     
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label" for="first-name">
-                                GST Name: <span class="required">*</span>
-                            </label>
-                            <input name="name" type="text" maxlength="255" value="{{$gst->name}}" class="form-control text-capitalize" >
-                            @error('name')
-                                <span class="invalid-feedback d-block" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                    </div>
+                    
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label" for="first-name">

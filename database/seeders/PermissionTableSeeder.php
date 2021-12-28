@@ -180,31 +180,52 @@ class PermissionTableSeeder extends Seeder
             ,[
                 'name'=>'invoice.master',
                 'guard_name'=>'web',
-                'master_name'=>'invoice master'
-            ]
-            */
-        $permissions = [
+                'master_name'=>'invoice'
+            ],
             [
                 'name'=>'stock-distributions.index',
                 'guard_name'=>'web',
-                'master_name'=>'stock distribution'
+                'master_name'=>'stock-distribution'
             ],
             [
                 'name'=>'stock-distributions.create',
                 'guard_name'=>'web',
-                'master_name'=>'stock distribution'
+                'master_name'=>'stock-distribution'
             ],
             [
-                'name'=>'stock-distributions.view',
+                'name'=>'stock-distributions.show',
                 'guard_name'=>'web',
-                'master_name'=>'stock distribution'
+                'master_name'=>'stock-distribution'
             ],
             [
                 'name'=>'stock-distributions.destroy',
                 'guard_name'=>'web',
-                'master_name'=>'stock distribution'
+                'master_name'=>'stock-distribution'
+            ],
+            */
+        $permissions = [
+            
+            [
+                'name'=>'users-stock.list',
+                'guard_name'=>'web',
+                'master_name'=>'users-stock'
+            ],
+            [
+                'name'=>'user-stock-distribution.create',
+                'guard_name'=>'web',
+                'master_name'=>'user-stock-distribution'
+            ],
+            [
+                'name'=>'user-stock-distribution.show',
+                'guard_name'=>'web',
+                'master_name'=>'user-stock-distribution'
+            ],
+            [
+                'name'=>'user-stock-distribution.destroy',
+                'guard_name'=>'web',
+                'master_name'=>'user-stock-distribution'
             ]
-
+            
             
         ];
       

@@ -22,7 +22,7 @@ class HasPermission
     public function handle(Request $request, Closure $next)
     {   
         $user = Auth::user();
-
+        
         if(!$user->hasRole(Constants::ROLE_ADMIN)){
             if(!$user->hasPermissionTo(Route::current()->getName())){
                 return abort(403,'You are not authorised to access this page.');

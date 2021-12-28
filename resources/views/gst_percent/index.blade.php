@@ -35,7 +35,6 @@
             <thead>
               <tr>
                 <th>Sr.no.</th>
-                <th>GST Name</th>
                 <th>Percentage</th>
                 <th>Created At</th>
                 <th>Created By/Updated By</th>
@@ -46,7 +45,7 @@
               @foreach($gst as $key => $h)
                 <tr>
                     <td>{{$key+1}}</td>
-                    <td>{{$h->name}}</td>
+                    
                     <td>{{$h->percent}}</td>
                     
                     <td>{{date('d-m-Y',strtotime($h->created_at))}}</td>

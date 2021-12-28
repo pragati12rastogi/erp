@@ -6,8 +6,13 @@
 @endpush
 
 @push('custom-scripts')
+    <script>
+        var gst_percent = 0;
+    </script>
     {!! Html::script('/js/common.js') !!}
     <script>
+        
+
         $(function() {
             $.validator.addMethod('decimal', function(value, element) {
             return this.optional(element) || /^((\d+(\\.\d{0,2})?)|((\d*(\.\d{1,2}))))$/.test(value);
@@ -15,12 +20,40 @@
 
             jQuery('#gst_form').validate({ // initialize the plugin
                 rules: {
+                    category_id:{
+                        required:true
+                    },
                     item_id:{
+                        required:true
+                    },
+                    prod_quantity:{
                         required:true,
                     },
-                    percent:{
+                    prod_price:{
                         required:true,
-                    }
+                    },
+                    total_price:{
+                        required:true,
+                    },
+                    per_freight_price:{
+                        required:true,
+                    },
+                    user_percent:{
+                        required:true
+                    },
+                    final_price:{
+                        required:true
+                    },
+
+                    date_of_purchase:{
+                        required:true
+                    },
+                    price_for_user:{
+                        required:true
+                    },
+                    vendor_id:{
+                        required:true
+                    },
                     
                 },
                 errorPlacement: function(error,element)
@@ -44,65 +77,10 @@
             });
         });
         
-        $("#prod_quantity, #prod_price, #total_price").keyup(function(){
-            calculate_product();
-        })
-        function calculate_product(){
-            var prod_quantity = $("#prod_quantity").val();
-            var prod_price = $("#prod_price").val();
-
-            var calc_total = parseInt(prod_quantity)*parseFloat(prod_price);
-            
-            var total_price = $("#total_price").val(calc_total);
-
-        }
-
-        $("#per_freight_price").change(function(){
-            calculate_final_price();
-
-            // var = '<div id="myModal" class="modal fade" role="dialog">'+
-            //         '<div class="modal-dialog">'+
-            //             '<div class="modal-content">'+
-            //                 '<div class="modal-header">'+
-            //                     '<button type="button" class="close" data-dismiss="modal">&times;</button>'+
-            //                     '<h4 class="modal-title">Modal Header</h4>'+
-            //                 '</div>'+
-            //                 '<div class="modal-body">'+
-            //                     '<table class="table">'+
-            //                         '<tr>'+
-            //                             '<th></th>'
-            //                         '</tr>'+
-            //                         '<tr></tr>'+
-            //                     '</table>'+
-            //                 '</div>'+
-            //                 '<div class="modal-footer">'+
-            //                     '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
-            //                 '</div>'+
-            //             '</div>'+
-
-            //         '</div>'+
-            //     '</div>';
-        })
-        function calculate_final_price (){
-            var per_freight_price = $("#per_freight_price").val();
-            var prod_quantity = $("#prod_quantity").val();
-            var total_price = $("#total_price").val();
-            var total_price = $("#total_price").val();
-
-            var calc_total = (parseInt(per_freight_price)*parseInt(prod_quantity))+parseInt(total_price);
-            
-            var final_price = $("#final_price").val(calc_total);
-        }
-
-        $("#user_percent").change(function(){
-            var prod_price = $("#prod_price").val();
-            var get_percent = parseFloat(prod_price)*(5/100);
-
-            var user_price = (parseFloat(prod_price)+parseFloat(get_percent)).toFixed(2);
-            $("#price_for_user").val(user_price);
-        })
+        
         
     </script>
+    {!! Html::script('/js/stock.js') !!}
 @endpush
 
 @section('content')
@@ -177,7 +155,7 @@
                                 <select name="gst_id" id="gst_id" disabled class="form-control select2">
                                     <option value="">Select GST</option>
                                     @foreach($gsts as $gst_i => $gst)
-                                    <option value="{{$gst->id}}">{{$gst->name}}({{$gst->percent}}%)</option>
+                                    <option value="{{$gst->id}}">{{$gst->percent}}%</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -225,6 +203,7 @@
                                 Total Price: <span class="required">*</span>
                             </label>
                             <input type="number" readonly value="0" min="0" name="total_price" id="total_price" class="form-control">
+                            <small id="total_price_span"></small>
                             @error('total_price')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -235,7 +214,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label" for="first-name">
-                                Per Freight Charge: <span class="required">*</span>
+                                Per Fright Charge: <span class="required">*</span>
                             </label>
                             <input type="number" value="0" min="0" name="per_freight_price" id="per_freight_price" class="form-control">
                             @error('per_freight_price')
@@ -284,6 +263,7 @@
                                 Price For User: <span class="required">*</span>
                             </label>
                             <input type="number" value="0" min="0"  name="price_for_user" id="price_for_user" class="form-control">
+                            
                             @error('price_for_user')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>

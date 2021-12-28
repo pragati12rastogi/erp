@@ -2,7 +2,14 @@
 @section('title', 'Edit Item')
 
 @push('style')
+    <style>
+        .other_image_delete_style{
+            position: absolute;
+            top: 46px;
+            left: 12px;
 
+        }
+    </style>
 @endpush
 
 @push('custom-scripts')
@@ -123,7 +130,7 @@
                             <select class="form-control select2" name="gst_percent_id" >
                                 <option value="">Select GST</option>
                                 @foreach($gsts as $ind => $gst)
-                                    <option value="{{$gst->id}}" {{($item->gst_percent_id == $gst->id)?'selected':''}}>{{$gst->name}}({{$gst->percent}} %)</option>
+                                    <option value="{{$gst->id}}" {{($item->gst_percent_id == $gst->id)?'selected':''}}>{{$gst->percent}} %</option>
                                 @endforeach
                             </select>
                             @error('gst_id')
@@ -133,15 +140,15 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="row">
-                            <div class="col-md-7">
+                            <div class="col-md-4 ">
                                 <div class="form-group">
                                     <label class="control-label" for="address">
                                         Image: 
                                     </label>
                                     <br>
-                                    <input type="file" id="photo" name="photo" accept="image/*">
+                                    <input type="file" id="photo" name="photo[]" accept="image/*" multiple>
                                     <br>
                                     <small class="txt-desc">(Photo accept jpeg,png and jpg)</small>
                                     @error('photo')
@@ -151,18 +158,23 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-5">
-                                @if($item->image != '' && file_exists(public_path().'/uploads/items/'.$item->image))
-                                <div class="card-inverse-secondary ">
-                                    <center>
-                                        
-                                            <img class="img-avatar" src=" {{url('/uploads/items/'.$item->image)}}">
-                                       
-                                    </center>    
+                            @foreach($item->images as $i => $img )
+                            @if($img->photo != '' && file_exists(public_path().'/uploads/items/'.$img->photo))
+                                    
+                                <div class="col-md-1  col-sm-6">
+                                    
+                                    <div class="card-inverse-secondary ">
+                                        <center>
+                                            <img class="img-avatar" src=" {{url('/uploads/items/'.$img->photo)}}">
+                                        </center>  
+                                          
+                                    </div>
+                                    <a href="{{route('delete.item.photo',$img->id)}}" class="mdi mdi-delete-circle-outline text-danger other_image_delete_style"></a>
                                 </div>
-                                @endif
-                            </div>
+                            @endif
+                            @endforeach
                         </div>
+                        
                         
                     </div>
                 </div>

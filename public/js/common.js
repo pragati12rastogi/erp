@@ -55,6 +55,7 @@ $("#item_id").on('change',function(){
                     $("#gst_id").val(response.data.gst_percent_id).trigger('change');
                     $("#hsn_id").val(response.data.hsn_id).trigger('change');
 
+                    gst_percent =  response.data.gst_percent;
                 }
 
             },

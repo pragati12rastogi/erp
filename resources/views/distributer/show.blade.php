@@ -48,11 +48,7 @@
                                 <b>Invoice ID:</b> {{$inv_no}}
 								
                             </th>
-                            @if(!empty($dis->is_cancelled))
-                            <th>
-                                <b>Status:</b>Cancelled / <b>By:</b> {{!empty($dis->updated_by)? $dis->updated_by_user->name:''}}
-                            </th>
-                            @endif
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -104,57 +100,77 @@
 							<th>Price</th>
 							<th>TAX</th>
 							<th>Total</th>
+                            <th>Action</th>
 						</tr>
 					</thead>
 
 					<tbody>
+                        @foreach($dis->invoices as $in => $inv)
 						<tr>
                             <td>
-                                <b>{{$dis->item->name}}</b>
+                                <b>{{$inv->item->name}}</b>
                                 <br>
+                                @php
+                                    $tax = ($inv->product_price * $inv->item->gst_percent->percent)/100;
+                                    $single_price = $inv->product_price-$tax;
+                                @endphp
                                 <small class="tax"><b>Price:</b> Rs.
-									{{ number_format((float)$dis->product_price, 2, '.', '')}}
+									{{ number_format((float)$single_price, 2, '.', '')}}
 								</small>
                                 <small class="tax"><b>Tax:</b> Rs.
-                                    @if(!empty($dis->igst))
-								        {{ number_format((float)$dis->igst , 2, '.', '')}}
-                                    @elseif(!empty($dis->scgst))
-                                        {{ number_format((float)($dis->scgst + $dis->scgst) , 2, '.', '')}}
-                                    @endif
-								</small>
-								<br>
+                                    
+                                    {{ number_format((float)$tax , 2, '.', '')}}
+                                    
+                                </small>
+                                <br>
 								<small class="help-block">(Displayed for single Qty.)</small>
                             </td>
                             <td valign="middle">
-								{{ $dis->distributed_quantity }}
+								{{ $inv->distributed_quantity }}
 							</td>
                             <td>
                                 <p><b>Price:</b> Rs.
                                     
-                                    {{ round(($dis->product_price*$dis->distributed_quantity),2) }}</p>
+                                    {{ round(($single_price*$inv->distributed_quantity),2) }}</p>
                                 
                                 <small class="help-block">(Price Multiplied with Qty.)</small>
 							</td>
                             <td>
 
-								@if(!empty($dis->igst) )
-		                          <p>Rs. {{ sprintf("%.2f",$dis->igst) }} (IGST)</p>
+								@if(!empty($inv->igst) )
+		                          <p>Rs. {{ sprintf("%.2f",$inv->igst) }} (IGST)</p>
 		                        @endif
-								@if(!empty($dis->scgst))
-									<p>Rs. {{ sprintf("%.2f",$dis->scgst) }} (SGST)</p>
-                                    <p>Rs. {{ sprintf("%.2f",$dis->scgst) }} (CGST)</p>
+								@if(!empty($inv->scgst))
+									<p>Rs. {{ sprintf("%.2f",$inv->scgst) }} (SGST)</p>
+                                    <p>Rs. {{ sprintf("%.2f",$inv->scgst) }} (CGST)</p>
 								@endif
 								<small class="help-block">(Tax Multiplied with Qty.)</small>
                             </td>
                             <td>
 								Rs.
 								
-									{{ round($dis->total_cost,2) }}
+									{{ round($inv->product_total_price,2) }}
 								<br>
 								<small class="help-block">(Incl. of Tax )</small>
 							</td>
-                            
+                            <td>
+                                <a title="Print Single Product" target="_blank" href="{{route('print.singleinvoice',$inv->id)}}" class="btn btn-dark ">
+                                    <i class="m-0 mdi mdi-printer"></i>
+                                </a>
+                                @if(Auth::user()->hasPermissionTo('stock-distributions.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                                    @if(empty($inv->is_cancelled))
+                                        <a onclick='return $("#{{$inv->id}}_cancel").modal("show");' class="btn btn-danger text-white">
+                                        Cancel
+                                        </a>
+                                    @else
+                                        <b>Status:</b> Cancelled / <b>By:</b> {{!empty($inv->updated_by)? $inv->updated_by_user->name:''}} 
+                                    @endif
+                                @endif
+
+                                
+                            </td>
                         </tr>
+                        @endforeach
                         <tr>
 							<td></td>
 							<td></td>
@@ -175,4 +191,33 @@
     </div>
   </div>
 </div>
+
+@foreach($dis->invoices as $did =>$dv)
+    <div id="{{$dv->id}}_cancel" class="delete-modal modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="delete-icon"></div>
+            </div>
+            <div class="modal-body text-center">
+            <h4 class="modal-heading">Are You Sure ?</h4>
+            <p>Do you really want to Cancel this product from stock distribution? This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+            <form method="post" action="{{url('/stock-distributions/'.$dv->id)}}" class="pull-right">
+                            {{csrf_field()}}
+                            {{method_field("DELETE")}}
+                                
+                            
+            
+                <button type="reset" class="btn btn-gray translate-y-3" data-dismiss="modal">No</button>
+                <button type="submit" class="btn btn-danger">Yes</button>
+            </form>
+            </div>
+        </div>
+        </div>
+    </div>
+@endforeach
 @endsection

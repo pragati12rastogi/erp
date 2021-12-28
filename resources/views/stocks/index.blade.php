@@ -50,7 +50,7 @@
                     <td>{{$key+1}}</td>
                     <td>{{$h->item->name}}</td>
                     <td>{{$h->prod_quantity}}</td>
-                    <td>{{$h->prod_price}}</td>
+                    <td>{{$h->price_for_user}}</td>
                     
                     
                     <td>{{!empty($h->created_by)?$h->created_by_user['name']:""}}  {{!empty($h->updated_by)?'/'.$h->updated_by_user->name :""}}</td>

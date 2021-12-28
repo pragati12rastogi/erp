@@ -14,6 +14,7 @@ use App\Http\Controllers\StockController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\DistributionController;
+use App\Http\Controllers\UserDistributionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -40,7 +41,10 @@ Route::group(['middleware' => ['auth','has_permission']], function () {
     Route::resource('item', ItemController::class);
     Route::resource('stocks', StockController::class);
     Route::resource('vendors', VendorController::class);  
-    Route::resource('stock-distributions', DistributionController::class);  
+    Route::resource('stock-distributions', DistributionController::class); 
+     
+    Route::get('users-stock/list', [UserDistributionController::class,'users_stock_list'])->name('users-stock.list');
+    Route::resource('user-stock-distribution', UserDistributionController::class);
     
     Route::get('invoice/setting',[SettingController::class, 'invoice_master'])->name('invoice.master');
     
@@ -52,6 +56,7 @@ Route::group(['middleware' => ['auth']],function(){
 
     Route::get('/get/items/by/category',[StockController::class, 'get_items_by_category'])->name('category.items');
     Route::get('/get/items/details',[StockController::class, 'get_items_details'])->name('item.details');
+    Route::get('/delete/item/photo/{id}',[ItemController::class, 'delete_item_photo'])->name('delete.item.photo');
 
     // invoice
     Route::post('invoice/setting',[SettingController::class, 'save_invoice_master'])->name('save.invoice.master');
@@ -60,4 +65,5 @@ Route::group(['middleware' => ['auth']],function(){
     Route::get('get/stock/item/details',[DistributionController::class,'get_stock_item_detail'])->name('stock.item.detail');
 
     Route::get('print/invoice/{id}',[DistributionController::class,'print_invoice'])->name('print.invoice');
+    Route::get('print/singleinvoice/{id}',[DistributionController::class,'print_single_invoice'])->name('print.singleinvoice');
 });

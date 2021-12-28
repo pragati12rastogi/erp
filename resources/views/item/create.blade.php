@@ -123,7 +123,7 @@
                             <select class="form-control select2" name="gst_percent_id" >
                                 <option value="">Select GST</option>
                                 @foreach($gsts as $ind => $gst)
-                                    <option value="{{$gst->id}}">{{$gst->name}}({{$gst->percent}} %)</option>
+                                    <option value="{{$gst->id}}">{{$gst->percent}} %</option>
                                 @endforeach
                             </select>
                             @error('gst_id')
@@ -140,7 +140,7 @@
                                 Image: 
                             </label>
                             <br>
-                            <input type="file" id="photo" name="photo" accept="image/*">
+                            <input type="file" id="photo" name="photo[]" accept="image/*" multiple>
                             <br>
                             <small class="txt-desc">(Photo accept jpeg,png and jpg)</small>
                             @error('photo')
