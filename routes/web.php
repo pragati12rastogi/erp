@@ -44,7 +44,7 @@ Route::group(['middleware' => ['auth','has_permission']], function () {
     Route::resource('stock-distributions', DistributionController::class); 
      
     Route::get('users-stock/list', [UserDistributionController::class,'users_stock_list'])->name('users-stock.list');
-    Route::resource('user-stock-distribution', UserDistributionController::class);
+    Route::resource('local-stock-distribution', UserDistributionController::class);
     
     Route::get('invoice/setting',[SettingController::class, 'invoice_master'])->name('invoice.master');
     
@@ -66,4 +66,8 @@ Route::group(['middleware' => ['auth']],function(){
 
     Route::get('print/invoice/{id}',[DistributionController::class,'print_invoice'])->name('print.invoice');
     Route::get('print/singleinvoice/{id}',[DistributionController::class,'print_single_invoice'])->name('print.singleinvoice');
+    
+    Route::get('print/local/invoice/{id}',[UserDistributionController::class,'print_invoice'])->name('print.local.invoice');
+    Route::get('print/local/singleinvoice/{id}',[UserDistributionController::class,'print_single_invoice'])->name('print.local.singleinvoice');
+
 });

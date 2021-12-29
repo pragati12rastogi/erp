@@ -201,32 +201,119 @@ class PermissionTableSeeder extends Seeder
                 'name'=>'stock-distributions.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'stock-distribution'
-            ],
-            */
-        $permissions = [
-            
-            [
+            ],[
                 'name'=>'users-stock.list',
                 'guard_name'=>'web',
                 'master_name'=>'users-stock'
             ],
             [
-                'name'=>'user-stock-distribution.create',
+                'name'=>'local-stock-distribution.create',
                 'guard_name'=>'web',
-                'master_name'=>'user-stock-distribution'
+                'master_name'=>'local-stock-distribution'
+            ],[
+                'name'=>'local-stock-distribution.show',
+                'guard_name'=>'web',
+                'master_name'=>'local-stock-distribution'
             ],
             [
-                'name'=>'user-stock-distribution.show',
+                'name'=>'local-stock-distribution.destroy',
                 'guard_name'=>'web',
-                'master_name'=>'user-stock-distribution'
-            ],
-            [
-                'name'=>'user-stock-distribution.destroy',
-                'guard_name'=>'web',
-                'master_name'=>'user-stock-distribution'
+                'master_name'=>'local-stock-distribution'
             ]
+            */
+        $permissions = [
             
             
+            [
+                'name'=>'local-stock-distribution.store',
+                'guard_name'=>'web',
+                'master_name'=>'local-stock-distribution'
+            ],
+            [
+                'name'=>'stock-distributions.store',
+                'guard_name'=>'web',
+                'master_name'=>'stock-distribution'
+            ],
+            [
+                'name'=>'vendors.store',
+                'guard_name'=>'web',
+                'master_name'=>'vendors'
+            ],
+            [
+                'name'=>'vendors.update',
+                'guard_name'=>'web',
+                'master_name'=>'vendors'
+            ],
+            [
+                'name'=>'stocks.store',
+                'guard_name'=>'web',
+                'master_name'=>'stocks'
+            ],
+            [
+                'name'=>'stocks.update',
+                'guard_name'=>'web',
+                'master_name'=>'stocks'
+            ],
+            [
+                'name'=>'item.store',
+                'guard_name'=>'web',
+                'master_name'=>'item'
+            ],
+            [
+                'name'=>'item.update',
+                'guard_name'=>'web',
+                'master_name'=>'item'
+            ],
+            [
+                'name'=>'gst.store',
+                'guard_name'=>'web',
+                'master_name'=>'gst'
+            ],
+            [
+                'name'=>'gst.update',
+                'guard_name'=>'web',
+                'master_name'=>'gst'
+            ],
+            [
+                'name'=>'hsn.store',
+                'guard_name'=>'web',
+                'master_name'=>'hsn'
+            ],
+            [
+                'name'=>'hsn.update',
+                'guard_name'=>'web',
+                'master_name'=>'hsn'
+            ],
+            [
+                'name'=>'category.store',
+                'guard_name'=>'web',
+                'master_name'=>'category'
+            ],
+            [
+                'name'=>'category.update',
+                'guard_name'=>'web',
+                'master_name'=>'category'
+            ],
+            [
+                'name'=>'users.store',
+                'guard_name'=>'web',
+                'master_name'=>'users'
+            ],
+            [
+                'name'=>'users.update',
+                'guard_name'=>'web',
+                'master_name'=>'users'
+            ],
+            [
+                'name'=>'roles.store',
+                'guard_name'=>'web',
+                'master_name'=>'roles'
+            ],
+            [
+                'name'=>'roles.update',
+                'guard_name'=>'web',
+                'master_name'=>'roles'
+            ],
         ];
       
         foreach ($permissions as $permission) {

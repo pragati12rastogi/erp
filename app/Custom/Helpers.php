@@ -3,6 +3,7 @@
   use App\Models\Role;
   use App\Custom\Constants;
   use App\Models\DistributionOrder;
+  use App\Models\UserStockDistributionOrder;
   use App\Models\InvoiceSetting;
 
   // For add'active' class for activated route nav-item
@@ -31,21 +32,30 @@
 
   function generate_invoice_no(){
     $inv = InvoiceSetting::first();
-    $distribution = DistributionOrder::orderBy('id','desc')->first();
+    $distribution = $inv['invoice_no'];
 
     if(empty($distribution)){
       $make_inv_no = str_pad(1,$inv['suffix_number_length'],"0",STR_PAD_LEFT);
+      
     }else{
-      $increment = (int)$distribution['invoice_no']+1;
+      $increment = (int)$distribution+1;
       $make_inv_no = str_pad($increment,$inv['suffix_number_length'],"0",STR_PAD_LEFT);
     }
-    
+    $inv->increment('invoice_no',1);
     return $make_inv_no;
   }
 
   function getInvoiceNo($distribution_id = 0){
     $inv = InvoiceSetting::first();
     $distribution = DistributionOrder::where('id',$distribution_id)->first();
+
+    return $inv['prefix'].$distribution['invoice_no'];
+  }
+
+
+  function getLocalInvoiceNo($distribution_id = 0){
+    $inv = InvoiceSetting::first();
+    $distribution = UserStockDistributionOrder::where('id',$distribution_id)->first();
 
     return $inv['prefix'].$distribution['invoice_no'];
   }

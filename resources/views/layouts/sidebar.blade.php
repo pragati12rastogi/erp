@@ -91,13 +91,13 @@
     @endif
 
     @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN) || Auth::user()->hasPermissionTo('invoice.master') || Auth::user()->hasPermissionTo('stock-distributions.index') || Auth::user()->hasPermissionTo('users-stock.list'))
-    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','user-stock-distribution','user-stock-distribution/*','users-stock/list']) }}">
-      <a class="nav-link" data-toggle="collapse" href="#basic-ui" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','user-stock-distribution','user-stock-distribution/*','users-stock/list']) }}" aria-controls="basic-ui">
+    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}">
+      <a class="nav-link" data-toggle="collapse" href="#basic-ui2" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}" aria-controls="basic-ui2">
         <i class="menu-icon mdi mdi-image-auto-adjust"></i>
         <span class="menu-title">Inventory</span>
         <i class="menu-arrow"></i>
       </a>
-      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','user-stock-distribution','user-stock-distribution/*','users-stock/list']) }}" id="basic-ui">
+      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}" id="basic-ui2">
         <ul class="nav flex-column sub-menu">
           @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
           <li class="nav-item {{ active_class(['item','item/*']) }}">
@@ -136,10 +136,10 @@
           </li>
           @endif
 
-          @if(Auth::user()->hasPermissionTo('user-stock-distribution.index') )
-          <li class="nav-item {{ active_class(['user-stock-distribution','user-stock-distribution/*']) }}">
-            <a class="nav-link" href="{{ url('user-stock-distribution') }}">
-              User Stock Distribution
+          @if(Auth::user()->hasPermissionTo('local-stock-distribution.index') )
+          <li class="nav-item {{ active_class(['local-stock-distribution','local-stock-distribution/*']) }}">
+            <a class="nav-link" href="{{ url('local-stock-distribution') }}">
+              Local Stock Distribution
             </a>
           </li>
           @endif

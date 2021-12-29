@@ -35,7 +35,7 @@
                 <th>Sr.no.</th>
                 <th>Item</th>
                 <th>Quantity</th>
-                <th>Price</th>
+                <th>Price(single unit)</th>
                 
               </tr>
             </thead>
@@ -46,7 +46,6 @@
                     <td>{{$h->item->name}}</td>
                     <td>{{$h->prod_quantity}}</td>
                     <td>{{$h->price}}</td>
-                    
                 </tr>
               @endforeach
             </tbody>

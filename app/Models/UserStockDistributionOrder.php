@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class UserStockDistributionOrder extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['invoice_no','user_name','address','phone','email','total_cost','total_tax','created_by'];
+
+    public function items(){
+        return $this->hasMany(UserStockDistributionItem::class,'order_id');
+    }
+
+    public function created_by_user(){
+        return $this->belongsTo(User::class,'created_by','id');
+    }
 }

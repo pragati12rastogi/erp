@@ -27,7 +27,7 @@ class DistributionController extends Controller
         if(is_admin(Auth::user()->role_id)){
             $distribution = DistributionOrder::get();
         }else{
-            $distribution = DistributionOrder::where('user_id',Auth::id())->orWhere('created_by',Auth::id())->get();
+            $distribution = DistributionOrder::where('user_id',Auth::id())->get();
         }
        
         return view('distributer.index',compact('distribution'));
