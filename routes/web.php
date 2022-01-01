@@ -70,4 +70,8 @@ Route::group(['middleware' => ['auth']],function(){
     Route::get('print/local/invoice/{id}',[UserDistributionController::class,'print_invoice'])->name('print.local.invoice');
     Route::get('print/local/singleinvoice/{id}',[UserDistributionController::class,'print_single_invoice'])->name('print.local.singleinvoice');
 
+    Route::post('distribution/payment/form',[DistributionController::class, 'distribution_payment'])->name('distribution.payment');
+    Route::post('local/distribution/payment/form',[UserDistributionController::class, 'distribution_payment'])->name('local.distribution.payment');
+
+
 });

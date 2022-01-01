@@ -91,8 +91,18 @@
                                         <label> <input type="checkbox" class="all_select_permission" id="all_{{ $value->master_name }}"  {{count($per_intersect) == count($permission_ids) ? 'checked':''}}> {{ $value->master_name }}</label>
                                         <ul style="list-style: none;">
                                             @foreach($sub_permissions as $p_id => $p_name)
+                                                @php 
+                                                    $break_string = explode('.',$p_name);
+                                                    
+                                                @endphp
+                                                @if(!in_Array('store',$break_string) && !in_Array('update',$break_string) )
                                                 <li><label >{{ Form::checkbox('permission[]', $p_id, in_array($p_id, $rolePermissions) ? true : false, array('class' => 'sub_permission all_'.$value->master_name)) }}
                                                 {{ $p_name }}</label></li>
+                                                @else
+                                                <li class="d-none "><label >{{ Form::checkbox('permission[]', $p_id, in_array($p_id, $rolePermissions) ? true : false, array('class' => 'sub_permission all_'.$value->master_name)) }}
+                                                {{ $p_name }}</label></li>
+
+                                                @endif
                                             @endforeach
                                         </ul>
                                     </li>

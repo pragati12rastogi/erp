@@ -26,7 +26,10 @@
                 <h4 class="card-title">Item Summary</h4>
             </div>
             <div class="col-md-2 text-right" >
+              @if(Auth::user()->hasPermissionTo('item.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                      
                 <a href="{{url('item/create')}}" class="btn btn-inverse-primary btn-sm">{{__("Add Item")}}</a>
+              @endif
             </div>
         </div>
         
@@ -68,12 +71,16 @@
                     <td>{{!empty($item->created_by)?$item->created_by_user['name']:""}}{{!empty($item->updated_by)? '/'.$item->updated_by_user->name :'' }}</td>
                     
                     <td>
+                      @if(Auth::user()->hasPermissionTo('item.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                         <a href="{{url('item/'.$item->id.'/edit')}}" class="btn btn-success ">
                             <i class="mdi mdi-pen"></i>
                         </a>
+                      @endif
+                      @if(Auth::user()->hasPermissionTo('item.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                         <a onclick='return $("#{{$item->id}}_item").modal("show");' class="btn btn-danger text-white">
                             <i class=" mdi mdi-delete-forever"></i>
                         </a>
+                      @endif
                     </td>
                 </tr>
               @endforeach

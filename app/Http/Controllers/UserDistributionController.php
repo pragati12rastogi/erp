@@ -7,6 +7,8 @@ use App\Models\UserStock;
 use App\Models\UserStockDistributionItem;
 use App\Models\UserStockDistributionOrder;
 use App\Models\DistributionOrder;
+use App\Models\DistributionPayment;
+use Crypt;
 use DB;
 use Auth;
 use Validator;
@@ -208,8 +210,27 @@ class UserDistributionController extends Controller
 
     public function print_single_invoice($id){
         
-        $dis = UserStockDistributionOrder::findOrFail($id);
+        $dis = UserStockDistributionItem::findOrFail($id);
         $inv_no = getLocalInvoiceNo($dis->order_id);
+        
         return view('user_stock.singleinvoice',compact('dis','inv_no'));
+    }
+
+    public function distribution_payment(Request $request){
+        $input = $request->all();
+        
+        $id = Crypt::decrypt($input['local_order_id']);
+        if(empty($id)){
+            return back()->with('error','some error occoured order id not find');
+        }else{
+
+            $input['local_order_id'] = $id;
+            $input['created_by'] = Auth::id();
+
+            $distribution  = new DistributionPayment();
+            $distribution->create($input);
+            return back()->with('success',"Payment Amount updated");
+        }
+
     }
 }

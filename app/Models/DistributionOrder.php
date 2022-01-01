@@ -30,4 +30,8 @@ class DistributionOrder extends Model
     public function invoices(){
         return $this->hasMany(Distribution::class,'order_id');
     }
+
+    public function payment(){
+        return $this->hasMany(DistributionPayment::class,'admin_order_id');
+    }
 }

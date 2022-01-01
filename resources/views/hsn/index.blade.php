@@ -26,7 +26,10 @@
                 <h4 class="card-title">Hsn Summary</h4>
             </div>
             <div class="col-md-2 text-right" >
+              @if(Auth::user()->hasPermissionTo('hsn.create') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                      
                 <a href="{{url('hsn/create')}}" class="btn btn-inverse-primary btn-sm">{{__("Add Hsn")}}</a>
+              @endif
             </div>
         </div>
         
@@ -51,12 +54,18 @@
                     <td>{{!empty($h->created_by)?$h->created_by_user['name']:""}}  {{!empty($h->updated_by)? '/'.$h->updated_by_user->name : ""}}</td>
                     
                     <td>
+                      @if(Auth::user()->hasPermissionTo('hsn.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                      
                         <a href="{{url('hsn/'.$h->id.'/edit')}}" class="btn btn-success ">
                             <i class="mdi mdi-pen"></i>
                         </a>
+                      @endif
+                      @if(Auth::user()->hasPermissionTo('hsn.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                      
                         <a onclick='return $("#{{$h->id}}_hsn").modal("show");' class="btn btn-danger text-white">
                             <i class=" mdi mdi-delete-forever"></i>
                         </a>
+                      @endif
                     </td>
                 </tr>
               @endforeach

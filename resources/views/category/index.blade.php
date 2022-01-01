@@ -26,7 +26,9 @@
                 <h4 class="card-title">Category Summary</h4>
             </div>
             <div class="col-md-2 text-right" >
+              @if(Auth::user()->hasPermissionTo('category.create') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                 <a href="{{url('category/create')}}" class="btn btn-inverse-primary btn-sm">{{__("Add Category")}}</a>
+              @endif
             </div>
         </div>
         
@@ -58,12 +60,16 @@
                     <td>{{!empty($cat->created_by)?$cat->created_by_user['name']:""}}  {{!empty($cat->updated_by)? '/'.$cat->updated_by_user->name:"" }}</td>
                     
                     <td>
+                      @if(Auth::user()->hasPermissionTo('category.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                         <a href="{{url('category/'.$cat->id.'/edit')}}" class="btn btn-success ">
                             <i class="mdi mdi-pen"></i>
                         </a>
+                      @endif
+                      @if(Auth::user()->hasPermissionTo('category.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                         <a onclick='return $("#{{$cat->id}}_cat").modal("show");' class="btn btn-danger text-white">
                             <i class=" mdi mdi-delete-forever"></i>
                         </a>
+                      @endif
                     </td>
                 </tr>
               @endforeach

@@ -9,7 +9,7 @@
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     
-    <link rel="stylesheet" href="{{asset('theme/assets/css/style.css')}}">
+    
 	<style>
         .padding-15{
             padding : 15px;

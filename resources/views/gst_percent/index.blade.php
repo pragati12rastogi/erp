@@ -26,7 +26,10 @@
                 <h4 class="card-title">GST Summary</h4>
             </div>
             <div class="col-md-2 text-right" >
+              @if(Auth::user()->hasPermissionTo('gst.create') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                      
                 <a href="{{url('gst/create')}}" class="btn btn-inverse-primary btn-sm">{{__("Add GST")}}</a>
+              @endif
             </div>
         </div>
         
@@ -52,12 +55,18 @@
                     <td>{{!empty($h->created_by)?$h->created_by_user['name']:""}}  {{!empty($h->updated_by)?'/'.$h->updated_by_user->name :""}}</td>
                     
                     <td>
+                      @if(Auth::user()->hasPermissionTo('gst.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                      
                         <a href="{{url('gst/'.$h->id.'/edit')}}" class="btn btn-success ">
                             <i class="mdi mdi-pen"></i>
                         </a>
+                      @endif
+                      @if(Auth::user()->hasPermissionTo('gst.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                      
                         <a onclick='return $("#{{$h->id}}_gst").modal("show");' class="btn btn-danger text-white">
                             <i class=" mdi mdi-delete-forever"></i>
                         </a>
+                        @endif
                     </td>
                 </tr>
               @endforeach

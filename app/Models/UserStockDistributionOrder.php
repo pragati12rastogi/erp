@@ -18,4 +18,8 @@ class UserStockDistributionOrder extends Model
     public function created_by_user(){
         return $this->belongsTo(User::class,'created_by','id');
     }
+
+    public function payment(){
+        return $this->hasMany(DistributionPayment::class,'local_order_id');
+    }
 }

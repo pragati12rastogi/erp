@@ -88,8 +88,17 @@
                                         <label> <input type="checkbox" class="all_select_permission" id="all_{{ $value->master_name }}"> {{ $value->master_name }}</label>
                                         <ul style="list-style: none;">
                                             @foreach($sub_permissions as $p_id => $p_name)
-                                                <li><label >{{ Form::checkbox('permission[]', $p_id, false, array('class' => 'sub_permission all_'.$value->master_name )) }}
-                                                {{ $p_name }}</label></li>
+                                                @php 
+                                                    $break_string = explode('.',$p_name);
+                                                    
+                                                @endphp
+                                                @if(!in_Array('store',$break_string) && !in_Array('update',$break_string) )
+                                                    <li><label >{{ Form::checkbox('permission[]', $p_id, false, array('class' => 'sub_permission all_'.$value->master_name )) }}{{ $p_name }}</label></li>
+                                                @else
+                                                    <li class="d-none "><label >{{ Form::checkbox('permission[]', $p_id, true, array('class' => 'sub_permission all_'.$value->master_name)) }}
+                                                    {{ $p_name }}</label></li>
+
+                                                @endif
                                             @endforeach
                                         </ul>
                                     </li>
