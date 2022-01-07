@@ -24,7 +24,12 @@ class StockController extends Controller
     public function index()
     {
         $stocks = Stock::orderBy('id','Desc')->get();
-        return view('stocks.index',compact('stocks'));
+        $category = Category::all();
+        $hsn = Hsn::all();
+        $item = Item::all();
+        $gsts = GstPercent::all();
+        $vendor = Vendor::all();
+        return view('stocks.index',compact('stocks','category','hsn','item','gsts','vendor'));
     }
 
     /**
@@ -67,24 +72,31 @@ class StockController extends Controller
                 
 
             ],[
-                'item_id.required'          => 'This field is required',
-                'prod_quantity.required'    => 'This field is required',
-                'prod_quantity.numeric'     => 'This field can only accept number',
-                'prod_price.required'       => 'This field is required',
-                'prod_price.numeric'         => 'This field can only accept number',
-                'total_price.required'            => 'This field is required',
-                'total_price.numeric'               => 'This field can only accept number',
-                'per_freight_price.required'         => 'This field is required',
-                'user_percent.required'         => 'This field is required',
-                'final_price.required'         => 'This field is required',
-                'price_for_user.required'         => 'This field is required',
-                'date_of_purchase.required'         => 'This field is required',
-                'vendor_id.required'            => 'This field is required',
+                'item_id.required'          => 'Item field is required',
+                'prod_quantity.required'    => 'Product Quantity field is required',
+                'prod_quantity.numeric'     => 'Product Quantity field can only accept number',
+                'prod_price.required'       => 'Product Price field is required',
+                'prod_price.numeric'         => 'Product Price field can only accept number',
+                'total_price.required'            => 'Total Price field is required',
+                'total_price.numeric'               => 'Total Price field can only accept number',
+                'per_freight_price.required'         => 'Fright Price field is required',
+                'user_percent.required'         => 'User Percent field is required',
+                'final_price.required'         => 'Final Price field is required',
+                'price_for_user.required'         => 'Price for User field is required',
+                'date_of_purchase.required'         => 'Date Of Purchase field is required',
+                'vendor_id.required'            => 'Vendor field is required',
             ]);
 
             if($validation->fails()){
-                $errors = $validation->errors();
-                return back()->withErrors($errors)->withInput();
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.', ';
+                    
+                }
+                
+                return back()->with('error',$message);
+
             }
 
                 DB::beginTransaction();
@@ -145,13 +157,14 @@ class StockController extends Controller
      */
     public function edit($id)
     {
-        $category = Category::all();
-        $hsn = Hsn::all();
-        $item = Item::all();
-        $gsts = GstPercent::all();
-        $vendor = Vendor::all();
-        $stock = Stock::findOrFAil($id);
-        return view('stocks.edit',compact('category','hsn','item','gsts','vendor','stock'));
+        $stock = Stock::where('id',$id)->with('item','vendor','item.gst_percent','item.images')->first();
+        $image = '';
+        if(count($stock->item->images)>0){
+            $image = asset('/uploads/items/'.$stock->item->images[0]['photo']);
+        }
+        
+        echo json_encode(compact('stock','image'));
+        
     }
 
     /**
@@ -180,24 +193,30 @@ class StockController extends Controller
                 
 
             ],[
-                'item_id.required'          => 'This field is required',
-                'prod_quantity.required'    => 'This field is required',
-                'prod_quantity.numeric'     => 'This field can only accept number',
-                'prod_price.required'       => 'This field is required',
-                'prod_price.numeric'         => 'This field can only accept number',
-                'total_price.required'            => 'This field is required',
-                'total_price.numeric'               => 'This field can only accept number',
-                'per_freight_price.required'         => 'This field is required',
-                'user_percent.required'         => 'This field is required',
-                'final_price.required'         => 'This field is required',
-                'price_for_user.required'         => 'This field is required',
-                'date_of_purchase.required'         => 'This field is required',
-                'vendor_id.required'            => 'This field is required',
+                'item_id.required'          => 'Item field is required',
+                'prod_quantity.required'    => 'Product Quantity field is required',
+                'prod_quantity.numeric'     => 'Product Quantity field can only accept number',
+                'prod_price.required'       => 'Product Price field is required',
+                'prod_price.numeric'         => 'Product Price field can only accept number',
+                'total_price.required'            => 'Total Price field is required',
+                'total_price.numeric'               => 'Total Price field can only accept number',
+                'per_freight_price.required'         => 'Fright Price field is required',
+                'user_percent.required'         => 'User Percent field is required',
+                'final_price.required'         => 'Final Price field is required',
+                'price_for_user.required'         => 'Price for User field is required',
+                'date_of_purchase.required'         => 'Date Of Purchase field is required',
+                'vendor_id.required'            => 'Vendor field is required',
             ]);
 
             if($validation->fails()){
-                $errors = $validation->errors();
-                return back()->withErrors($errors)->withInput();
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.', ';
+                    
+                }
+                
+                return back()->with('error',$message);
             }
 
             DB::beginTransaction();

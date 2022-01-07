@@ -40,14 +40,14 @@
     </li>
     @endif
 
-    @if(Auth::user()->hasPermissionTo('roles.index') || Auth::user()->hasPermissionTo('category.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN) || Auth::user()->hasPermissionTo('hsn.index') || Auth::user()->hasPermissionTo('gst.index') || Auth::user()->hasPermissionTo('vendors.index') )
-    <li class="nav-item {{ active_class(['roles','roles/*','category','category/*','hsn','hsn/*','gst','gst/*','vendors','vendors/*']) }}">
-      <a class="nav-link" data-toggle="collapse" href="#basic-ui" aria-expanded="{{ is_active_route(['roles','roles/*','category','category/*','hsn','hsn/*','gst','gst/*','vendors','vendors/*']) }}" aria-controls="basic-ui">
+    @if(Auth::user()->hasPermissionTo('roles.index') || Auth::user()->hasPermissionTo('category.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN) || Auth::user()->hasPermissionTo('hsn.index') || Auth::user()->hasPermissionTo('gst.index') || Auth::user()->hasPermissionTo('vendors.index') || Auth::user()->hasPermissionTo('invoice.master') )
+    <li class="nav-item {{ active_class(['roles','roles/*','category','category/*','hsn','hsn/*','gst','gst/*','vendors','vendors/*','invoice/setting']) }}">
+      <a class="nav-link" data-toggle="collapse" href="#basic-ui" aria-expanded="{{ is_active_route(['roles','roles/*','category','category/*','hsn','hsn/*','gst','gst/*','vendors','vendors/*','invoice/setting']) }}" aria-controls="basic-ui">
         <i class="menu-icon mdi mdi-widgets"></i>
         <span class="menu-title">Master</span>
         <i class="menu-arrow"></i>
       </a>
-      <div class="collapse {{ show_class(['roles','roles/*','category','category/*','hsn','hsn/*','gst','gst/*','vendors','vendors/*']) }}" id="basic-ui">
+      <div class="collapse {{ show_class(['roles','roles/*','category','category/*','hsn','hsn/*','gst','gst/*','vendors','vendors/*','invoice/setting']) }}" id="basic-ui">
         <ul class="nav flex-column sub-menu">
           @if(Auth::user()->hasPermissionTo('roles.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
           <li class="nav-item {{ active_class(['roles','roles/*']) }}">
@@ -85,19 +85,26 @@
             </a>
           </li>
           @endif
+          @if(Auth::user()->hasPermissionTo('invoice.master') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+          <li class="nav-item {{ active_class(['invoice/setting']) }}">
+            <a class="nav-link" href="{{ url('invoice/setting') }}">
+              Invoice Master
+            </a>
+          </li>
+          @endif
         </ul>
       </div>
     </li>
     @endif
 
-    @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN) || Auth::user()->hasPermissionTo('invoice.master') || Auth::user()->hasPermissionTo('stock-distributions.index') || Auth::user()->hasPermissionTo('users-stock.list'))
-    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}">
-      <a class="nav-link" data-toggle="collapse" href="#basic-ui2" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}" aria-controls="basic-ui2">
+    @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN)  || Auth::user()->hasPermissionTo('stock-distributions.index') || Auth::user()->hasPermissionTo('users-stock.list'))
+    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}">
+      <a class="nav-link" data-toggle="collapse" href="#basic-ui2" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}" aria-controls="basic-ui2">
         <i class="menu-icon mdi mdi-image-auto-adjust"></i>
         <span class="menu-title">Inventory</span>
         <i class="menu-arrow"></i>
       </a>
-      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*','invoice/setting','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}" id="basic-ui2">
+      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}" id="basic-ui2">
         <ul class="nav flex-column sub-menu">
           @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
           <li class="nav-item {{ active_class(['item','item/*']) }}">
@@ -113,13 +120,7 @@
             </a>
           </li>
           @endif
-          @if(Auth::user()->hasPermissionTo('invoice.master') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-          <li class="nav-item {{ active_class(['invoice/setting']) }}">
-            <a class="nav-link" href="{{ url('invoice/setting') }}">
-              Invoice Master
-            </a>
-          </li>
-          @endif
+          
           @if(Auth::user()->hasPermissionTo('stock-distributions.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
           <li class="nav-item {{ active_class(['stock-distributions','stock-distributions/*']) }}">
             <a class="nav-link" href="{{ url('stock-distributions') }}">

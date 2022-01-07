@@ -20,7 +20,9 @@ class CreateDistributionOrders extends Migration
             $table->integer('user_id');
             $table->double('total_cost');
             $table->double('total_tax');
+            $table->boolean('is_cancelled')->default('0');
             $table->integer('created_by');
+            $table->integer('updated_by')->nullable();
             
             $table->softDeletes();
             $table->timestamps();

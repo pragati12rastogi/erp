@@ -22,7 +22,9 @@ class CreateUserStockDistributionOrders extends Migration
             $table->string('email');
             $table->double('total_cost');
             $table->double('total_tax');
+            $table->boolean('is_cancelled')->nullable();
             $table->integer('created_by');
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

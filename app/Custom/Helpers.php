@@ -32,16 +32,19 @@
 
   function generate_invoice_no(){
     $inv = InvoiceSetting::first();
-    $distribution = $inv['invoice_no'];
-
+    $distribution = (int) filter_var($inv['suffix_number_length'], FILTER_SANITIZE_NUMBER_INT);
+    $suffix_length = strlen($inv['suffix_number_length']);
+    
     if(empty($distribution)){
-      $make_inv_no = str_pad(1,$inv['suffix_number_length'],"0",STR_PAD_LEFT);
+      $make_inv_no = str_pad(1,$suffix_length,"0",STR_PAD_LEFT);
       
     }else{
       $increment = (int)$distribution+1;
-      $make_inv_no = str_pad($increment,$inv['suffix_number_length'],"0",STR_PAD_LEFT);
+      $make_inv_no = str_pad($increment,$suffix_length,"0",STR_PAD_LEFT);
     }
-    $inv->increment('invoice_no',1);
+    
+    $inv->update(['suffix_number_length' => $make_inv_no]);
+    
     return $make_inv_no;
   }
 

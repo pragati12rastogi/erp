@@ -29,9 +29,11 @@
                 <h4 class="card-title">Invoice - {{$inv_no}}</h4>
             </div>
             <div class="col-md-2 text-right">
+            @if(empty($dis->is_cancelled))
                 @if(Auth::user()->hasPermissionTo('local-stock-distribution.payment'))    
                     <a onclick='return $("#pay").modal("show");'  class="btn  btn-warning text-white"><i class="m-0 mdi mdi-vote"></i> Pay </a>  
                 @endif
+            @endif
                 
             </div>
             <div class="col-md-1" id="hide-div">
@@ -104,7 +106,7 @@
 							<th>Price</th>
 							<th>TAX</th>
 							<th>Total</th>
-                            <th>Action</th>
+                            
 						</tr>
 					</thead>
 
@@ -150,22 +152,7 @@
 								<br>
 								<small class="help-block">(Incl. of Tax )</small>
 							</td>
-                            <td>
-                                <a title="Print Single Product" target="_blank" href="{{route('print.local.singleinvoice',$inv->id)}}" class="btn btn-dark ">
-                                    <i class="m-0 mdi mdi-printer"></i>
-                                </a>
-                                @if(Auth::user()->hasPermissionTo('local-stock-distribution.destroy') )
-                                    @if(empty($inv->is_cancelled))
-                                        <a onclick='return $("#{{$inv->id}}_cancel").modal("show");' class="btn btn-danger text-white">
-                                        Cancel
-                                        </a>
-                                    @else
-                                        <b>Status:</b> Cancelled / <b>By:</b> {{!empty($inv->updated_by)? $inv->update_by_user->name:''}} 
-                                    @endif
-                                @endif
-
-                                
-                            </td>
+                            
                         </tr>
                         @endforeach
                         <tr>
@@ -251,34 +238,6 @@
   </div>
 </div>
 
-@foreach($dis->items as $did =>$dv)
-    <div id="{{$dv->id}}_cancel" class="delete-modal modal fade" role="dialog">
-        <div class="modal-dialog modal-sm">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <div class="delete-icon"></div>
-            </div>
-            <div class="modal-body text-center">
-            <h4 class="modal-heading">Are You Sure ?</h4>
-            <p>Do you really want to Cancel this product from stock distribution? This process cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-            <form method="post" action="{{url('/local-stock-distribution/'.$dv->id)}}" class="pull-right">
-                            {{csrf_field()}}
-                            {{method_field("DELETE")}}
-                                
-                            
-            
-                <button type="reset" class="btn btn-gray translate-y-3" data-dismiss="modal">No</button>
-                <button type="submit" class="btn btn-danger">Yes</button>
-            </form>
-            </div>
-        </div>
-        </div>
-    </div>
-@endforeach
 
 <div id="pay" class="delete-modal modal fade" role="dialog">
     <div class="modal-dialog ">
@@ -292,16 +251,7 @@
         <div class="modal-body text-center">
             <div class="col-md-12">
             @php
-                $total_item_amount =0;
-                $total_cancel_amount = 0;
-                foreach($dis->items as $inv => $in){
-                if($in->is_cancelled ){
-                    $total_cancel_amount +=  $in->product_total_price;
-                }else{
-                    $total_item_amount +=  $in->product_total_price;
-                    
-                }
-                }
+                
                 $paid_amt = 0;
                 foreach($dis->payment as $pid => $p){
                 $paid_amt += $p->amount;
@@ -316,20 +266,14 @@
                     <span> Rs. {{$dis->total_cost}}</span>
                 </div>
                 <div class="col-md-3 text-left text-small">
-                    <label><b> Total Item Amount :</b></label>
-                    <span> Rs. {{$total_item_amount}}</span>
-                </div>
-                <div class="col-md-3 text-left text-small">
-                    <label>
-                    <b> Total Cancel Item Amount :</b>
-                    </label>
-                    <span> Rs. {{$total_cancel_amount}}</span>
+                    <label><b> Total Amount Paid :</b></label>
+                    <span> Rs. {{$paid_amt}}</span>
                 </div>
                 <div class="col-md-3 text-left text-small">
                     <label>
                     <b> Pending Payment:</b>
                     </label>
-                    <span> Rs. {{($total_item_amount-$paid_amt<0)? abs($total_item_amount-$paid_amt)."(Extra amt paid)":$total_item_amount-$paid_amt}}</span>
+                    <span> Rs. {{($dis->total_cost-$paid_amt<0)? abs($dis->total_cost-$paid_amt)."(Extra amt paid)":$dis->total_cost-$paid_amt}}</span>
                 </div>
                 </div>
                 <hr>
@@ -340,7 +284,7 @@
                     <label class="control-label" for="first-name">
                         Amount: <span class="required">*</span>
                     </label>
-                    <input type="number" name="amount" id="amount" class="form-control">
+                    <input type="number" max="{{$dis->total_cost-$paid_amt}}" name="amount" id="amount" class="form-control">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -348,7 +292,7 @@
                     <label class="control-label" for="first-name">
                         Transaction Type: <span class="required">*</span>
                     </label>
-                    <select name="transaction_type" id="transaction_type" class="form-control select2">
+                    <select name="transaction_type" data-type="{{$dis->id}}"  class="transaction_type form-control select2">
                         <option value="">Select transaction method</option>
                         <option value="cash">Cash</option>
                         <option value="online">Online</option>
@@ -356,7 +300,7 @@
                     </select>
                     </div>
                 </div>
-                <div class="col-md-6" id="online_div" style="display:none">
+                <div class="col-md-6" id="online_div_{{$dis->id}}" style="display:none">
                     <div class="form-group">
                     <label class="control-label" for="first-name">
                         Transaction ID: <span class="required">*</span>
@@ -364,7 +308,7 @@
                     <input type="text" class="form-control" name="transaction_id">
                     </div>
                 </div>
-                <div class="col-md-12" id="cheque_div" style="display:none">
+                <div class="col-md-12" id="cheque_div_{{$dis->id}}" style="display:none">
                     <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -405,7 +349,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="submit" class="btn btn-success translate-y-3" id="modal-submit" >Submit</button>
+            <button type="submit" class="btn btn-success translate-y-3" >Submit</button>
         </form>
             <button type="reset" class="btn btn-inverse-dark translate-y-3" data-dismiss="modal">cancel</button>
             

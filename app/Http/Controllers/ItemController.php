@@ -11,6 +11,7 @@ use App\Models\GstPercent;
 use App\Models\Category;
 use App\Models\Hsn;
 use Image;
+use Validator;
 use Illuminate\Support\Str;
 
 class ItemController extends Controller
@@ -22,8 +23,11 @@ class ItemController extends Controller
      */
     public function index()
     {
+        $categories = Category::all();
+        $gsts = GstPercent::all();
+        $hsns = Hsn::all();
         $items = Item::orderBy('id','Desc')->get();
-        return view('item.index',compact('items'));
+        return view('item.index',compact('items','categories','gsts','hsns'));
     }
 
     /**
@@ -50,21 +54,32 @@ class ItemController extends Controller
         try {
             $input = $request->all();
             
-            $this->validate($request,[
+            $validation = Validator::make($input,[
                 'name' => 'required',
                 'category_id' => 'required',
                 'photo.*' => 'required|mimes:jpeg,jpg,png',
                 'hsn_id' => 'required',
                 'gst_percent_id' => 'required'
             ],[
-                'name.required'=>'This is required',
-                'category_id.required'=>'This is required',
-                'photo.*.required'=>'This is required',
-                'photo.*.mimes'=>'Accept only jpeg,png,jpg extensions',
-                'hsn_id.required'=>'This is required',
-                'gst_percent_id.required'=>'This is required'
+                'name.required'=>'Name is required',
+                'category_id.required'=>'Category is required',
+                'photo.*.required'=>'Photo is required',
+                'photo.*.mimes'=>'Photo Accept only jpeg,png,jpg extensions',
+                'hsn_id.required'=>'Hsn is required',
+                'gst_percent_id.required'=>'Gst is required'
             ]);
-            
+            if($validation->fails()){
+                
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.' ';
+                    
+                }
+                
+                return back()->with('error',$message);
+                
+            }
             DB::beginTransaction();
             $item = new Item();
             
@@ -132,20 +147,33 @@ class ItemController extends Controller
         try {
             $input = $request->all();
             
-            $this->validate($request,[
+            $validation = Validator::make($input,[
                 'name' => 'required',
                 'category_id' => 'required',
                 'photo.*' => 'mimes:jpeg,jpg,png',
                 'hsn_id' => 'required',
                 'gst_percent_id' => 'required'
             ],[
-                'name.required'=>'This is required',
-                'category_id.required'=>'This is required',
+                'name.required'=>'Name is required',
+                'category_id.required'=>'Category is required',
                 
-                'photo.*.mimes'=>'Accept only jpeg,png,jpg extensions',
-                'hsn_id.required'=>'This is required',
-                'gst_percent_id.required'=>'This is required'
+                'photo.*.mimes'=>'Photo Accept only jpeg,png,jpg extensions',
+                'hsn_id.required'=>'Hsn is required',
+                'gst_percent_id.required'=>'Gst is required'
             ]);
+
+            if($validation->fails()){
+                
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.' ';
+                    
+                }
+                
+                return back()->with('error',$message);
+                
+            }
 
             DB::beginTransaction();
             $item = Item::findOrFail($id);
@@ -153,22 +181,23 @@ class ItemController extends Controller
             if(!isset($input['photo']) && count($item->images)<= 0){
                 return back()->with('error','Item image is required please select any product image');
             }
-
-            foreach ($input['photo'] as $f => $file ) {
-                
-                $optimizeImage = Image::make($file);
-                $optimizePath = public_path() . '/uploads/items/';
-                $image = Str::random(5).time() .'.'. $file->getClientOriginalExtension();
-                
-                $optimizeImage->save($optimizePath . $image, 90);
-    
-                ItemPhoto::insert([
-                    'item_id' => $id,
-                    'photo' => $image
-                ]);
-                
+            if(isset($input['photo'])){
+                foreach ($input['photo'] as $f => $file ) {
+                    
+                    $optimizeImage = Image::make($file);
+                    $optimizePath = public_path() . '/uploads/items/';
+                    $image = Str::random(5).time() .'.'. $file->getClientOriginalExtension();
+                    
+                    $optimizeImage->save($optimizePath . $image, 90);
+        
+                    ItemPhoto::insert([
+                        'item_id' => $id,
+                        'photo' => $image
+                    ]);
+                    
+                }
             }
-
+            
             $input['updated_by'] = Auth::id();
             $item->update($input);
 

@@ -25,7 +25,12 @@ class UserDistributionController extends Controller
     {
         $given_distribution = UserStockDistributionOrder::where('created_by',Auth::id())->get();
         
-        return view('user_stock.distribution_index',compact('given_distribution'));
+        $sell = UserStockDistributionOrder::where('is_cancelled',0)->where('created_by',Auth::id())->select(DB::raw('SUM(total_cost) as sum_sell'))->first();
+        $recieve = DistributionPayment::whereHas('local_order',function($query){
+            return $query->where('created_by',Auth::id())->where('is_cancelled',0);
+        })->select(DB::raw('SUM(amount) as sum_recieve'))->first();
+        $items = UserStock::where('user_id',Auth::id())->get();
+        return view('user_stock.distribution_index',compact('given_distribution','sell','recieve','items'));
     }
 
     /**
@@ -67,13 +72,18 @@ class UserDistributionController extends Controller
                 $validation_arr = $validate->errors();
                 $message = '';
                 foreach ($validation_arr->all() as $key => $value) {
-                    $message = $message.' '.$value;
+                    $message .= $value.', ';
                 }
                 return back()->with('error',$message);
             }
             DB::beginTransaction();
             
-
+            $gen_invoice_no = generate_invoice_no();
+            $check_userinvoice_no = UserStockDistributionOrder::where('invoice_no',$gen_invoice_no)->first();
+            $check_invoice_no = DistributionOrder::where('invoice_no',$gen_invoice_no)->first();
+            if(!empty($check_invoice_no) || !empty($check_userinvoice_no)){
+                return back()->with('error','Generated Invoice number is already taken. Change sequence from master.');
+            }
             
             $timestamp = date('Y-m-d H:i:s');
 
@@ -105,7 +115,7 @@ class UserDistributionController extends Controller
             }
             
             $order = new UserStockDistributionOrder();
-            $order->invoice_no = generate_invoice_no();
+            $order->invoice_no = $gen_invoice_no;
             $order->user_name    = $input['user_name'];
             $order->address    = $input['address'];
             $order->phone    = $input['phone'];
@@ -182,10 +192,12 @@ class UserDistributionController extends Controller
      */
     public function destroy($id)
     {
-        $dis = UserStockDistributionItem::findOrFail($id);
-        $user_stock = UserStock::where('user_id',$dis['created_by'])->where('item_id',$dis['item_id'])->first();
-        $user_stock->increment('prod_quantity',$dis['distributed_quantity']);
-
+        $dis = UserStockDistributionOrder::findOrFail($id);
+        foreach($dis->items as $ind => $item){
+            $user_stock = UserStock::where('user_id',$dis['created_by'])->where('item_id',$item['item_id'])->first();
+            $user_stock->increment('prod_quantity',$item['distributed_quantity']);
+        }
+        
         $dis->update([
             'is_cancelled'=>1,
             'updated_by'=> Auth::id()
@@ -224,6 +236,20 @@ class UserDistributionController extends Controller
             return back()->with('error','some error occoured order id not find');
         }else{
 
+            $order = UserStockDistributionOrder::find($id);
+            $calculate = DistributionPayment::where('local_order_id',$id)->select(DB::raw('SUM(amount) as total'))->first();
+
+            if(empty($calculate['total'])){
+                if($order['total_cost']< $input['amount']){
+                    return back()->with('error','Wrong entry, Pending amount is lesser than what you enter');
+                }
+            }else{
+                $new_pay = $calculate['total']+$input['amount'];
+                if($order['total_cost']< $new_pay){
+                    return back()->with('error','Wrong entry, Pending amount is lesser than what you enter');
+                }
+            }
+            
             $input['local_order_id'] = $id;
             $input['created_by'] = Auth::id();
 

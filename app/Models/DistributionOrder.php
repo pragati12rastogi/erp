@@ -9,7 +9,7 @@ class DistributionOrder extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['invoice_no','role_id','user_id','total_cost','total_tax','created_by'];
+    protected $fillable = ['invoice_no','role_id','user_id','total_cost','total_tax','created_by','updated_by','is_cancelled'];
     
     public function role(){
         return $this->belongsTo(Role::class,'role_id','id');
@@ -34,4 +34,6 @@ class DistributionOrder extends Model
     public function payment(){
         return $this->hasMany(DistributionPayment::class,'admin_order_id');
     }
+
+    
 }

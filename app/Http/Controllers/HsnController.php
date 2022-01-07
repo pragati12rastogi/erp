@@ -18,8 +18,8 @@ class HsnController extends Controller
      */
     public function index()
     {
-        $hsn = Hsn::all();
-        return view('hsn.index',compact('hsn'));
+        $hsns = Hsn::all();
+        return view('hsn.index',compact('hsns'));
     }
 
     /**
@@ -42,11 +42,25 @@ class HsnController extends Controller
     {
         try {
             $input = $request->all();
-            $this->validate($request,[
-                'hsn_no' =>'required'
+            $validation = Validator::make($input,[
+                'hsn_no' =>'required|unique:hsn'
             ],[
-                'hsn_no.required'=>'This is required'
+                'hsn_no.required'=>'Hsn is required',
+                'hsn_no.unique'=>'Hsn is already present',
+                
             ]);
+            if($validation->fails()){
+                
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.' ';
+                    
+                }
+                
+                return back()->with('error',$message);
+                
+            }
             DB::beginTransaction();
             $hsn = new Hsn();
             $input['created_by'] = Auth::id();
@@ -80,8 +94,9 @@ class HsnController extends Controller
      */
     public function edit($id)
     {
+        
         $hsn = Hsn::findOrFail($id);
-        return view('hsn.edit',compact('hsn'));
+        echo json_encode(compact('hsn'));
     }
 
     /**
@@ -95,11 +110,25 @@ class HsnController extends Controller
     {
         try {
             $input = $request->all();
-            $this->validate($request,[
-                'hsn_no' =>'required'
+            $validation = Validator::make($input,[
+                'hsn_no' =>['required','unique:hsn,hsn_no,'.$id.',id']
             ],[
-                'hsn_no.required'=>'This is required'
+                'hsn_no.required'=>'Hsn is required',
+                'hsn_no.unique'=>'Hsn is already present',
+                
             ]);
+            if($validation->fails()){
+                
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.' ';
+                    
+                }
+                
+                return back()->with('error',$message);
+                
+            }
             DB::beginTransaction();
             $hsn = Hsn::findOrFail($id);
             $input['updated_by'] = Auth::id();

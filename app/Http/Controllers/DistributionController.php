@@ -28,11 +28,20 @@ class DistributionController extends Controller
     {
         if(is_admin(Auth::user()->role_id)){
             $distribution = DistributionOrder::get();
+
         }else{
-            $distribution = DistributionOrder::where('user_id',Auth::id())->get();
+            $distribution = DistributionOrder::where('user_id',Auth::id())->Orwhere('created_by',Auth::id())->get();
         }
        
-        return view('distributer.index',compact('distribution'));
+        $sell = DistributionOrder::where('is_cancelled',0)->where('created_by',Auth::id())->select(DB::raw('SUM(total_cost) as sum_sell'))->first();
+        $recieve = DistributionPayment::whereHas('admin_order',function($query){
+            return $query->where('created_by',Auth::id())->where('is_cancelled',0);
+        })->select(DB::raw('SUM(amount) as sum_recieve'))->first();
+        
+        $items = Item::whereHas('stock')->get();
+        $roles = Role::where('name','<>',Constants::ROLE_ADMIN)->get();
+        $user = User::all();
+        return view('distributer.index',compact('distribution','sell','recieve','user','roles','items'));
     }
 
     /**
@@ -74,12 +83,18 @@ class DistributionController extends Controller
                 $validation_arr = $validate->errors();
                 $message = '';
                 foreach ($validation_arr->all() as $key => $value) {
-                    $message = $message.' '.$value;
+                    $message .= $value.', ';
                 }
                 return back()->with('error',$message);
             }
             DB::beginTransaction();
             
+            $gen_invoice_no = generate_invoice_no();
+            $check_userinvoice_no = UserStockDistributionOrder::where('invoice_no',$gen_invoice_no)->first();
+            $check_invoice_no = DistributionOrder::where('invoice_no',$gen_invoice_no)->first();
+            if(!empty($check_invoice_no) || !empty($check_userinvoice_no)){
+                return back()->with('error','Generated Invoice number is already taken. Change sequence from master.');
+            }
 
             $billing_user = User::where('id',$input['user_id'])->first();
             $timestamp = date('Y-m-d H:i:s');
@@ -113,8 +128,10 @@ class DistributionController extends Controller
                 $stock->decrement('prod_quantity',$qty);
             }
             
+            
+
             $order = new DistributionOrder();
-            $order->invoice_no = generate_invoice_no();
+            $order->invoice_no = $gen_invoice_no;
             $order->role_id    = $input['role_id'];
             $order->user_id    = $input['user_id'];
             $order->total_cost = $total_cost;
@@ -140,13 +157,13 @@ class DistributionController extends Controller
                 $invoice_insert->product_total_price  = $item_data['product_total_price'];
                 $invoice_insert->created_at = $timestamp;
                 $invoice_insert->save();
-
+                
                 $user_stock = UserStock::updateOrCreate(
                     [
                         'user_id'=>$input['user_id'],'item_id'=>$item_id
                     ],
                     [
-                        'prod_quantity'=>$item_data['distributed_quantity'],
+                        'prod_quantity'=> DB::raw('prod_quantity + '.$item_data['distributed_quantity']),
                         'price'=>$item_data['product_price']
                     ]
                 );
@@ -206,24 +223,29 @@ class DistributionController extends Controller
      */
     public function destroy($id)
     {
-        $dis = Distribution::findOrFail($id);
-        $user_stock = UserStock::where('user_id',$dis['user_id'])->where('item_id',$dis['item_id'])->first();
+        DB::beginTransaction();
+        $dis = DistributionOrder::findOrFail($id);
 
-        if($user_stock['prod_quantity'] < $dis['distributed_quantity']){
-            return back()->with('error','User Sold some stock, qunatity of product is not available to cancel the product');
+        foreach($dis->invoices as $ind => $item){
+            $user_stock = UserStock::where('user_id',$item['user_id'])->where('item_id',$item['item_id'])->first();
+            
+            if($user_stock['prod_quantity'] < $item['distributed_quantity']){
+                DB::rollback();
+                return back()->with('error','User Sold some stocks, quantity of product is not available to cancel the product');
+            }
+
+            $user_stock->decrement('prod_quantity',$item['distributed_quantity']);
+
+            $stock = Stock::where('item_id',$item['item_id'])->first();
+            $stock->increment('prod_quantity',$item['distributed_quantity']);
+
         }
 
-        $user_stock->decrement('prod_quantity',$dis['distributed_quantity']);
-
-        $stock = Stock::where('item_id',$dis['item_id'])->first();
-        $stock->increment('prod_quantity',$dis['distributed_quantity']);
-
-        
         $dis->update([
             'is_cancelled'=>1,
             'updated_by'=> Auth::id()
         ]);
-
+        DB::commit();
         return back()->with('success','Stock Distribution Cancelled');
 
     }
@@ -263,6 +285,20 @@ class DistributionController extends Controller
         if(empty($id)){
             return back()->with('error','some error occoured order id not find');
         }else{
+
+            $order = DistributionOrder::find($id);
+            $calculate = DistributionPayment::where('admin_order_id',$id)->select(DB::raw('SUM(amount) as total'))->first();
+
+            if(empty($calculate['total'])){
+                if($order['total_cost']< $input['amount']){
+                    return back()->with('error','Wrong entry, Pending amount is lesser than what you enter');
+                }
+            }else{
+                $new_pay = $calculate['total']+$input['amount'];
+                if($order['total_cost']< $new_pay){
+                    return back()->with('error','Wrong entry, Pending amount is lesser than what you enter');
+                }
+            }
 
             $input['admin_order_id'] = $id;
             $input['created_by'] = Auth::id();

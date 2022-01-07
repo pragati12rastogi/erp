@@ -19,8 +19,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $category = Category::all();
-        return view('category.index',compact('category'));
+        $categories = Category::all();
+        return view('category.index',compact('categories'));
 
     }
 
@@ -45,17 +45,23 @@ class CategoryController extends Controller
         try {
 
             $input = $request->all();
-            $validator = Validator::make($input,[
+            $validation = Validator::make($input,[
                 'name'=>'required',
                 'photo'=>'mimes:jpeg,png,jpg'
             ],[
-                'name.required'=>'This field is required',
-                'photo.mimes' => ' Accept only jpeg,png,jpg extensions'
+                'name.required'=>'Name is required',
+                'photo.mimes' => 'Photo Accept only jpeg,png,jpg extensions'
             ]);
 
-            if($validator->fails()){
-                $errors = $validator->errors();
-                return back()->withErrors($errors)->withInput();
+            if($validation->fails()){
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.' ';
+                    
+                }
+                
+                return back()->with('error',$message);
             }
 
             DB::beginTransaction();
@@ -104,8 +110,9 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
+        $categories = Category::all();
         $category = Category::findOrFail($id);
-        return view('category.edit',compact('category'));
+        return view('category.edit',compact('category','categories'));
     }
 
     /**
@@ -120,17 +127,25 @@ class CategoryController extends Controller
         try {
 
             $input = $request->all();
-            $validator = Validator::make($input,[
+            $validation = Validator::make($input,[
                 'name'=>'required',
                 'photo'=>'mimes:jpeg,png,jpg,gif'
             ],[
-                'name.required'=>'This field is required',
-                'photo.mimes' => ' Accept only jpeg,png,jpg,gif extensions'
+                'name.required'=>'Name is required',
+                'photo.mimes' => 'Photo Accepts only jpeg,png,jpg,gif extensions'
             ]);
 
-            if($validator->fails()){
-                $errors = $validator->errors();
-                return back()->withErrors($errors)->withInput();
+            if($validation->fails()){
+                
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.' ';
+                    
+                }
+                
+                return back()->with('error',$message);
+                
             }
 
             DB::beginTransaction();

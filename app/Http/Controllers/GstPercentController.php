@@ -42,14 +42,26 @@ class GstPercentController extends Controller
     {
         try {
             $input = $request->all();
-            $this->validate($request,[
-                'name' =>'required',
+            $validation = Validator::make($input,[
                 'percent'=>'required|numeric'
             ],[
-                'name.required'=>'This is required',
-                'percent.required' => 'This is required',
-                'percent.numeric' => 'This field only take numeric value'
+                
+                'percent.required' => 'Percent is required',
+                'percent.numeric' => 'Percent field only take numeric value'
             ]);
+
+            if($validation->fails()){
+                
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.' ';
+                    
+                }
+                
+                return back()->with('error',$message);
+                
+            }
             DB::beginTransaction();
             $gst = new GstPercent();
             $input['created_by'] = Auth::id();
@@ -83,7 +95,8 @@ class GstPercentController extends Controller
     public function edit($id)
     {
         $gst = GstPercent::findOrFail($id);
-        return view('gst_percent.edit',compact('gst'));
+        echo json_encode(compact('gst'));
+        
     }
 
     /**
@@ -97,14 +110,26 @@ class GstPercentController extends Controller
     {
         try {
             $input = $request->all();
-            $this->validate($request,[
-                'name' =>'required',
+            $validation = Validator::make($input,[
                 'percent'=>'required|numeric'
             ],[
-                'name.required'=>'This is required',
-                'percent.required' => 'This is required',
-                'percent.numeric' => 'This field only take numeric value'
+                
+                'percent.required' => 'Percent is required',
+                'percent.numeric' => 'Percent field only take numeric value'
             ]);
+
+            if($validation->fails()){
+                
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.' ';
+                    
+                }
+                
+                return back()->with('error',$message);
+                
+            }
             DB::beginTransaction();
             $gst = GstPercent::findOrFail($id);
             $input['updated_by'] = Auth::id();

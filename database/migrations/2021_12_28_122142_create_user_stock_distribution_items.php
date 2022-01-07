@@ -21,7 +21,6 @@ class CreateUserStockDistributionItems extends Migration
             $table->double('gst')->nullable();
             $table->integer('distributed_quantity');
             $table->double('product_total_price');
-            $table->boolean('is_cancelled')->nullable();
             $table->timestamps();
         });
     }

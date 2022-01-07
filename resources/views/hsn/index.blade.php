@@ -9,74 +9,101 @@
     <script>
         $(function() {
             $("#hsn_table").DataTable();
-            
+            jQuery('#hsn_form').validate({ // initialize the plugin
+                rules: {
+
+                    
+                    hsn_no:{
+                        required:true,
+                    }
+                    
+                },
+                errorPlacement: function(error,element)
+                {
+                    if($(element).attr('type') == 'radio')
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else if($(element).is('select'))
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else{
+                        error.insertAfter(element);
+                    }
+                        
+                }
+            });
+
+            jQuery('#hsn_form_upd').validate({ // initialize the plugin
+                rules: {
+
+                    
+                    hsn_no:{
+                        required:true,
+                    }
+                    
+                },
+                errorPlacement: function(error,element)
+                {
+                    if($(element).attr('type') == 'radio')
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else if($(element).is('select'))
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else{
+                        error.insertAfter(element);
+                    }
+                        
+                }
+            });
         });
         
+        function edit_hsn_modal(edit_id){
+            var submit_edit_url = '{{url("hsn")}}/'+edit_id;
+            var get_edit_url = submit_edit_url +'/edit';
+            
+            $.ajax({
+                type:"GET",
+                dataType:"JSON",
+                url:get_edit_url,
+                success:function(result){
+
+                    if(result != ''){
+                        var inputs = result.hsn;
+                        $('#hsn_form_upd').attr('action',submit_edit_url);
+                        $('#hsn_no_upd').val(inputs.hsn_no);
+                        $("#hsn_edit_modal").modal('show');
+                    }else{
+                        alert('some error occured, please refresh page and try again');
+                    }
+
+                },
+                error:function(error){
+                    console.log(error.responseText);
+                }
+            })
+        }
     </script>
 @endpush
 
 @section('content')
 <div class="row">
-  <div class="col-lg-12 grid-margin stretch-card">
-    <div class="card">
-    @include('flash-msg')
-      <div class="card-body">
-        <div class="border-bottom mb-3 row">
-            <div class="col-md-10">
-                <h4 class="card-title">Hsn Summary</h4>
-            </div>
-            <div class="col-md-2 text-right" >
-              @if(Auth::user()->hasPermissionTo('hsn.create') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                      
-                <a href="{{url('hsn/create')}}" class="btn btn-inverse-primary btn-sm">{{__("Add Hsn")}}</a>
-              @endif
-            </div>
-        </div>
-        
-        <div class="table-responsive">
-          <table id="hsn_table" class="table ">
-            <thead>
-              <tr>
-                <th>Sr.no.</th>
-                <th>Hsn No</th>
-                <th>Created At</th>
-                <th>Created By/Updated BY</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach($hsn as $key => $h)
-                <tr>
-                    <td>{{$key+1}}</td>
-                    <td>{{$h->hsn_no}}</td>
-                    
-                    <td>{{date('d-m-Y',strtotime($h->created_at))}}</td>
-                    <td>{{!empty($h->created_by)?$h->created_by_user['name']:""}}  {{!empty($h->updated_by)? '/'.$h->updated_by_user->name : ""}}</td>
-                    
-                    <td>
-                      @if(Auth::user()->hasPermissionTo('hsn.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                      
-                        <a href="{{url('hsn/'.$h->id.'/edit')}}" class="btn btn-success ">
-                            <i class="mdi mdi-pen"></i>
-                        </a>
-                      @endif
-                      @if(Auth::user()->hasPermissionTo('hsn.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                      
-                        <a onclick='return $("#{{$h->id}}_hsn").modal("show");' class="btn btn-danger text-white">
-                            <i class=" mdi mdi-delete-forever"></i>
-                        </a>
-                      @endif
-                    </td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div class="col-md-12 ">
+      
+        @include('flash-msg')
+      
     </div>
-  </div>
 </div>
-@foreach($hsn as $h)
+
+@include('hsn.list')
+
+@include('hsn.create')
+@include('hsn.edit')
+@foreach($hsns as $h)
     <div id="{{$h->id}}_hsn" class="delete-modal modal fade" role="dialog">
         <div class="modal-dialog modal-sm">
         <!-- Modal content-->
@@ -103,5 +130,7 @@
         </div>
         </div>
     </div>
+    
 @endforeach
+
 @endsection

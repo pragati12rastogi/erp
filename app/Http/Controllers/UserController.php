@@ -22,13 +22,20 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {   
+        // create_form
+        $roles = Role::where('name','<>',Constants::ROLE_ADMIN)->get();
+        
+        $states = State::all();
+        //listing
         $users = User::whereHas('role',function($query){
             $query->where('name','<>',Constants::ROLE_ADMIN);
         })->get();
         
-        return view('user.index',compact('users'));
+        return view('user.index',compact('users','roles','states'));
+        
+        
     }
 
     /**
@@ -66,25 +73,32 @@ class UserController extends Controller
                 'district'         => ['required'],
                 'image'            => ['mimes:jpeg,png,jpg,gif']
             ],[
-                'role.required'       => 'This field is required',
-                'name.required'          => 'This field is required',
-                'name.string'            => 'This field can only accept string',
-                'name.max'               => 'This field max length is 255',
-                'email.required'         => 'This field is required',
-                'email.string'            => 'This field can only accept string',
-                'email.max'               => 'This field max length is 255',
-                'mobile.required'         => 'This field is required',
-                'firm_name.required'         => 'This field is required',
-                'gst_no.required'         => 'This field is required',
-                'state_id.required'         => 'This field is required',
-                'district.required'         => 'This field is required',
-                'image.mimes'            => 'Field accept only jpeg,png,jpg,gif',
+                'role.required'        => 'Role is required',
+                'name.required'        => 'Name is required',
+                'name.string'          => 'Name field can only accept string',
+                'name.max'             => 'Name field max length is 255',
+                'email.required'       => 'Email field is required',
+                'email.string'         => 'Email field can only accept string',
+                'email.max'            => 'Email field max length is 255',
+                'email.unique'         => 'Email is already in used',
+                'mobile.required'      => 'Mobile field is required',
+                'firm_name.required'   => 'Firm Name field is required',
+                'gst_no.required'      => 'GST No field is required',
+                'state_id.required'    => 'State field is required',
+                'district.required'    => 'District field is required',
+                'image.mimes'          => 'Image accept only jpeg,png,jpg,gif',
             ]);
 
             if($validation->fails()){
-                $errors = $validation->errors();
-                return back()->withErrors($errors)->withInput();
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.', ';
+                    
+                }
+                return back()->with('error',$message);
             }
+            
 
             $role = Role::where('name',$request->input('role'))->first();
             
@@ -158,7 +172,10 @@ class UserController extends Controller
         $states = State::all();
         $userRole = $user->roles->pluck('name','name')->first();
 
-        return view('user.edit',compact('roles','states','user','userRole'));
+        $users = User::whereHas('role',function($query){
+            $query->where('name','<>',Constants::ROLE_ADMIN);
+        })->get();
+        return view('user.edit',compact('roles','states','user','userRole','users'));
     }
 
     /**
@@ -201,8 +218,12 @@ class UserController extends Controller
             ]);
 
             if($validation->fails()){
-                $errors = $validation->errors();
-                return back()->withErrors($errors)->withInput();
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.', ';
+                }
+                return back()->with('error',$message);
             }
 
             $role = Role::where('name',$request->input('role'))->first();

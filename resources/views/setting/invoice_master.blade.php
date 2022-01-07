@@ -83,9 +83,9 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label" for="first-name">
-                                Suffix Invoice Number Length: <span class="required">*</span>
+                                Suffix Invoice Number: <span class="required">*</span>
                             </label>
-                            <input name="suffix_number_length" id="suffix_number_length" value="{{!empty($invoice_setting)?$invoice_setting['suffix_number_length']:''}}" type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" maxlength="2" class="form-control" >
+                            <input name="suffix_number_length" id="suffix_number_length" value="{{!empty($invoice_setting)?$invoice_setting['suffix_number_length']:''}}" type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" class="form-control" >
                             @error('suffix_number_length')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>

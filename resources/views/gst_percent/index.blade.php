@@ -10,73 +10,111 @@
         $(function() {
             $("#gst_table").DataTable();
             
+            $.validator.addMethod('decimal', function(value, element) {
+            return this.optional(element) || /^((\d+(\\.\d{0,2})?)|((\d*(\.\d{1,2}))))$/.test(value);
+            }, "Please enter a correct number, format 0.00");
+
+            jQuery('#gst_form').validate({ // initialize the plugin
+                rules: {
+
+                    
+                    name:{
+                        required:true,
+                    },
+                    percent:{
+                        required:true,
+                        decimal:true
+                    }
+                    
+                },
+                errorPlacement: function(error,element)
+                {
+                    if($(element).attr('type') == 'radio')
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else if($(element).is('select'))
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else if($(element).attr('type') == 'number'){
+                        error.insertAfter(element.parent());
+                    }
+                    else{
+                        error.insertAfter(element);
+                    }
+                        
+                }
+            });
+
+            jQuery('#gst_form_upd').validate({ // initialize the plugin
+                rules: {
+
+                    percent:{
+                        required:true,
+                        decimal:true
+                    }
+                    
+                },
+                errorPlacement: function(error,element)
+                {
+                    if($(element).attr('type') == 'radio')
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else if($(element).is('select'))
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else if($(element).attr('type') == 'number'){
+                        error.insertAfter(element.parent());
+                    }
+                    else{
+                        error.insertAfter(element);
+                    }
+                        
+                }
+            });
         });
         
+        function edit_gst_modal(edit_id){
+            var submit_edit_url = '{{url("gst")}}/'+edit_id;
+            var get_edit_url = submit_edit_url +'/edit';
+            
+            $.ajax({
+                type:"GET",
+                dataType:"JSON",
+                url:get_edit_url,
+                success:function(result){
+
+                    if(result != ''){
+                        var inputs = result.gst;
+                        $('#gst_form_upd').attr('action',submit_edit_url);
+                        $('#percent_upd').val(inputs.percent);
+                        $("#gst_edit_modal").modal('show');
+                    }else{
+                        alert('some error occured, please refresh page and try again');
+                    }
+
+                },
+                error:function(error){
+                    console.log(error.responseText);
+                }
+            })
+        }
     </script>
 @endpush
 
 @section('content')
 <div class="row">
-  <div class="col-lg-12 grid-margin stretch-card">
-    <div class="card">
+  <div class="col-lg-12 ">
     @include('flash-msg')
-      <div class="card-body">
-        <div class="border-bottom mb-3 row">
-            <div class="col-md-10">
-                <h4 class="card-title">GST Summary</h4>
-            </div>
-            <div class="col-md-2 text-right" >
-              @if(Auth::user()->hasPermissionTo('gst.create') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                      
-                <a href="{{url('gst/create')}}" class="btn btn-inverse-primary btn-sm">{{__("Add GST")}}</a>
-              @endif
-            </div>
-        </div>
-        
-        <div class="table-responsive">
-          <table id="gst_table" class="table ">
-            <thead>
-              <tr>
-                <th>Sr.no.</th>
-                <th>Percentage</th>
-                <th>Created At</th>
-                <th>Created By/Updated By</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach($gst as $key => $h)
-                <tr>
-                    <td>{{$key+1}}</td>
-                    
-                    <td>{{$h->percent}}</td>
-                    
-                    <td>{{date('d-m-Y',strtotime($h->created_at))}}</td>
-                    <td>{{!empty($h->created_by)?$h->created_by_user['name']:""}}  {{!empty($h->updated_by)?'/'.$h->updated_by_user->name :""}}</td>
-                    
-                    <td>
-                      @if(Auth::user()->hasPermissionTo('gst.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                      
-                        <a href="{{url('gst/'.$h->id.'/edit')}}" class="btn btn-success ">
-                            <i class="mdi mdi-pen"></i>
-                        </a>
-                      @endif
-                      @if(Auth::user()->hasPermissionTo('gst.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                      
-                        <a onclick='return $("#{{$h->id}}_gst").modal("show");' class="btn btn-danger text-white">
-                            <i class=" mdi mdi-delete-forever"></i>
-                        </a>
-                        @endif
-                    </td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
+
+@include('gst_percent.list')
+@include('gst_percent.create')
+@include('gst_percent.edit')
 @foreach($gst as $h)
     <div id="{{$h->id}}_gst" class="delete-modal modal fade" role="dialog">
         <div class="modal-dialog modal-sm">
@@ -91,7 +129,7 @@
             <p>Do you really want to delete this GST? This process cannot be undone.</p>
             </div>
             <div class="modal-footer">
-            <form method="post" action="{{url('/hsn/'.$h->id)}}" class="pull-right">
+            <form method="post" action="{{url('/gst/'.$h->id)}}" class="pull-right">
                             {{csrf_field()}}
                             {{method_field("DELETE")}}
                                 
@@ -104,5 +142,6 @@
         </div>
         </div>
     </div>
+    
 @endforeach
 @endsection

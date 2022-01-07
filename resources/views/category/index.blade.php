@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Category Summary')
+@section('title', 'Category Creation')
 
 @push('style')
 
@@ -9,7 +9,58 @@
     <script>
         $(function() {
             $("#category_table").DataTable();
-            
+
+            jQuery('#category_form').validate({ // initialize the plugin
+                rules: {
+
+                    
+                    name:{
+                        required:true,
+                    }
+                    
+                },
+                errorPlacement: function(error,element)
+                {
+                    if($(element).attr('type') == 'radio')
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else if($(element).is('select'))
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else{
+                        error.insertAfter(element);
+                    }
+                        
+                }
+            });
+
+            @foreach($categories as $cat)
+            jQuery('#category_form_{{$cat->id}}').validate({ // initialize the plugin
+                rules: {
+                    name:{
+                        required:true,
+                    }
+                    
+                },
+                errorPlacement: function(error,element)
+                {
+                    if($(element).attr('type') == 'radio')
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else if($(element).is('select'))
+                    {
+                        error.insertAfter(element.parent());
+                    }
+                    else{
+                        error.insertAfter(element);
+                    }
+                        
+                }
+            });
+            @endforeach
         });
         
     </script>
@@ -17,70 +68,13 @@
 
 @section('content')
 <div class="row">
-  <div class="col-lg-12 grid-margin stretch-card">
-    <div class="card">
-    @include('flash-msg')
-      <div class="card-body">
-        <div class="border-bottom mb-3 row">
-            <div class="col-md-10">
-                <h4 class="card-title">Category Summary</h4>
-            </div>
-            <div class="col-md-2 text-right" >
-              @if(Auth::user()->hasPermissionTo('category.create') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                <a href="{{url('category/create')}}" class="btn btn-inverse-primary btn-sm">{{__("Add Category")}}</a>
-              @endif
-            </div>
-        </div>
-        
-        <div class="table-responsive">
-          <table id="category_table" class="table ">
-            <thead>
-              <tr>
-                <th>Sr.no.</th>
-                <th>Name</th>
-                <th>Image</th>
-                <th>Created At</th>
-                <th>Created By/Updated By</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach($category as $key => $cat)
-                <tr>
-                    <td>{{$key+1}}</td>
-                    <td>{{$cat->name}}</td>
-                    
-                    <td>
-                      @if($cat->image != '' && file_exists(public_path().'/uploads/category/'.$cat->image) )
-                          <img class="img-thumbnail"  src="{{url('uploads/category/'.$cat->image)}}" title="{{ $cat->name }}">
-                      @endif
-                    </td>
-                    
-                    <td>{{date('d-m-Y',strtotime($cat->created_at))}}</td>
-                    <td>{{!empty($cat->created_by)?$cat->created_by_user['name']:""}}  {{!empty($cat->updated_by)? '/'.$cat->updated_by_user->name:"" }}</td>
-                    
-                    <td>
-                      @if(Auth::user()->hasPermissionTo('category.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                        <a href="{{url('category/'.$cat->id.'/edit')}}" class="btn btn-success ">
-                            <i class="mdi mdi-pen"></i>
-                        </a>
-                      @endif
-                      @if(Auth::user()->hasPermissionTo('category.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                        <a onclick='return $("#{{$cat->id}}_cat").modal("show");' class="btn btn-danger text-white">
-                            <i class=" mdi mdi-delete-forever"></i>
-                        </a>
-                      @endif
-                    </td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div class="col-md-12">
+        @include('flash-msg')
     </div>
-  </div>
 </div>
-@foreach($category as $cat)
+@include('category.list')
+@include('category.create')
+@foreach($categories as $cat)
     <div id="{{$cat->id}}_cat" class="delete-modal modal fade" role="dialog">
         <div class="modal-dialog modal-sm">
         <!-- Modal content-->
@@ -107,5 +101,9 @@
         </div>
         </div>
     </div>
+    
+    @include('category.edit')
+    
 @endforeach
+
 @endsection

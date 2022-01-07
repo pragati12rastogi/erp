@@ -59,23 +59,31 @@ class VendorController extends Controller
                 
             ],[
                
-                'name.required'          => 'This field is required',
-                'name.string'            => 'This field can only accept string',
-                'name.max'               => 'This field max length is 255',
-                'email.required'         => 'This field is required',
-                'email.string'            => 'This field can only accept string',
-                'email.max'               => 'This field max length is 255',
-                'mobile.required'         => 'This field is required',
-                'firm_name.required'         => 'This field is required',
-                'gst_no.required'         => 'This field is required',
-                'state.required'         => 'This field is required',
-                'district.required'         => 'This field is required',
+                'name.required'          => 'Name field is required',
+                'name.string'            => 'Name field can only accept string',
+                'name.max'               => 'Name field max length is 255',
+                'email.required'         => 'Email field is required',
+                'email.string'            => 'Email field can only accept string',
+                'email.max'               => 'Email field max length is 255',
+                'mobile.required'         => 'Mobile field is required',
+                'firm_name.required'         => 'Firm Name field is required',
+                'gst_no.required'         => 'GST field is required',
+                'state.required'         => 'State field is required',
+                'district.required'         => 'District field is required',
                 
             ]);
 
             if($validation->fails()){
-                $errors = $validation->errors();
-                return back()->withErrors($errors)->withInput();
+                
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.' ';
+                    
+                }
+                
+                return back()->with('error',$message);
+                
             }
 
             DB::beginTransaction();
@@ -140,23 +148,31 @@ class VendorController extends Controller
                 
             ],[
                
-                'name.required'          => 'This field is required',
-                'name.string'            => 'This field can only accept string',
-                'name.max'               => 'This field max length is 255',
-                'email.required'         => 'This field is required',
-                'email.string'            => 'This field can only accept string',
-                'email.max'               => 'This field max length is 255',
-                'mobile.required'         => 'This field is required',
-                'firm_name.required'         => 'This field is required',
-                'gst_no.required'         => 'This field is required',
-                'state.required'         => 'This field is required',
-                'district.required'         => 'This field is required',
+                'name.required'          => 'Name field is required',
+                'name.string'            => 'Name field can only accept string',
+                'name.max'               => 'Name field max length is 255',
+                'email.required'         => 'Email field is required',
+                'email.string'            => 'Email field can only accept string',
+                'email.max'               => 'Email field max length is 255',
+                'mobile.required'         => 'Mobile field is required',
+                'firm_name.required'         => 'Firm Name field is required',
+                'gst_no.required'         => 'Gst field is required',
+                'state.required'         => 'State field is required',
+                'district.required'         => 'District field is required',
                 
             ]);
 
             if($validation->fails()){
-                $errors = $validation->errors();
-                return back()->withErrors($errors)->withInput();
+                
+                $validation_arr = $validation->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.' ';
+                    
+                }
+                
+                return back()->with('error',$message);
+                
             }
 
             DB::beginTransaction();
@@ -189,7 +205,7 @@ class VendorController extends Controller
         $value = $user->delete();
 
         if ($value) {
-            return back()->with('success','User Has Been Deleted');
+            return back()->with('success','Vendor Has Been Deleted');
         }
     }
 }
