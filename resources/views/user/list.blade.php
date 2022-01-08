@@ -26,7 +26,9 @@
                 <th>Created At</th>
                 <th>Created By/Updated By</th>
                 <th>Status</th>
+                @if(Auth::user()->hasPermissionTo('users.edit') || Auth::user()->hasPermissionTo('users.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                 <th>Action</th>
+                @endif
               </tr>
             </thead>
             <tbody>
@@ -51,6 +53,7 @@
                         </button>
                     </form>
                   </td>
+                  @if(Auth::user()->hasPermissionTo('users.edit') || Auth::user()->hasPermissionTo('users.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                   <td>
                     @if(Auth::user()->hasPermissionTo('users.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                     <a onclick='return $("#{{$user->id}}_user_edit_modal").modal("show");' class="btn btn-success text-white">
@@ -65,6 +68,7 @@
                     </a>
                     @endif
                   </td>
+                  @endif
               </tr>
               @endforeach
             </tbody>

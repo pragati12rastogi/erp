@@ -25,7 +25,6 @@ class CreateStocks extends Migration
             $table->double('price_for_user');
             $table->date('date_of_purchase');
             $table->integer('vendor_id');
-            $table->text('description')->nullable();
             $table->integer('created_by');
             $table->integer('updated_by')->nullable();
             

@@ -21,7 +21,9 @@ class RoleController extends Controller
     public function index()
     {
         $roles = Role::where('name','<>',Constants::ROLE_ADMIN)->get();
-        return view('roles.index',compact('roles'));
+        $permission = Permission::select(DB::raw('GROUP_CONCAT(id) as sub_permission_id'), DB::raw('GROUP_CONCAT(name) as sub_permission_name'),'guard_name','master_name')->groupBy('master_name','guard_name')->get();
+        
+        return view('roles.index',compact('roles','permission'));
     }
 
     /**
@@ -44,10 +46,24 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validation = Validator::make($request, [
             'name' => 'required|unique:roles,name',
             'permission' => 'required',
-        ]);    
+        ],[
+            'name.required' => 'Name is required',
+            'name.unique' => 'Name is already present',
+            'permission' => 'Permission is required'
+        ]); 
+        if($validation->fails()){
+                
+            $validation_arr = $validation->errors();
+            $message = '';
+            foreach ($validation_arr->all() as $key => $value) {
+                $message .= $value.', '; 
+            }
+            return back()->with('error',$message);
+            
+        }   
         $role = Role::create(['name' => $request->input('name')]);
         $role->syncPermissions($request->input('permission'));
     
@@ -93,11 +109,26 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $validation = Validator::make($request->all(), [
             'name' => 'required',
             'permission' => 'required',
+        ],[
+            'name.required' => 'Name is required',
+            'permission' => 'Permission is required'
         ]);
-    
+        if($validation->fails()){
+                
+            $validation_arr = $validation->errors();
+            $message = '';
+            foreach ($validation_arr->all() as $key => $value) {
+                $message .= $value.', ';
+                
+            }
+            
+            return back()->with('error',$message);
+            
+        }
+
         $role = Role::find($id);
         $role->name = $request->input('name');
         $role->save();

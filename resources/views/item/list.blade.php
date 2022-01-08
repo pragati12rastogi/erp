@@ -26,7 +26,10 @@
                 <th>GST</th>
                 <th>Created At</th>
                 <th>Created By/Updated By</th>
+                @if(Auth::user()->hasPermissionTo('item.edit') || Auth::user()->hasPermissionTo('item.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                 <th>Action</th>
+                @endif
+                
               </tr>
             </thead>
             <tbody>
@@ -51,6 +54,7 @@
                     <td>{{date('d-m-Y',strtotime($item->created_at))}}</td>
                     <td>{{!empty($item->created_by)?$item->created_by_user['name']:""}}{{!empty($item->updated_by)? '/'.$item->updated_by_user->name :'' }}</td>
                     
+                    @if(Auth::user()->hasPermissionTo('item.edit') || Auth::user()->hasPermissionTo('item.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                     <td>
                       @if(Auth::user()->hasPermissionTo('item.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                         <a onclick='return $("#{{$item->id}}_item_edit_modal").modal("show");' class="btn btn-success text-white">
@@ -63,6 +67,7 @@
                         </a>
                       @endif
                     </td>
+                    @endif
                 </tr>
               @endforeach
             </tbody>

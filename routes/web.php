@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Controller;
-
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
@@ -15,6 +14,9 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\DistributionController;
 use App\Http\Controllers\UserDistributionController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\ChartController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -42,6 +44,8 @@ Route::group(['middleware' => ['auth','has_permission']], function () {
     Route::resource('stocks', StockController::class);
     Route::resource('vendors', VendorController::class);  
     Route::resource('stock-distributions', DistributionController::class); 
+    Route::resource('expenses', ExpenseController::class); 
+    Route::get('profit-chart', [ChartController::class,'index'])->name('profit-chart.index'); 
      
     Route::get('users-stock/list', [UserDistributionController::class,'users_stock_list'])->name('users-stock.list');
     Route::resource('local-stock-distribution', UserDistributionController::class);

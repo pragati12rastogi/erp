@@ -1,131 +1,81 @@
-@extends('layouts.master')
-@section('title', 'Edit Role')
 
-@push('style')
-
-@endpush
-
-@push('custom-scripts')
-    <script>
-        $(function() {
-            jQuery('#role_form').validate({ // initialize the plugin
-                rules: {
-
-                    name: {
-                        required: true,
-                    },
-                    'permission[]':{
-                        required: true
-                    }
-                }
-            });
-
-            $(".all_select_permission").click(function(){
-                var check_status = this.checked;
-                var data_id = $(this).attr('id');
-                $("."+data_id).prop('checked', this.checked);
-            })
-
-            $(".sub_permission").click(function(){
-                var check_status = this.checked;
-                var get_class = $(this).attr('class');
-                var split_get_class = get_class.split(' ');
-                var sub_per_name = split_get_class[1];
-
-                var count_length = $('.'+sub_per_name).length;
-                var count_checked_length = $('.'+sub_per_name+':checked').length;
-
-                if(count_length == count_checked_length ){
-                    $('#'+sub_per_name).prop('checked', true);
-                }else{
-                    $('#'+sub_per_name).prop('checked', false);
-                }
-            }) 
-        });
-        
-    </script>
-@endpush
-
-@section('content')
-<div class="row">
-  <div class="col-lg-12 grid-margin stretch-card">
-    <div class="card">
-      <div class="card-body">
-        <div class="border-bottom mb-3 row">
-            <div class="col-md-10">
-                <h4 class="card-title">Edit Role</h4>
+<div id="edit_role_modal_{{$role->id}}" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content bg-inverse-light">
+            <div class="modal-header">
+                <h4 class="modal-heading">Add Role</h4>
+                <button type="button" class="close m-0 p-0" data-dismiss="modal">&times;</button> 
             </div>
-            <div class="col-md-2 text-right" >
-                <a class="btn btn-inverse-primary btn-sm" href="{{ route('roles.index') }}"><i class="mdi mdi-redo-variant"></i> Back</a>
-            </div>
-        </div>
-        
-        <div class="row">
-          <div class="col-md-12">
-          <form id="role_form" method="post" enctype="multipart/form-data" action="{{route('roles.update', $role->id)}}" data-parsley-validate class="form-horizontal form-label-left">
-                {{csrf_field()}}
-                {{ method_field('PUT') }}
+            <div class="modal-body">
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong>Name:</strong>
-                            {!! Form::text('name', $role->name, array('placeholder' => 'Name','class' => 'form-control')) !!}
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12">
-                        <div class="form-group">
-                            <strong>Permission:</strong>
-                            <br/>
+                    <div class="col-md-12">
+                        <form id="role_form_{{$role->id}}" method="post" enctype="multipart/form-data" action="{{route('roles.update', $role->id)}}" data-parsley-validate class="form-horizontal form-label-left">
+                            {{csrf_field()}}
+                            {{ method_field('PUT') }}
                             <div class="row">
-                            @foreach($permission as $value)
-                                @php 
-                                    $permission_ids = explode(',',$value->sub_permission_id);
-                                    $permission_name = explode(',',$value->sub_permission_name);
-                                    $sub_permissions = array_combine($permission_ids,$permission_name);
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <div class="form-group">
+                                        <strong>Name:</strong>
+                                        {!! Form::text('name', $role->name, array('placeholder' => 'Name','class' => 'form-control')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <div class="form-group">
+                                        <strong>Permission:</strong>
+                                        <br/>
+                                        <div class="row">
+                                            @php 
+                                            $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$role->id)->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')->all();
+                                            @endphp
+                                        @foreach($permission as $value)
+                                            @php 
+                                                $permission_ids = explode(',',$value->sub_permission_id);
+                                                $permission_name = explode(',',$value->sub_permission_name);
+                                                $sub_permissions = array_combine($permission_ids,$permission_name);
 
-                                    $per_intersect = array_intersect($permission_ids,$rolePermissions);
+                                                $per_intersect = array_intersect($permission_ids,$rolePermissions);
 
-                                @endphp
-                                <ul class="col-md-6 list-unstyled">
-                                    <li>
-                                        <label> <input type="checkbox" class="all_select_permission" id="all_{{ $value->master_name }}"  {{count($per_intersect) == count($permission_ids) ? 'checked':''}}> {{ $value->master_name }}</label>
-                                        <ul style="list-style: none;">
-                                            @foreach($sub_permissions as $p_id => $p_name)
-                                                @php 
-                                                    $break_string = explode('.',$p_name);
-                                                    
-                                                @endphp
-                                                @if(!in_Array('store',$break_string) && !in_Array('update',$break_string) )
-                                                <li><label >{{ Form::checkbox('permission[]', $p_id, in_array($p_id, $rolePermissions) ? true : false, array('class' => 'sub_permission all_'.$value->master_name)) }}
-                                                {{ $p_name }}</label></li>
-                                                @else
-                                                <li class="d-none "><label >{{ Form::checkbox('permission[]', $p_id, in_array($p_id, $rolePermissions) ? true : false, array('class' => 'sub_permission all_'.$value->master_name)) }}
-                                                {{ $p_name }}</label></li>
+                                            @endphp
+                                            <ul class="col-md-6 list-unstyled">
+                                                <li>
+                                                    <label> <input type="checkbox" class="all_select_permission_upd" id="upd_{{$role->id}}_all_{{ $value->master_name }}"  {{count($per_intersect) == count($permission_ids) ? 'checked':''}}> {{ $value->master_name }}</label>
+                                                    <ul style="list-style: none;">
+                                                        @foreach($sub_permissions as $p_id => $p_name)
+                                                            @php 
+                                                                $break_string = explode('.',$p_name);
+                                                                
+                                                            @endphp
+                                                            @if(!in_Array('store',$break_string) && !in_Array('update',$break_string) )
+                                                            <li><label >{{ Form::checkbox('permission[]', $p_id, in_array($p_id, $rolePermissions) ? true : false, array('class' => 'sub_permission_upd upd_'.$role->id.'_all_'.$value->master_name)) }}
+                                                            {{ $p_name }}</label></li>
+                                                            @else
+                                                            <li class="d-none "><label >{{ Form::checkbox('permission[]', $p_id, in_array($p_id, $rolePermissions) ? true : false, array('class' => 'sub_permission_upd upd_'.$role->id.'_all_'.$value->master_name)) }}
+                                                            {{ $p_name }}</label></li>
 
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                    </li>
-                                </ul>
-                                
-                            @endforeach
-                            
+                                                            @endif
+                                                        @endforeach
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                            
+                                        @endforeach
+                                        
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            
+                            <div class="col-xs-12 ">
+                                <hr>
+                                <button type="submit" class="btn btn-dark mt-3">Save</button>
+                            </div>
+                        </form>
                     </div>
-                </div>
-                
-                <div class="col-xs-12 ">
-                    <hr>
-                    <button type="submit" class="btn btn-dark mt-3">Save</button>
-                </div>
-            </form>
-          </div>
           
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
-@endsection

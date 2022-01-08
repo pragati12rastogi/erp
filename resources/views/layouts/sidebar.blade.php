@@ -97,14 +97,14 @@
     </li>
     @endif
 
-    @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN)  || Auth::user()->hasPermissionTo('stock-distributions.index') || Auth::user()->hasPermissionTo('users-stock.list'))
-    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}">
-      <a class="nav-link" data-toggle="collapse" href="#basic-ui2" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}" aria-controls="basic-ui2">
+    @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN)  || Auth::user()->hasPermissionTo('stock-distributions.index') || Auth::user()->hasPermissionTo('users-stock.list') || Auth::user()->hasPermissionTo('expenses.index') || Auth::user()->hasPermissionTo('profit-chart.index'))
+    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list','expenses','expenses/*','profit-chart.index']) }}">
+      <a class="nav-link" data-toggle="collapse" href="#basic-ui2" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list','expenses','expenses/*','profit-chart.index']) }}" aria-controls="basic-ui2">
         <i class="menu-icon mdi mdi-image-auto-adjust"></i>
         <span class="menu-title">Inventory</span>
         <i class="menu-arrow"></i>
       </a>
-      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list']) }}" id="basic-ui2">
+      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list','expenses','expenses/*','profit-chart.index']) }}" id="basic-ui2">
         <ul class="nav flex-column sub-menu">
           @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
           <li class="nav-item {{ active_class(['item','item/*']) }}">
@@ -144,9 +144,26 @@
             </a>
           </li>
           @endif
+
+          @if(Auth::user()->hasPermissionTo('expenses.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+          <li class="nav-item {{ active_class(['expenses','expenses/*']) }}">
+            <a class="nav-link" href="{{ url('/expenses') }}">
+              <span class="menu-title">Expenses</span>
+            </a>
+          </li>
+          @endif
+
+          @if(Auth::user()->hasPermissionTo('profit-chart.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+          <li class="nav-item {{ active_class(['profit-chart']) }}">
+            <a class="nav-link" href="{{ url('/profit-chart') }}">
+              <span class="menu-title">View Chart</span>
+            </a>
+          </li>
+          @endif
         </ul>
       </div>
     </li>
     @endif
+
   </ul>
 </nav>

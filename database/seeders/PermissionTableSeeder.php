@@ -219,15 +219,6 @@ class PermissionTableSeeder extends Seeder
                 'name'=>'local-stock-distribution.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'local-stock-distribution'
-            ]
-            */
-        $permissions = [
-            
-            
-            [
-                'name'=>'local-stock-distribution.store',
-                'guard_name'=>'web',
-                'master_name'=>'local-stock-distribution'
             ],
             [
                 'name'=>'stock-distributions.store',
@@ -313,7 +304,50 @@ class PermissionTableSeeder extends Seeder
                 'name'=>'roles.update',
                 'guard_name'=>'web',
                 'master_name'=>'roles'
+            ],[
+                'name'=>'local-stock-distribution.store',
+                'guard_name'=>'web',
+                'master_name'=>'local-stock-distribution'
+            ],[
+                'name'=>'expenses.index',
+                'guard_name'=>'web',
+                'master_name'=>'expenses'
             ],
+            [
+                'name'=>'expenses.store',
+                'guard_name'=>'web',
+                'master_name'=>'expenses'
+            ],
+            [
+                'name'=>'expenses.edit',
+                'guard_name'=>'web',
+                'master_name'=>'expenses'
+            ],
+            [
+                'name'=>'expenses.update',
+                'guard_name'=>'web',
+                'master_name'=>'expenses'
+            ],
+            [
+                'name'=>'expenses.destroy',
+                'guard_name'=>'web',
+                'master_name'=>'expenses'
+            ],
+            [
+                'name'=>'expenses.create',
+                'guard_name'=>'web',
+                'master_name'=>'expenses'
+            ],
+            */
+        $permissions = [
+            
+            [
+                'name'=>'profit-chart.index',
+                'guard_name'=>'web',
+                'master_name'=>'profit-chart'
+            ],
+            
+            
         ];
       
         foreach ($permissions as $permission) {

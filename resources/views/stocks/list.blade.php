@@ -24,8 +24,10 @@
                 <th>Price</th>
                 <th>Created By/Updated By</th>
                 <th>Created At</th>
-                
+                @if(Auth::user()->hasPermissionTo('stocks.edit') || Auth::user()->hasPermissionTo('stocks.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                 <th>Action</th>
+                @endif
+                
               </tr>
             </thead>
             <tbody>
@@ -40,7 +42,8 @@
                     <td>{{!empty($h->created_by)?$h->created_by_user['name']:""}}  {{!empty($h->updated_by)?'/'.$h->updated_by_user->name :""}}</td>
                     <td>{{date('d-m-Y',strtotime($h->created_at))}}</td>
                     
-                    <td>
+                    @if(Auth::user()->hasPermissionTo('stocks.edit') || Auth::user()->hasPermissionTo('stocks.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                      <td>
                         @if(Auth::user()->hasPermissionTo('stocks.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
               
                         <a onclick="edit_stock_modal('{{$h->id}}')" class="btn btn-success text-white">
@@ -54,6 +57,7 @@
                         </a>
                         @endif
                     </td>
+                    @endif
                 </tr>
               @endforeach
             </tbody>

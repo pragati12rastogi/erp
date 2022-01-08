@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Hsn;
 use DB;
-use Auth;
 use Validator;
-use Image;
+use Auth;
+use App\Models\Expense;
 
-class HsnController extends Controller
+class ExpenseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,8 +17,9 @@ class HsnController extends Controller
      */
     public function index()
     {
-        $hsns = Hsn::all();
-        return view('hsn.index',compact('hsns'));
+        $expenses = Expense::where('created_by',Auth::id())->get();
+
+        return view('expenses.index',compact('expenses'));
     }
 
     /**
@@ -29,7 +29,7 @@ class HsnController extends Controller
      */
     public function create()
     {
-        return view('hsn.create');
+        //
     }
 
     /**
@@ -43,36 +43,38 @@ class HsnController extends Controller
         try {
             $input = $request->all();
             $validation = Validator::make($input,[
-                'hsn_no' =>'required|unique:hsn'
+                'name' => 'required',
+                'amount' => 'required',
+                'datetime' => 'required'
             ],[
-                'hsn_no.required'=>'Hsn is required',
-                'hsn_no.unique'=>'Hsn is already present',
-                
+                'name.required' => 'Name is required',
+                'amount.required' => 'Amount is required',
+                'datetime.required' => 'Date Time is required'
+
             ]);
+
             if($validation->fails()){
-                
-                $validation_arr = $validation->errors();
+                $error = $validation->errors();
                 $message = '';
                 foreach ($validation_arr->all() as $key => $value) {
-                    $message .= $value.', ';
-                    
+                    $message .= $value.' ';
                 }
-                
                 return back()->with('error',$message);
-                
             }
+
             DB::beginTransaction();
-            $hsn = new Hsn();
+
+            $insert = new Expense();
             $input['created_by'] = Auth::id();
-            $hsn->create($input);
+
+            $insert->create($input);
 
         } catch (\Illuminate\Database\QueryException $th) {
             DB::rollback();
             return back()->with('error','Something went wrong '.$th->getMessage());
         }
         DB::commit();
-        return back()->with('success','Hsn is created successfully');
-
+        return back()->with('success','Expense is created successfully');
     }
 
     /**
@@ -94,9 +96,9 @@ class HsnController extends Controller
      */
     public function edit($id)
     {
-        
-        $hsn = Hsn::findOrFail($id);
-        echo json_encode(compact('hsn'));
+        $expense = Expense::findOrFail($id);
+        $expense['datetime'] = str_replace(' ','T',$expense['datetime']);
+        echo json_encode(compact('expense'));
     }
 
     /**
@@ -111,36 +113,37 @@ class HsnController extends Controller
         try {
             $input = $request->all();
             $validation = Validator::make($input,[
-                'hsn_no' =>['required','unique:hsn,hsn_no,'.$id.',id']
+                'name' => 'required',
+                'amount' => 'required',
+                'datetime' => 'required'
             ],[
-                'hsn_no.required'=>'Hsn is required',
-                'hsn_no.unique'=>'Hsn is already present',
-                
+                'name.required' => 'Name is required',
+                'amount.required' => 'Amount is required',
+                'datetime.required' => 'Date Time is required'
+
             ]);
+
             if($validation->fails()){
-                
-                $validation_arr = $validation->errors();
+                $error = $validation->errors();
                 $message = '';
                 foreach ($validation_arr->all() as $key => $value) {
-                    $message .= $value.', ';
-                    
+                    $message .= $value.' ';
                 }
-                
                 return back()->with('error',$message);
-                
             }
+
             DB::beginTransaction();
-            $hsn = Hsn::findOrFail($id);
-            $input['updated_by'] = Auth::id();
-            $hsn->update($input);
+
+            $update = Expense::findorFail($id);
+            $update->update($input);
+
 
         } catch (\Illuminate\Database\QueryException $th) {
             DB::rollback();
             return back()->with('error','Something went wrong '.$th->getMessage());
         }
         DB::commit();
-        return back()->with('success','Hsn is updated successfully');
-
+        return back()->with('success','Expense is updated successfully');
     }
 
     /**
@@ -151,11 +154,11 @@ class HsnController extends Controller
      */
     public function destroy($id)
     {
-        $hsn = Hsn::find($id);
+        $expense = Expense::find($id);
 
-        $value = $hsn->delete();
+        $value = $expense->delete();
         if ($value) {
-            return back()->with('success','Hsn is deleted successfully.');
+            return back()->with('success','Expense is deleted successfully.');
         }
     }
 }

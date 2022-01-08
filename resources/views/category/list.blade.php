@@ -22,7 +22,10 @@
                 <th>Image</th>
                 <th>Created At</th>
                 <th>Created By/Updated By</th>
+                @if(Auth::user()->hasPermissionTo('category.edit') || Auth::user()->hasPermissionTo('category.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                
                 <th>Action</th>
+                @endif
               </tr>
             </thead>
             <tbody>
@@ -39,7 +42,8 @@
                     
                     <td>{{date('d-m-Y',strtotime($cat->created_at))}}</td>
                     <td>{{!empty($cat->created_by)?$cat->created_by_user['name']:""}}  {{!empty($cat->updated_by)? '/'.$cat->updated_by_user->name:"" }}</td>
-                    
+                    @if(Auth::user()->hasPermissionTo('category.edit') || Auth::user()->hasPermissionTo('category.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                
                     <td>
                       @if(Auth::user()->hasPermissionTo('category.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                         <a onclick='return $("#{{$cat->id}}_category_edit_modal").modal("show");' class="btn btn-success text-white">
@@ -52,6 +56,7 @@
                         </a>
                       @endif
                     </td>
+                    @endif
                 </tr>
               @endforeach
             </tbody>

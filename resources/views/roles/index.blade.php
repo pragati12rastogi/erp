@@ -9,9 +9,75 @@
     <script>
         $(function() {
             $("#role_table").DataTable();
-            
+            jQuery('#role_form').validate({ // initialize the plugin
+                rules: {
+
+                    name: {
+                        required: true,
+                    },
+                    'permission[]':{
+                        required: true
+                    }
+                }
+            });
+
+            @foreach($roles as $key => $role)
+            jQuery('#role_form_{{$role->id}}').validate({ // initialize the plugin
+                rules: {
+
+                    name: {
+                        required: true,
+                    },
+                    'permission[]':{
+                        required: true
+                    }
+                }
+            });
+            @endforeach
         });
         
+        $(".all_select_permission").click(function(){
+            var check_status = this.checked;
+            var data_id = $(this).attr('id');
+            $("."+data_id).prop('checked', this.checked);
+        })
+
+        $(".sub_permission").click(function(){
+            var check_status = this.checked;
+            var get_class = $(this).attr('class');
+            var split_get_class = get_class.split(' ');
+            var sub_per_name = split_get_class[1];
+
+            var count_length = $('.'+sub_per_name).length;
+            var count_checked_length = $('.'+sub_per_name+':checked').length;
+
+            if(count_length == count_checked_length ){
+                $('#'+sub_per_name).prop('checked', true);
+            }else{
+                $('#'+sub_per_name).prop('checked', false);
+            }
+        })
+        $(".all_select_permission_upd").click(function(){
+            var check_status = this.checked;
+            var data_id = $(this).attr('id');
+            $("."+data_id).prop('checked', this.checked);
+        })
+
+        $(".sub_permission_upd").click(function(){
+            var check_status = this.checked;
+            var get_class = $(this).attr('class');
+            var split_get_class = get_class.split(' ');
+            var sub_per_name = split_get_class[1];
+
+            var count_length = $('.'+sub_per_name).length;
+            var count_checked_length = $('.'+sub_per_name+':checked').length;
+
+            if(count_length == count_checked_length ){
+                $('#'+sub_per_name).prop('checked', true);
+            }else{
+                $('#'+sub_per_name).prop('checked', false);
+            }
+        }) 
     </script>
 @endpush
 
@@ -28,7 +94,7 @@
             </div>
             <div class="col-md-2 text-right" >
               
-              <a href="{{route('roles.create')}}" class="btn btn-inverse-primary btn-sm">{{__("Add Role")}}</a>
+              <a onclick='return $("#add_role_modal").modal("show");' class="btn btn-inverse-primary btn-sm">{{__("Add Role")}}</a>
             </div>
         </div>
         
@@ -48,7 +114,7 @@
                 <td>{{ $role->name }}</td>
                 <td>
                   @if(Auth::user()->hasPermissionTo('roles.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                    <a class="btn btn-sm btn-success" href="{{ route('roles.edit',$role->id) }}">Edit</a>
+                    <a class="btn btn-sm btn-success text-white" onclick='return $("#edit_role_modal_{{$role->id}}").modal("show");' >Edit</a>
                   @endif
                   @if(Auth::user()->hasPermissionTo('users.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                     <a onclick='return $("#{{$role->id}}_role").modal("show");'  class="btn  btn-sm btn-danger text-white"> Delete </a>  
@@ -63,6 +129,8 @@
     </div>
   </div>
 </div>
+
+@include('roles.add')
 @foreach($roles as $key => $role)
     <div id="{{$role->id}}_role" class="delete-modal modal fade" role="dialog">
         <div class="modal-dialog modal-sm">
@@ -90,5 +158,6 @@
         </div>
         </div>
     </div>
+    @include('roles.edit')
 @endforeach
 @endsection

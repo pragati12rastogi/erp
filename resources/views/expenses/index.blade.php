@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'GST Summary')
+@section('title', 'Expenses Creation')
 
 @push('style')
 
@@ -8,22 +8,23 @@
 @push('custom-scripts')
     <script>
         $(function() {
-            $("#gst_table").DataTable();
-            
+            $("#expense_table").DataTable();
             $.validator.addMethod('decimal', function(value, element) {
             return this.optional(element) || /^((\d+(\\.\d{0,2})?)|((\d*(\.\d{1,2}))))$/.test(value);
             }, "Please enter a correct number, format 0.00");
 
-            jQuery('#gst_form').validate({ // initialize the plugin
+            jQuery('#expense_form').validate({ // initialize the plugin
                 rules: {
-
-                    
                     name:{
                         required:true,
                     },
-                    percent:{
+                    amount:{
                         required:true,
-                        decimal:true
+                        decimal:true,
+                        min:0
+                    },
+                    datetime:{
+                        required:true
                     }
                     
                 },
@@ -35,9 +36,6 @@
                     }
                     else if($(element).is('select'))
                     {
-                        error.insertAfter(element.parent());
-                    }
-                    else if($(element).attr('type') == 'number'){
                         error.insertAfter(element.parent());
                     }
                     else{
@@ -47,12 +45,18 @@
                 }
             });
 
-            jQuery('#gst_form_upd').validate({ // initialize the plugin
+            jQuery('#expense_form_upd').validate({ // initialize the plugin
                 rules: {
-
-                    percent:{
+                    name:{
                         required:true,
-                        decimal:true
+                    },
+                    amount:{
+                        required:true,
+                        decimal:true,
+                        min:0
+                    },
+                    datetime:{
+                        required:true
                     }
                     
                 },
@@ -64,9 +68,6 @@
                     }
                     else if($(element).is('select'))
                     {
-                        error.insertAfter(element.parent());
-                    }
-                    else if($(element).attr('type') == 'number'){
                         error.insertAfter(element.parent());
                     }
                     else{
@@ -77,8 +78,8 @@
             });
         });
         
-        function edit_gst_modal(edit_id){
-            var submit_edit_url = '{{url("gst")}}/'+edit_id;
+        function edit_expense_modal(edit_id){
+            var submit_edit_url = '{{url("expenses")}}/'+edit_id;
             var get_edit_url = submit_edit_url +'/edit';
             
             $.ajax({
@@ -88,10 +89,12 @@
                 success:function(result){
 
                     if(result != ''){
-                        var inputs = result.gst;
-                        $('#gst_form_upd').attr('action',submit_edit_url);
-                        $('#percent_upd').val(inputs.percent);
-                        $("#gst_edit_modal").modal('show');
+                        var inputs = result.expense;
+                        $('#expense_form_upd').attr('action',submit_edit_url);
+                        $('#name_upd').val(inputs.name);
+                        $('#amount_upd').val(inputs.amount);
+                        $('#datetime_upd').val(inputs.datetime);
+                        $("#expense_edit_modal").modal('show');
                     }else{
                         alert('some error occured, please refresh page and try again');
                     }
@@ -107,16 +110,19 @@
 
 @section('content')
 <div class="row">
-  <div class="col-lg-12 ">
-    @include('flash-msg')
-  </div>
+    <div class="col-md-12 ">
+      
+        @include('flash-msg')
+      
+    </div>
 </div>
 
-@include('gst_percent.list')
-@include('gst_percent.create')
-@include('gst_percent.edit')
-@foreach($gst as $h)
-    <div id="{{$h->id}}_gst" class="delete-modal modal fade" role="dialog">
+@include('expenses.list')
+
+@include('expenses.create')
+@include('expenses.edit')
+@foreach($expenses as $e)
+    <div id="{{$e->id}}_expense" class="delete-modal modal fade" role="dialog">
         <div class="modal-dialog modal-sm">
         <!-- Modal content-->
         <div class="modal-content">
@@ -126,10 +132,10 @@
             </div>
             <div class="modal-body text-center">
             <h4 class="modal-heading">Are You Sure ?</h4>
-            <p>Do you really want to delete this GST? This process cannot be undone.</p>
+            <p>Do you really want to delete this expense? This process cannot be undone.</p>
             </div>
             <div class="modal-footer">
-            <form method="post" action="{{url('/gst/'.$h->id)}}" class="pull-right">
+            <form method="post" action="{{url('/expenses/'.$e->id)}}" class="pull-right">
                             {{csrf_field()}}
                             {{method_field("DELETE")}}
                                 
@@ -142,5 +148,7 @@
         </div>
         </div>
     </div>
+    
 @endforeach
+
 @endsection

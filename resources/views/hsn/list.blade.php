@@ -22,7 +22,9 @@
                 <th>Hsn No</th>
                 <th>Created At</th>
                 <th>Created By/Updated BY</th>
+                @if(Auth::user()->hasPermissionTo('hsn.edit') || Auth::user()->hasPermissionTo('hsn.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                 <th>Action</th>
+                @endif
               </tr>
             </thead>
             <tbody>
@@ -34,6 +36,8 @@
                     <td>{{date('d-m-Y',strtotime($h->created_at))}}</td>
                     <td>{{!empty($h->created_by)?$h->created_by_user['name']:""}}  {{!empty($h->updated_by)? '/'.$h->updated_by_user->name : ""}}</td>
                     
+                    @if(Auth::user()->hasPermissionTo('hsn.edit') || Auth::user()->hasPermissionTo('hsn.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                
                     <td>
                       @if(Auth::user()->hasPermissionTo('hsn.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                       
@@ -48,6 +52,7 @@
                         </a>
                       @endif
                     </td>
+                    @endif
                 </tr>
               @endforeach
             </tbody>

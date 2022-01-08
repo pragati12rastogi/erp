@@ -128,6 +128,8 @@
       });
     });
   </script>
+  {!! Html::script('/assets/plugins/chartjs/chart.min.js') !!}
+  {!! Html::script('/assets/js/chart.js') !!}
   @stack('custom-scripts')
   
 </body>
