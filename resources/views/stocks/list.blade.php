@@ -56,6 +56,10 @@
                             <i class=" mdi mdi-delete-forever"></i>
                         </a>
                         @endif
+
+                        <a onclick="return $('#{{$h->id}}_stock_history').modal('show');" class="btn btn-warning text-white">
+                            History
+                        </a>
                     </td>
                     @endif
                 </tr>

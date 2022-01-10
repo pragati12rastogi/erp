@@ -4,6 +4,8 @@ $("#prod_quantity, #prod_price, #total_price").on('keyup',function(){
 
 $("#prod_quantity_upd, #prod_price_upd, #total_price_upd").on('keyup',function(){
     calculate_product_upd();
+    calculate_final_price_upd();
+    user_percent_calculation_upd();
 })
 
 function calculate_product(){
@@ -73,7 +75,7 @@ $("#user_percent").change(function(){
     user_percent_calculation()
 })
 
-$("#user_percent").change(function(){
+$("#user_percent_upd").change(function(){
     user_percent_calculation_upd()
 })
 
@@ -89,12 +91,12 @@ function user_percent_calculation(){
     var get_percent = parseFloat(prod_price)*(user_percent/100);
 
     var user_price = (parseFloat(prod_price)+parseFloat(get_percent)).toFixed(2);
-    $("#price_for_user").val(user_price.toFixed(2));
+    $("#price_for_user").val(user_price);
 }
 
 function user_percent_calculation_upd(){
     var prod_price = $("#prod_price_upd").val();
-    var calculate_gst = (prod_price * gst_percent)/100;
+    var calculate_gst = (prod_price * gst_percent_upd)/100;
     prod_price = parseFloat(prod_price) + parseFloat(calculate_gst);
 
     var per_freight_price = $("#per_freight_price_upd").val();
@@ -104,5 +106,5 @@ function user_percent_calculation_upd(){
     var get_percent = parseFloat(prod_price)*(user_percent/100);
 
     var user_price = (parseFloat(prod_price)+parseFloat(get_percent)).toFixed(2);
-    $("#price_for_user_upd").val(user_price.toFixed(2));
+    $("#price_for_user_upd").val(user_price);
 }

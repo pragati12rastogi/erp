@@ -30,6 +30,8 @@ class Stock extends Model
         return $this->belongsTo('App\Models\Item','item_id','id');
     }
 
-    
+    public function history(){
+        return $this->hasMany(StockHistory::class,'stock_id')->orderBy('id','desc');
+    }
 
 }

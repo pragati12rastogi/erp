@@ -40,7 +40,7 @@
                                         <label class="control-label" for="first-name">
                                             Items: <span class="required">*</span>
                                         </label>
-                                        <select disabled class="form-control select2" id="item_id_upd">
+                                        <select disabled class="form-control select2"  id="item_id_upd">
                                             <option>Select Items</option>
                                             @foreach($item as $i_ind => $i)
                                             <option value="{{$i->id}}" >{{$i->name}}</option>

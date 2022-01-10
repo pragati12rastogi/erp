@@ -98,13 +98,13 @@
     @endif
 
     @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasPermissionTo('stocks.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN)  || Auth::user()->hasPermissionTo('stock-distributions.index') || Auth::user()->hasPermissionTo('users-stock.list') || Auth::user()->hasPermissionTo('expenses.index') || Auth::user()->hasPermissionTo('profit-chart.index'))
-    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list','expenses','expenses/*','profit-chart.index']) }}">
-      <a class="nav-link" data-toggle="collapse" href="#basic-ui2" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list','expenses','expenses/*','profit-chart.index']) }}" aria-controls="basic-ui2">
+    <li class="nav-item {{ active_class(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list','expenses','expenses/*','profit-chart']) }}">
+      <a class="nav-link" data-toggle="collapse" href="#basic-ui2" aria-expanded="{{ is_active_route(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list','expenses','expenses/*','profit-chart']) }}" aria-controls="basic-ui2">
         <i class="menu-icon mdi mdi-image-auto-adjust"></i>
         <span class="menu-title">Inventory</span>
         <i class="menu-arrow"></i>
       </a>
-      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list','expenses','expenses/*','profit-chart.index']) }}" id="basic-ui2">
+      <div class="collapse {{ show_class(['item','item/*','stocks','stocks/*','stock-distributions','stock-distributions/*','local-stock-distribution','local-stock-distribution/*','users-stock/list','expenses','expenses/*','profit-chart']) }}" id="basic-ui2">
         <ul class="nav flex-column sub-menu">
           @if(Auth::user()->hasPermissionTo('item.index') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
           <li class="nav-item {{ active_class(['item','item/*']) }}">

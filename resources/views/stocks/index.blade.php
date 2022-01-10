@@ -2,7 +2,15 @@
 @section('title', 'Stock Summary')
 
 @push('style')
-
+<style>
+    @media screen and (min-device-width : 1024px)  {
+        .stock-res{
+            width: fit-content;
+        }
+    }
+    
+</style>
+    
 @endpush
 
 @push('custom-scripts')
@@ -190,31 +198,107 @@
 @include('stocks.create')
 @include('stocks.edit')
 @foreach($stocks as $h)
-  <div id="{{$h->id}}_stocks" class="delete-modal modal fade" role="dialog">
-      <div class="modal-dialog modal-sm">
-      <!-- Modal content-->
-      <div class="modal-content">
-          <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <div class="delete-icon"></div>
-          </div>
-          <div class="modal-body text-center">
-          <h4 class="modal-heading">Are You Sure ?</h4>
-          <p>Do you really want to delete this stock? This process cannot be undone.</p>
-          </div>
-          <div class="modal-footer">
-          <form method="post" action="{{url('/stocks/'.$h->id)}}" class="pull-right">
-                          {{csrf_field()}}
-                          {{method_field("DELETE")}}
-                              
-                          
-          
-              <button type="reset" class="btn btn-gray translate-y-3" data-dismiss="modal">No</button>
-              <button type="submit" class="btn btn-danger">Yes</button>
-          </form>
-          </div>
-      </div>
-      </div>
-  </div>
+    <div id="{{$h->id}}_stocks" class="delete-modal modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="delete-icon"></div>
+            </div>
+            <div class="modal-body text-center">
+            <h4 class="modal-heading">Are You Sure ?</h4>
+            <p>Do you really want to delete this stock? This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+            <form method="post" action="{{url('/stocks/'.$h->id)}}" class="pull-right">
+                            {{csrf_field()}}
+                            {{method_field("DELETE")}}
+                                
+                            
+            
+                <button type="reset" class="btn btn-gray translate-y-3" data-dismiss="modal">No</button>
+                <button type="submit" class="btn btn-danger">Yes</button>
+            </form>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div id="{{$h->id}}_stock_history" class=" modal fade" role="dialog">
+        <div class="modal-dialog ">
+        <!-- Modal content-->
+        <div class="modal-content " style="    ">
+            <div class="modal-header">
+                <h4 class="modal-heading">Stock History</h4>
+                <button type="button" class="close m-0 p-0" data-dismiss="modal">&times;</button> 
+            
+            </div>
+            <div class="modal-body ">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-responsive table-bordered table-warning">
+                            <thead>
+                                <tr>
+                                    <th>Price</th>
+                                    <th>User Price</th>
+                                    <th>Added</th>
+                                    <th>Total Quantity</th>
+                                    <th>Remaining</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($h->history as $h_id => $h_data)
+                                <tr>
+                                    <td>
+                                        <small>
+                                            <p>Rs. {{$h_data->final_price}}</p>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <b>Product Price :</b>
+                                                    <span>Rs. {{$h_data->prod_price}}</span>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <b>GST :</b>
+                                                    <span>{{$h_data->gst}}%</span>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <b>Fright :</b>
+                                                    <span>Rs. {{$h_data->per_freight_price}}</span>
+                                                </div>
+                                            </div>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        Rs. {{$h_data->price_for_user}}
+                                    </td>
+                                    <td>
+                                        {{$h_data->prod_quantity}}
+                                    </td>
+                                    <td>
+                                        {{$h_data->total_qty}}
+                                    </td>
+                                    <td>
+                                        {{ array_key_exists($h_id-1,$h->history->toArray()) ? $h->history[$h_id-1]['total_qty'] - $h->history[$h_id-1]['prod_quantity'] : '-'}}
+                                    </td>
+                                    <td>
+                                        {{date('d-m-Y h:i A',strtotime($h_data->created_at))}}
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            
+                <button type="reset" class="btn btn-gray translate-y-3" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+        </div>
+    </div>
 @endforeach
 @endsection

@@ -798,67 +798,7 @@ $(function() {
             "doughnut-chart-legend"
         ).innerHTML = doughnutChart.generateLegend();
     }
-    if ($("#pieChart").length) {
-        var pieChartCanvas = $("#pieChart")
-            .get(0)
-            .getContext("2d");
-        var pieChart = new Chart(pieChartCanvas, {
-            type: "pie",
-            data: {
-                datasets: [
-                    {
-                        data: [30, 40, 30],
-                        backgroundColor: [
-                            ChartColor[0],
-                            ChartColor[1],
-                            ChartColor[2]
-                        ],
-                        borderColor: [
-                            ChartColor[0],
-                            ChartColor[1],
-                            ChartColor[2]
-                        ]
-                    }
-                ],
-                labels: ["Sales", "Profit", "Return"]
-            },
-            options: {
-                responsive: true,
-                animation: {
-                    animateScale: true,
-                    animateRotate: true
-                },
-                legend: {
-                    display: false
-                },
-                legendCallback: function(chart) {
-                    var text = [];
-                    text.push('<div class="chartjs-legend"><ul>');
-                    for (
-                        var i = 0;
-                        i < chart.data.datasets[0].data.length;
-                        i++
-                    ) {
-                        text.push(
-                            '<li><span style="background-color:' +
-                                chart.data.datasets[0].backgroundColor[i] +
-                                '">'
-                        );
-                        text.push("</span>");
-                        if (chart.data.labels[i]) {
-                            text.push(chart.data.labels[i]);
-                        }
-                        text.push("</li>");
-                    }
-                    text.push("</div></ul>");
-                    return text.join("");
-                }
-            }
-        });
-        document.getElementById(
-            "pie-chart-legend"
-        ).innerHTML = pieChart.generateLegend();
-    }
+    
     if ($("#scatterChart").length) {
         var options = {
             type: "bubble",

@@ -2,17 +2,80 @@
 @section('title', 'Distribution Summary')
 
 @push('style')
-S
+
 @endpush
 
 @push('custom-scripts')
+<script>
+  if ($("#pieChart").length) {
+      var pieChartCanvas = $("#pieChart")
+          .get(0)
+          .getContext("2d");
+      var pieChart = new Chart(pieChartCanvas, {
+          type: "pie",
+          data: {
+              datasets: [
+                  {
+                      data: ["{{$stock_added['sum_stock_spend']}}", "{{$recieve['sum_recieve']}}", "{{$expense['sum_expense']}}"],
+                      backgroundColor: [
+                          ChartColor[0],
+                          ChartColor[1],
+                          ChartColor[2]
+                      ],
+                      borderColor: [
+                          ChartColor[0],
+                          ChartColor[1],
+                          ChartColor[2]
+                      ]
+                  }
+              ],
+              labels: ["Total Stock Price", "Total Expense", "Total Recieve"]
+          },
+          options: {
+              responsive: true,
+              animation: {
+                  animateScale: true,
+                  animateRotate: true
+              },
+              legend: {
+                  display: false
+              },
+              legendCallback: function(chart) {
+                  var text = [];
+                  text.push('<div class="chartjs-legend"><ul>');
+                  for (
+                      var i = 0;
+                      i < chart.data.datasets[0].data.length;
+                      i++
+                  ) {
+                      text.push(
+                          '<li><span style="background-color:' +
+                              chart.data.datasets[0].backgroundColor[i] +
+                              '">'
+                      );
+                      text.push("</span>");
+                      if (chart.data.labels[i]) {
+                          text.push(chart.data.labels[i]);
+                      }
+                      text.push("</li>");
+                  }
+                  text.push("</div></ul>");
+                  return text.join("");
+              }
+          }
+      });
+      document.getElementById(
+          "pie-chart-legend"
+      ).innerHTML = pieChart.generateLegend();
+  }
+</script>
 @endpush
 
 @section('content')
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
       <div class="p-4 pr-5 border-bottom bg-light d-sm-flex justify-content-between">
-        <h4 class="card-title mb-0">Pie chart</h4>
+        <h4 class="card-title mb-0">Profit chart</h4>
         <div id="pie-chart-legend" class="mr-4"></div>
       </div>
       <div class="card-body d-flex">

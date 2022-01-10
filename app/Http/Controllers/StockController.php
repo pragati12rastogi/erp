@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Stock;
+use App\Models\StockHistory;
 use App\Models\Category;
 use App\Models\Hsn;
 use App\Models\Item;
@@ -101,24 +102,27 @@ class StockController extends Controller
 
                 DB::beginTransaction();
                 $stock = Stock::where('item_id',$input['item_id'])->first();
+                
+                $item = Item::findOrFail($input['item_id']);
+                $gst = $item->gst_percent->percent;
+
+                $history = $input;
+
                 if(empty($stock)){
                     $stock = new Stock();
-        
+                    
+                    $new_calculated_stock = $input['prod_quantity'];
                     $input['created_by'] = Auth::id();
-                    $stock->create($input);
+                    $stock = $stock->create($input);
                 }else{
                 
-                    $item = Item::findOrFail($stock->item_id);
-                    $gst = $item->gst_percent->percent;
-
-
                     $old_stock = $stock->prod_quantity;
                     $new_stock = $input['prod_quantity'];
 
                     $new_calculated_stock = $old_stock+$new_stock;
                     $input['prod_quantity'] = $new_calculated_stock;
 
-                    $gst_calc = ($input['prod_price'] * $stock->item->gst_percent->percent)/100;
+                    $gst_calc = ($input['prod_price'] * $gst)/100;
                     $new_total = $new_calculated_stock * ( $input['prod_price'] + $gst_calc );
                     $input['total_price'] = $new_total ;
 
@@ -129,6 +133,15 @@ class StockController extends Controller
                     $input['updated_by'] = Auth::id();
                     $stock->update($input);
                 }
+
+                /* ----------------------------------Stock History Creation--------------------------------------- */
+                
+                $history['stock_id'] =  $stock->id;
+                $history['total_qty'] =  $new_calculated_stock;
+                $history['gst'] =  $gst;
+                $history['created_by'] = Auth::id();
+                $stock_history_insertion = StockHistory::create($history);
+
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollback();
             return back()->with('error','some error occurred'.$ex->getMessage());
@@ -180,7 +193,7 @@ class StockController extends Controller
             $input = $request->all();
                 
             $validation = Validator::make($input,[
-                'item_id'          => ['required'],
+                
                 'prod_quantity'    => ['required', 'numeric'],
                 'prod_price'       => ['required', 'numeric'],
                 'total_price'      => ['required','numeric'],
@@ -221,6 +234,8 @@ class StockController extends Controller
 
             DB::beginTransaction();
             $stock = Stock::findOrFail($id);
+
+            $history = $input;
             
             $item = Item::findOrFail($stock->item_id);
             $gst = $item->gst_percent->percent;
@@ -241,8 +256,19 @@ class StockController extends Controller
             $input['final_price'] = $new_freight_final_total;
             
             $input['updated_by'] = Auth::id();
+            
             $stock->update($input);
             
+            /* ---------------------------------------Stock History Creation--------------------------------------- */
+
+            
+            $history['stock_id'] =  $stock->id;
+            $history['total_qty'] =  $new_calculated_stock;
+            $history['gst'] =  $stock->item->gst_percent->percent;
+            $history['created_by'] =  Auth::id();
+            
+            $stock_history_insertion = StockHistory::create($history);
+
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollback();
             return back()->with('error','some error occurred'.$ex->getMessage());
