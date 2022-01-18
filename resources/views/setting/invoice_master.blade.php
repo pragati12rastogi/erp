@@ -64,15 +64,18 @@
             <form id="invoice_master_form" method="post" enctype="multipart/form-data" action="{{route('save.invoice.master')}}" data-parsley-validate class="form-horizontal form-label-left">
                 {{csrf_field()}}
                 
+                @foreach($invoice_setting as $in => $setting)
                 <div class="row">
-                    
+                    <div class="col-md-12">
+                        <b>Invoice Master for {{$setting->user->name}} :</b>
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label" for="first-name">
                                 Invoice Number Prefix: <span class="required">*</span>
                             </label>
-                            <input name="prefix" value="{{!empty($invoice_setting)?$invoice_setting['prefix']:''}}" type="text" maxlength="255" class="form-control text-capitalize" >
-                            @error('prefix')
+                            <input name="prefix[{{$setting['id']}}]" value="{{!empty($setting['prefix'])?$setting['prefix']:''}}" type="text" maxlength="255" class="form-control text-capitalize" >
+                            @error('prefix.'.$setting->id)
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -85,22 +88,21 @@
                             <label class="control-label" for="first-name">
                                 Suffix Invoice Number: <span class="required">*</span>
                             </label>
-                            <input name="suffix_number_length" id="suffix_number_length" value="{{!empty($invoice_setting)?$invoice_setting['suffix_number_length']:''}}" type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" class="form-control" >
-                            @error('suffix_number_length')
+                            <input name="suffix_number_length[{{$setting['id']}}]" value="{{!empty($setting['suffix_number_length'])?$setting['suffix_number_length']:''}}" type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" class="form-control" >
+                            @error('suffix_number_length.'.$setting->id)
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
                             @enderror
                         </div>
                     </div>
+
                     
 
                 </div>
-                
-                <div class="col-xs-12 ">
-                    @if(!empty($invoice_setting))
-                    <span><b>Updated By:</b> {{$invoice_setting->updated_by_user['name']}}</span>
-                    @endif
+                @endforeach
+
+                <div class="col-xs-12">
                     <hr>
                     <button type="submit" class="btn btn-dark mt-3">Save</button>
                 </div>

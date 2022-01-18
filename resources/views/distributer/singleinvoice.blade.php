@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-    <title>Print Invoice: {{ $inv_no }}</title>
+    <title>Print Invoice: {{ $dis->order->invoice_no }}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{asset('/plugins/fontawesome-free/css/all.min.css')}}">
@@ -26,7 +26,7 @@
 </head>
 <body>
 <div class="container">
-    <h3 class="text-center">Invoice: {{$inv_no}}</h3>
+    <h3 class="text-center">Invoice: {{$dis->order->invoice_no}}</h3>
     <div class="row justify-content-md-center">
 
         <div class="col-lg-12 grid-margin stretch-card">
@@ -36,7 +36,7 @@
                 <div class="card-body">
                     <div class="border-bottom mb-3 row">
                         <div class="col-md-11">
-                            <h4 class="card-title">Invoice - {{$inv_no}}</h4>
+                            <h4 class="card-title">Invoice - {{$dis->order->invoice_no}}</h4>
                         </div>
                         <div id="hide-div">
                             <button title="Print Order" onclick="printIT()" class="p_btn pull-right btn btn-md btn-default"><i class="fa fa-print"></i></button>
@@ -53,7 +53,7 @@
                                         </th>
                                         
                                         <th>
-                                            <b>Invoice ID:</b> {{$inv_no}}
+                                            <b>Invoice ID:</b> {{$dis->order->invoice_no}}
                                             
                                         </th>
                                     </tr>
@@ -73,15 +73,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="2">
-                                            <b>{{ $dis->order->created_by_user->firm_name }},</b>
-                                            <br><br>
-                                            {{  $dis->order->created_by_user->address }},
-                                            <br>
-                                            {{  $dis->order->created_by_user->district }},{{  $dis->order->created_by_user->state->name }},
-                                            <br>
-                                            {{ $dis->order->created_by_user->email }}
-                                            <br>
-                                            {{ $dis->order->created_by_user->mobile }}
+                                            {!!$billing_add->details!!}
                                         </td>
                                         <td>
                                             <b>{{ $dis->user->firm_name }},</b>

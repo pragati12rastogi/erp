@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-    <title>Print Invoice: {{ $inv_no }}</title>
+    <title>Print Invoice: {{ $dis->invoice_no }}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{asset('/plugins/fontawesome-free/css/all.min.css')}}">
@@ -13,6 +13,10 @@
 	<style>
         .padding-15{
             padding : 15px;
+        }
+        .signature-box{
+            border:1px solid black;
+            padding:30px
         } 
 	</style>
     
@@ -20,7 +24,7 @@
 </head>
 <body>
 <div class="container-fluid">
-    <h3 class="text-center">Invoice: {{$inv_no}}</h3>
+    <h3 class="text-center">Invoice: {{$dis->invoice_no}}</h3>
     <div class="row justify-content-md-center">
 
         <div class="col-lg-12 grid-margin stretch-card">
@@ -30,13 +34,13 @@
                 <div class="card-body">
                     <div class="border-bottom mb-3 row">
                         <div class="col-md-11">
-                            <h4 class="card-title">Invoice - {{$inv_no}}</h4>
+                            <h4 class="card-title">Invoice - {{$dis->invoice_no}}</h4>
                         </div>
                         
                     </div>
                     
                     <div class="row" id="printarea">
-                    <div class="col-md-12">
+                        <div class="col-md-12">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
@@ -45,7 +49,7 @@
                                         </th>
                                         
                                         <th>
-                                            <b>Invoice ID:</b> {{$inv_no}}
+                                            <b>Invoice ID:</b> {{$dis->invoice_no}}
                                             
                                         </th>
                                     </tr>
@@ -65,15 +69,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="2">
-                                            <b>{{ $dis->created_by_user->firm_name }},</b>
-                                            <br><br>
-                                            {{  $dis->created_by_user->address }},
-                                            <br>
-                                            {{  $dis->created_by_user->district }},{{  $dis->created_by_user->state->name }},
-                                            <br>
-                                            {{ $dis->created_by_user->email }}
-                                            <br>
-                                            {{ $dis->created_by_user->mobile }}
+                                        {!!$billing_add->details!!}
                                         </td>
                                         <td>
                                             <b>{{ $dis->user->firm_name }},</b>
@@ -95,14 +91,18 @@
                                 <thead>
                                     <tr>
                                         <th>Item</th>
-                                        <th>Qty</th>
+                                        <th>GST</th>
                                         <th>Price</th>
-                                        <th>TAX</th>
-                                        <th>Total</th>
+                                        <th>Qty.</th>
+                                        <th>Total Price</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
+                                    @php 
+                                        $scgst = 0;
+                                        $igst = 0;
+                                    @endphp
                                     @foreach($dis->invoices as $in => $inv)
                                     <tr>
                                         <td>
@@ -111,17 +111,14 @@
                                             @php
                                                 $tax = ($inv->product_price * $inv->item->gst_percent->percent)/100;
                                                 $single_price = $inv->product_price-$tax;
+                                                $scgst += $inv->scgst;
+                                                $igst += $inv->igst;
                                             @endphp
-                                            <small class="tax"><b>Price:</b> Rs.
-                                                {{ number_format((float)$single_price, 2, '.', '')}}
-                                            </small>
-                                            <small class="tax"><b>Tax:</b> Rs.
-                                                
-                                                {{ number_format((float)$tax , 2, '.', '')}}
-                                                
-                                            </small>
-                                            <br>
-                                            <small class="help-block">(Displayed for single Qty.)</small>
+                                            
+                                        </td>
+                                        <td> {{$inv->gst_percent}}% </td>
+                                        <td>
+                                            Rs. {{ number_format((float)$single_price, 2, '.', '')}}
                                         </td>
                                         <td valign="middle">
                                             {{ $inv->distributed_quantity }}
@@ -133,30 +130,57 @@
                                             
                                             <small class="help-block">(Price Multiplied with Qty.)</small>
                                         </td>
-                                        <td>
-
-                                            @if(!empty($inv->igst) )
-                                            <p>Rs. {{ sprintf("%.2f",$inv->igst) }} (IGST)</p>
-                                            @endif
-                                            @if(!empty($inv->scgst))
-                                                <p>Rs. {{ sprintf("%.2f",$inv->scgst) }} (SGST)</p>
-                                                <p>Rs. {{ sprintf("%.2f",$inv->scgst) }} (CGST)</p>
-                                            @endif
-                                            <small class="help-block">(Tax Multiplied with Qty.)</small>
-                                        </td>
-                                        <td>
-                                            Rs.
-                                            
-                                                {{ round($inv->product_total_price,2) }}
-                                            <br>
-                                            <small class="help-block">(Incl. of Tax )</small>
-                                        </td>
+                                        
                                     </tr>
                                     @endforeach
+                                    @if(!empty($scgst))
                                     <tr>
                                         <td></td>
                                         <td></td>
                                         <td></td>
+                                        
+                                        <td>
+                                            <b>SGST:</b>
+                                        </td>
+                                        <td>
+                                        Rs.
+                                        {{ round($scgst,2) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        
+                                        <td>
+                                            <b>CGST:</b>
+                                        </td>
+                                        <td>
+                                        Rs.
+                                        {{ round($scgst,2) }}
+                                        </td>
+                                    </tr>
+                                    @endif
+                                    @if(!empty($igst))
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        
+                                        <td>
+                                            <b>IGST:</b>
+                                        </td>
+                                        <td>
+                                        Rs.
+                                        {{ round($igst,2) }}
+                                        </td>
+                                    </tr>
+                                    @endif
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        
                                         <td>
                                             <b>Grand Total:</b>
                                         </td>
@@ -167,7 +191,25 @@
                                     </tr>
                                 </tbody>
                             </table>
-                    </div>
+                            <table class="table ">
+                                <tr >
+                                    <td width="50%">
+                                        <label>Seller Signature:</label>
+                                        <div class="signature-box">
+
+                                        </div>
+                                    </td>
+                                    <td width="50%">
+                                        <label>Customer Signature:</label>
+                                        <div class="signature-box">
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

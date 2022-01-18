@@ -31,7 +31,7 @@
   }
 
   function generate_invoice_no(){
-    $inv = InvoiceSetting::first();
+    $inv = InvoiceSetting::where('user_id',Auth::id())->first();
     $distribution = (int) filter_var($inv['suffix_number_length'], FILTER_SANITIZE_NUMBER_INT);
     $suffix_length = strlen($inv['suffix_number_length']);
     
@@ -45,11 +45,11 @@
     
     $inv->update(['suffix_number_length' => $make_inv_no]);
     
-    return $make_inv_no;
+    return $inv['prefix'].$make_inv_no;
   }
 
   function getInvoiceNo($distribution_id = 0){
-    $inv = InvoiceSetting::first();
+    $inv = InvoiceSetting::where('user_id',Auth::id());
     $distribution = DistributionOrder::where('id',$distribution_id)->first();
 
     return $inv['prefix'].$distribution['invoice_no'];
@@ -57,7 +57,7 @@
 
 
   function getLocalInvoiceNo($distribution_id = 0){
-    $inv = InvoiceSetting::first();
+    $inv = InvoiceSetting::where('user_id',Auth::id());
     $distribution = UserStockDistributionOrder::where('id',$distribution_id)->first();
 
     return $inv['prefix'].$distribution['invoice_no'];

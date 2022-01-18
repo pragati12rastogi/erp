@@ -16,6 +16,10 @@ use App\Http\Controllers\DistributionController;
 use App\Http\Controllers\UserDistributionController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ChartController;
+use App\Http\Controllers\StateController;
+use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\AreaController;
+use App\Http\Controllers\ProductChargeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,13 +49,19 @@ Route::group(['middleware' => ['auth','has_permission']], function () {
     Route::resource('vendors', VendorController::class);  
     Route::resource('stock-distributions', DistributionController::class); 
     Route::resource('expenses', ExpenseController::class); 
+    Route::resource('states', StateController::class); 
+    Route::resource('districts', DistrictController::class); 
+    Route::resource('areas', AreaController::class); 
+    Route::resource('product_charge', ProductChargeController::class); 
+
     Route::get('profit-chart', [ChartController::class,'index'])->name('profit-chart.index'); 
      
     Route::get('users-stock/list', [UserDistributionController::class,'users_stock_list'])->name('users-stock.list');
     Route::resource('local-stock-distribution', UserDistributionController::class);
     
     Route::get('invoice/setting',[SettingController::class, 'invoice_master'])->name('invoice.master');
-    
+    Route::get('billing/setting',[SettingController::class, 'billing_master'])->name('billing.master');
+
 });
 
 // apis or not included in permission
@@ -64,6 +74,7 @@ Route::group(['middleware' => ['auth']],function(){
 
     // invoice
     Route::post('invoice/setting',[SettingController::class, 'save_invoice_master'])->name('save.invoice.master');
+    Route::post('billing/setting',[SettingController::class, 'save_billing_master'])->name('save.billing.master');
 
     Route::get('get/users/by/role',[DistributionController::class,'get_user'])->name('role.user');
     Route::get('get/stock/item/details',[DistributionController::class,'get_stock_item_detail'])->name('stock.item.detail');
@@ -77,5 +88,16 @@ Route::group(['middleware' => ['auth']],function(){
     Route::post('distribution/payment/form',[DistributionController::class, 'distribution_payment'])->name('distribution.payment');
     Route::post('local/distribution/payment/form',[UserDistributionController::class, 'distribution_payment'])->name('local.distribution.payment');
 
+    Route::get('download/profit-chart/pdf', [ChartController::class,'download_pdf'])->name('profit-chart.pdf.download'); 
+    Route::get('download/users/{type}', [UserController::class,'export_table'])->name('users.export'); 
+    Route::get('download/vendors/{type}', [VendorController::class,'export_table'])->name('vendors.export'); 
+    
+    Route::get('user-profile/update', [UserController::class,'user_profile_update'])->name('userprofile.update');
+    Route::post('update/user-profile/password', [UserController::class,'update_user_password'])->name('user.password.update');
+    Route::put('user-profile/update/{id}', [UserController::class,'update'])->name('user.profile.db');
 
+    Route::get('state/district/api',[AreaController::class,'getDistrictByState'])->name('state.district.list');
+    Route::get('district/area/api',[AreaController::class,'getAreaByDistrict'])->name('district.area.list');
+    Route::get('get/item/charge/api',[ProductChargeController::class,'getItemCharge'])->name('district.area.list');
+    
 });

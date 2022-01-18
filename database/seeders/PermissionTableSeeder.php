@@ -180,7 +180,7 @@ class PermissionTableSeeder extends Seeder
             ,[
                 'name'=>'invoice.master',
                 'guard_name'=>'web',
-                'master_name'=>'invoice'
+                'master_name'=>'master'
             ],
             [
                 'name'=>'stock-distributions.index',
@@ -337,17 +337,146 @@ class PermissionTableSeeder extends Seeder
                 'name'=>'expenses.create',
                 'guard_name'=>'web',
                 'master_name'=>'expenses'
-            ],
-            */
-        $permissions = [
-            
-            [
+            ],[
                 'name'=>'profit-chart.index',
                 'guard_name'=>'web',
                 'master_name'=>'profit-chart'
+            ],[
+                'name'=>'billing.master',
+                'guard_name'=>'web',
+                'master_name'=>'master'
             ],
             
+            [
+                'name'=>'states.index',
+                'guard_name'=>'web',
+                'master_name'=>'states'
+            ],
+            [
+                'name'=>'states.create',
+                'guard_name'=>'web',
+                'master_name'=>'states'
+            ],
+            [
+                'name'=>'states.store',
+                'guard_name'=>'web',
+                'master_name'=>'states'
+            ],
+            [
+                'name'=>'states.edit',
+                'guard_name'=>'web',
+                'master_name'=>'states'
+            ],
+            [
+                'name'=>'states.update',
+                'guard_name'=>'web',
+                'master_name'=>'states'
+            ],
+            [
+                'name'=>'states.destroy',
+                'guard_name'=>'web',
+                'master_name'=>'states'
+            ],
+
+
+            [
+                'name'=>'districts.index',
+                'guard_name'=>'web',
+                'master_name'=>'districts'
+            ],
+            [
+                'name'=>'districts.create',
+                'guard_name'=>'web',
+                'master_name'=>'districts'
+            ],
+            [
+                'name'=>'districts.store',
+                'guard_name'=>'web',
+                'master_name'=>'districts'
+            ],
+            [
+                'name'=>'districts.edit',
+                'guard_name'=>'web',
+                'master_name'=>'districts'
+            ],
+            [
+                'name'=>'districts.update',
+                'guard_name'=>'web',
+                'master_name'=>'districts'
+            ],
+            [
+                'name'=>'districts.destroy',
+                'guard_name'=>'web',
+                'master_name'=>'districts'
+            ],
             
+
+
+            [
+                'name'=>'areas.index',
+                'guard_name'=>'web',
+                'master_name'=>'areas'
+            ],
+            [
+                'name'=>'areas.create',
+                'guard_name'=>'web',
+                'master_name'=>'areas'
+            ],
+            [
+                'name'=>'areas.store',
+                'guard_name'=>'web',
+                'master_name'=>'areas'
+            ],
+            [
+                'name'=>'areas.edit',
+                'guard_name'=>'web',
+                'master_name'=>'areas'
+            ],
+            [
+                'name'=>'areas.update',
+                'guard_name'=>'web',
+                'master_name'=>'areas'
+            ],
+            [
+                'name'=>'areas.destroy',
+                'guard_name'=>'web',
+                'master_name'=>'areas'
+            ],
+            */
+        $permissions = [
+            [
+                'name'=>'product_charge.index',
+                'guard_name'=>'web',
+                'master_name'=>'product_charge'
+            ],
+            [
+                'name'=>'product_charge.create',
+                'guard_name'=>'web',
+                'master_name'=>'product_charge'
+            ],
+            [
+                'name'=>'product_charge.store',
+                'guard_name'=>'web',
+                'master_name'=>'product_charge'
+            ],
+            [
+                'name'=>'product_charge.edit',
+                'guard_name'=>'web',
+                'master_name'=>'product_charge'
+            ],
+            [
+                'name'=>'product_charge.update',
+                'guard_name'=>'web',
+                'master_name'=>'product_charge'
+            ],
+            [
+                'name'=>'product_charge.destroy',
+                'guard_name'=>'web',
+                'master_name'=>'product_charge'
+            ]
+            
+
+
         ];
       
         foreach ($permissions as $permission) {

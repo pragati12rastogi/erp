@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-    <title>Print Invoice: {{ $inv_no }}</title>
+    <title>Print Invoice: {{ $dis->invoice_no }}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{asset('/plugins/fontawesome-free/css/all.min.css')}}">
@@ -20,7 +20,7 @@
 </head>
 <body>
 <div class="container-fluid">
-    <h3 class="text-center">Invoice: {{$inv_no}}</h3>
+    <h3 class="text-center">Invoice: {{$dis->invoice_no}}</h3>
     <div class="row justify-content-md-center">
 
         <div class="col-lg-12 grid-margin stretch-card">
@@ -31,7 +31,7 @@
             <div class="card-body">
                 <div class="border-bottom mb-3 row">
                     <div class="col-md-11">
-                        <h4 class="card-title">Invoice - {{$inv_no}}</h4>
+                        <h4 class="card-title">Invoice - {{$dis->invoice_no}}</h4>
                     </div>
                     
                 </div>
@@ -46,7 +46,7 @@
                                     </th>
                                     
                                     <th>
-                                        <b>Invoice ID:</b> {{$inv_no}}
+                                        <b>Invoice ID:</b> {{$dis->invoice_no}}
                                         
                                     </th>
                                     

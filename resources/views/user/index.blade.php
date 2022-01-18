@@ -7,11 +7,10 @@
 
 @push('custom-scripts')
 {!! Html::script('/js/users.js') !!}
-
+{!! Html::script('/js/area_district.js') !!}
 <script>
     $(function() {   
-        @foreach($users as $user)
-            jQuery('#user_form_{{$user->id}}').validate({ // initialize the plugin
+        jQuery('#user_form_upd').validate({ // initialize the plugin
                 rules: {
         
                     role: {
@@ -38,8 +37,26 @@
                     district:{
                         required:true
                     },
+                    area_id:{
+                        required:true
+                    },
                     address:{
                         required:false
+                    },
+                    bank_name:{
+                        required:true
+                    },
+                    name_on_passbook:{
+                        required:true
+                    },
+                    ifsc:{
+                        required:true
+                    },
+                    account_no:{
+                        required:true
+                    },
+                    pan_no:{
+                        required:true
                     }
                 },
                 errorPlacement: function(error,element)
@@ -58,8 +75,64 @@
                         
                 }
             });
-        @endforeach
-    });
+        });
+
+    function edit_users_modal(edit_id){
+        var submit_edit_url = '{{url("users")}}/'+edit_id;
+        var get_edit_url = submit_edit_url +'/edit';
+        
+        $.ajax({
+            type:"GET",
+            dataType:"JSON",
+            url:get_edit_url,
+            success:function(result){
+
+                if(result != ''){
+                    var inputs = result.user;
+                    $('#user_form_upd').attr('action',inputs.edit_url);
+
+                    $('#role_upd').val(inputs.role_name).trigger('change');
+                    $('#name_upd').val(inputs.name);
+                    $('#email_upd').val(inputs.email);
+                    $('#mobile_upd').val(inputs.mobile);
+                    $('#firm_name_upd').val(inputs.firm_name);
+                    $('#gst_no_upd').val(inputs.gst_no);
+                    $('#address_upd').val(inputs.address);
+                    $('#bank_name_upd').val(inputs.bank_name);
+                    $('#name_on_passbook_upd').val(inputs.name_on_passbook);
+                    $('#ifsc_upd').val(inputs.ifsc);
+                    $('#account_no_upd').val(inputs.account_no);
+                    $('#pan_no_upd').val(inputs.pan_no);
+                    $('#state_id_upd').val(inputs.state_id).trigger('change');
+                    
+                    if(inputs.p_image != ''){
+                        $('#image_upd').attr('src',inputs.p_image);
+                    }
+
+                    
+                    $("#user_edit_modal").modal('show');
+                    
+                    setTimeout(() => {
+                        $('#district_id_upd').val(inputs.district).trigger('change')
+                    }, 500);
+
+                    setTimeout(() => {
+                        $('#area_id_upd').val(inputs.area_id).trigger('change')
+                    }, 1000);
+
+                }else{
+                    alert('some error occured, please refresh page and try again');
+                }
+                    
+            },
+            error:function(error){
+                console.log(error.responseText);
+            }
+        })
+        
+    }
+
+    
 </script>
 @endpush
 
@@ -75,7 +148,7 @@
 
 @include('user.list')
 @include('user.add')
-
+@include('user.edit')
 @foreach($users as $user)
     <div id="{{$user->id}}_user" class="delete-modal modal fade" role="dialog">
         <div class="modal-dialog modal-sm">
@@ -101,7 +174,7 @@
         </div>
         </div>
     </div>
-    @include('user.edit')
+    
 @endforeach
 
 @endsection

@@ -3,7 +3,7 @@ $('#category_id').on('change',function(){
     $.ajax({
         type: "GET",
         dataType: "json",
-        url: '/get/items/by/category',
+        url: admin_url+'/get/items/by/category',
         data: {
             'cat_id': cat_id
         },
@@ -41,7 +41,7 @@ $("#item_id").on('change',function(){
         $.ajax({
             type: "GET",
             dataType: "json",
-            url: '/get/items/details',
+            url: admin_url+'/get/items/details',
             data: {
                 'item_id': item
             },

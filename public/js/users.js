@@ -29,6 +29,21 @@ $(function() {
             },
             address:{
                 required:false
+            },
+            bank_name:{
+                required:true
+            },
+            name_on_passbook:{
+                required:true
+            },
+            ifsc:{
+                required:true
+            },
+            account_no:{
+                required:true
+            },
+            pan_no:{
+                required:true
             }
         },
         errorPlacement: function(error,element)
@@ -48,15 +63,5 @@ $(function() {
         }
     });
 
-    $("#user_table").DataTable({
-        dom: 'Bfrtip',
-        buttons: [
-            {
-            extend:'excelHtml5',
-            exportOptions: {
-                columns: [ 0, 1, 2,3,4 ] 
-            }
-            }
-        ]
-    });
+    $("#user_table").DataTable();
 });

@@ -10,6 +10,7 @@ use Auth;
 use DB;
 use Validator;
 use Image;
+use PDF;
 
 
 class VendorController extends Controller
@@ -206,6 +207,52 @@ class VendorController extends Controller
 
         if ($value) {
             return back()->with('success','Vendor Has Been Deleted');
+        }
+    }
+
+    public function export_table($type){
+        $outcolumn = [
+            'Id','Name','Email','Mobile','Firm Name','GST Number','State', 'District', 'Address'
+        ];
+
+        $column =['id','name','email','phone','firm_name','gst_no','state','district','address'];
+        
+        $users = Vendor::select($column)->get()->toArray();
+
+        if($type == 'excel'){
+
+            $file_name = 'vendors_excel_'.strtotime('now').'.csv';
+            header("Content-type: application/csv");
+            header("Content-Disposition: attachment; filename=".$file_name);
+            
+            $fp = fopen('php://output', 'w');
+            
+            if ($fp) {
+                
+                $tmpArray = $outcolumn;
+                fputcsv($fp, $tmpArray);
+                
+                
+                foreach($users as $key => $data) {
+                    
+                    $tmpArray = $data;
+                            
+                    fputcsv($fp, $tmpArray);
+                }
+                
+            }   
+            
+            fclose($fp);
+
+        }else if($type == 'pdf'){
+
+            $data = array(
+                "table_data" => $users
+            );
+            $pdfFilePath = "vendors_pdf_".strtotime('now').".pdf";
+            $pdf = PDF::loadView('pdf.vendortemplate',$data);
+            return $pdf->stream($pdfFilePath);
+            
         }
     }
 }

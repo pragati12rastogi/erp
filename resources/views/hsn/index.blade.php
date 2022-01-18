@@ -8,7 +8,23 @@
 @push('custom-scripts')
     <script>
         $(function() {
-            $("#hsn_table").DataTable();
+            $("#hsn_table").DataTable({
+                dom: 'Blfrtip',
+                buttons: [
+                    {
+                    extend:'excelHtml5',
+                    exportOptions: {
+                        columns: [ 0, 1, 2 ] 
+                    }
+                    },
+                    {
+                    extend:'pdfHtml5',
+                        exportOptions: {
+                            columns: [ 0, 1, 2 ] //Your Column value those you want
+                        }
+                    }
+                ]
+            });
             jQuery('#hsn_form').validate({ // initialize the plugin
                 rules: {
 

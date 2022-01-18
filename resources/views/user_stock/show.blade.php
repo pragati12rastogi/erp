@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Invoice -'.$inv_no)
+@section('title', 'Invoice -'.$dis->invoice_no)
 
 @push('style')
 
@@ -26,7 +26,7 @@
       <div class="card-body">
         <div class="border-bottom mb-3 row">
             <div class="col-md-9">
-                <h4 class="card-title">Invoice - {{$inv_no}}</h4>
+                <h4 class="card-title">Invoice - {{$dis->invoice_no}}</h4>
             </div>
             <div class="col-md-2 text-right">
             @if(empty($dis->is_cancelled))
@@ -55,7 +55,7 @@
                             </th>
                             
                             <th>
-                                <b>Invoice ID:</b> {{$inv_no}}
+                                <b>Invoice ID:</b> {{$dis->invoice_no}}
 								
                             </th>
                             

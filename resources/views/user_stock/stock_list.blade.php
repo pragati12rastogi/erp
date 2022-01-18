@@ -8,7 +8,24 @@
 @push('custom-scripts')
     <script>
         $(function() {
-            $("#stock_table").DataTable();
+            $("#stock_table").DataTable({
+              dom: 'Blfrtip',
+              buttons: [
+              {
+                  extend:'excelHtml5',
+                  exportOptions: {
+                      columns: [ 0, 1, 2,3 ] 
+                  }
+              },
+              {
+                  extend:'pdfHtml5',
+                  exportOptions: {
+                      columns: [0, 1, 2,3  ] //Your Column value those you want
+                  }
+              }
+              
+              ]
+            });
             
         });
         

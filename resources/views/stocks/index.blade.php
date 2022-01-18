@@ -21,7 +21,26 @@
     {!! Html::script('/js/common.js') !!}
     <script>
         $(function() {
-            $("#stock_table").DataTable();
+            $("#stock_table").DataTable(
+                {
+                    dom: 'Blfrtip',
+                    buttons: [
+                    {
+                        extend:'excelHtml5',
+                        exportOptions: {
+                            columns: [ 0, 1, 2,3 ] 
+                        }
+                    },
+                    {
+                        extend:'pdfHtml5',
+                        exportOptions: {
+                            columns: [0, 1, 2,3  ] //Your Column value those you want
+                        }
+                    }
+                    
+                    ]
+                }
+            );
             
             jQuery('#stock_form').validate({ // initialize the plugin
                 rules: {
@@ -228,7 +247,7 @@
     <div id="{{$h->id}}_stock_history" class=" modal fade" role="dialog">
         <div class="modal-dialog ">
         <!-- Modal content-->
-        <div class="modal-content " style="    ">
+        <div class="modal-content stock-res" style="">
             <div class="modal-header">
                 <h4 class="modal-heading">Stock History</h4>
                 <button type="button" class="close m-0 p-0" data-dismiss="modal">&times;</button> 

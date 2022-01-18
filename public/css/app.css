@@ -19581,4 +19581,7 @@ small {
   font-size: small;
 }
 
+.dt-buttons{
+  float: right;
+}
 /*# sourceMappingURL=app.css.map*/

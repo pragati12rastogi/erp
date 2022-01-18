@@ -11,7 +11,7 @@
     </button>
     <ul class="navbar-nav navbar-nav-left header-links">
       <li class="nav-item d-none d-xl-flex">
-        <a href="#" class="nav-link">Dashboard 
+        <a href="{{url('/')}}" class="nav-link">Dashboard 
         </a>
       </li>
     </ul>
@@ -27,7 +27,7 @@
             @endif
           </a>
         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
-            <!-- <a class="dropdown-item mt-2"> Manage Accounts </a> -->
+            <a class="dropdown-item mt-2" href="{{url('user-profile/update')}}"> Manage Accounts </a>
             <a class="dropdown-item" href="{{ route('logout') }}"
                 onclick="event.preventDefault();
                 document.getElementById('logout-form').submit();">

@@ -34,6 +34,12 @@ class UserTableSeeder extends Seeder
             'email_verified_at'=>null,
             'password' => bcrypt(12345678),
             'status' => '1',
+            'bank_name' => 'Test Bank',
+            'name_on_passbook' => 'Test User',
+            'ifsc' => '76823test',
+            'account_no' => '8398209382019',
+            'pan_no' => 'test398e928000',
+
             ]
         );
         

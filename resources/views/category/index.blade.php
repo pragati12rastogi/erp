@@ -8,7 +8,25 @@
 @push('custom-scripts')
     <script>
         $(function() {
-            $("#category_table").DataTable();
+            $("#category_table").DataTable({
+                dom: 'Blfrtip',
+                buttons: [
+                {
+                    extend:'excelHtml5',
+                    exportOptions: {
+                        columns: [ 0, 1, 3 ] 
+                    }
+                },
+                {
+                    extend:'pdfHtml5',
+                    exportOptions: {
+                        columns: [ 0, 1,3 ] //Your Column value those you want
+                    }
+                }
+                
+                ]
+
+            });
 
             jQuery('#category_form').validate({ // initialize the plugin
                 rules: {
@@ -37,29 +55,29 @@
             });
 
             @foreach($categories as $cat)
-            jQuery('#category_form_{{$cat->id}}').validate({ // initialize the plugin
-                rules: {
-                    name:{
-                        required:true,
-                    }
-                    
-                },
-                errorPlacement: function(error,element)
-                {
-                    if($(element).attr('type') == 'radio')
-                    {
-                        error.insertAfter(element.parent());
-                    }
-                    else if($(element).is('select'))
-                    {
-                        error.insertAfter(element.parent());
-                    }
-                    else{
-                        error.insertAfter(element);
-                    }
+                jQuery('#category_form_{{$cat->id}}').validate({ // initialize the plugin
+                    rules: {
+                        name:{
+                            required:true,
+                        }
                         
-                }
-            });
+                    },
+                    errorPlacement: function(error,element)
+                    {
+                        if($(element).attr('type') == 'radio')
+                        {
+                            error.insertAfter(element.parent());
+                        }
+                        else if($(element).is('select'))
+                        {
+                            error.insertAfter(element.parent());
+                        }
+                        else{
+                            error.insertAfter(element);
+                        }
+                            
+                    }
+                });
             @endforeach
         });
         

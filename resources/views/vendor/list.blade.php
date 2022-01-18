@@ -4,15 +4,19 @@
     
       <div class="card-body">
         <div class="border-bottom mb-3 row">
-            <div class="col-md-10">
+            <div class="col-md-9">
                 <h4 class="card-title">Vendor Summary</h4>
             </div>
-            @if(Auth::user()->hasPermissionTo('vendors.create') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                  
-            <div class="col-md-2 text-right" >
+                
+            <div class="col-md-3 text-right">
+              @if(Auth::user()->hasPermissionTo('vendors.create') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                 <a onclick='return $("#add_vendor_modal").modal("show");' class="btn btn-inverse-primary btn-sm ">{{__("Add Vendor")}}</a>
+              @endif
+              <div class="btn-group">
+                <a href="{{route('vendors.export','excel')}}" class="btn btn-dark btn-sm">{{__("Excel")}}</a>
+                <a href="{{route('vendors.export','pdf')}}" class="btn btn-dark btn-sm">{{__("PDF")}}</a>
+              </div>
             </div>
-            @endif
         </div>
         
         <div class="table-responsive">

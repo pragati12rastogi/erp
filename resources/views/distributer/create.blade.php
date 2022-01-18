@@ -42,7 +42,7 @@
                                 <label class="control-label" for="first-name">
                                     Select User: <span class="required">*</span>
                                 </label>
-                                <select name="user_id" id="user_id" class="form-control select2" >
+                                <select name="user_id" id="user_id" class="form-control select2" onchange="get_charge_of_item()">
                                     <option value=""> Select User </option>
                                 </select>
                                 @error('user_id')
@@ -95,6 +95,7 @@
                         <th>Category</th>
                         <th>Name</th>
                         <th>Price</th>
+                        <th>Charge</th>
                         <th>Quantity</th>
                         <th>Add</th>
                     </tr>
@@ -112,8 +113,12 @@
                             </td>
                             
                             <td>
-                                {{$item->stock->price_for_user}}
+                                Rs. {{$item->stock->price_for_user}}
                                 <input type="hidden" id="modal_prod_price_{{$item->id}}" value="{{$item->stock->price_for_user}}">
+                            </td>
+                            <td>
+                                Rs. <span id="text_prod_charge_{{$item->id}}">0</span>
+                                <input type="hidden" id="modal_prod_charge_{{$item->id}}" value="0">
                             </td>
                             <td>
                                 {{$item->stock->prod_quantity}}
@@ -137,10 +142,12 @@
             </div>
             <div class="row bg-inverse-primary p-1">
                 <div class="col-md-6">
-                    <label class="m-0">Total Price:</label> <span id="modal_total_price"></span>
+                    <label class="m-0">Total Price:</label> <span id="modal_total_price"></span><br>
+                    <label class="m-0">Total Charge:</label> <span id="modal_total_charge"></span>
                 </div>
                 <div class="col-md-6">
-                    <label class="m-0">Total Quantity:</label><span id="modal_total_quantity"></span>
+                    <label class="m-0">Total Quantity:</label><span id="modal_total_quantity"></span><br>
+                    <label class="m-0">Final Price:</label><span id="modal_final_price"></span>
                 </div>
             </div>
         </div>

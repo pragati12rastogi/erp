@@ -21,6 +21,23 @@
     <script>
         $(function() {
             $("#stock_table").DataTable({
+              dom: 'Blfrtip',
+              buttons: [
+              {
+                  extend:'excelHtml5',
+                  exportOptions: {
+                      columns: [ 0, 1, 2,3,4 ] 
+                  }
+              },
+              {
+                  extend:'pdfHtml5',
+                  exportOptions: {
+                      columns: [0, 1, 2,3,4  ] //Your Column value those you want
+                  }
+              }
+              
+              ],
+
               "order":[[0,'desc']]
             });
             

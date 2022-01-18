@@ -10,8 +10,10 @@ use App\Models\User;
 use App\Custom\Constants;
 use App\Models\Stock;
 use App\Models\DistributionOrder;
+use App\Models\BillingSetting;
 use App\Models\DistributionPayment;
 use App\Models\UserStock;
+use App\Models\ProductCharge;
 use DB;
 use Crypt;
 use Auth;
@@ -90,13 +92,13 @@ class DistributionController extends Controller
             DB::beginTransaction();
             
             $gen_invoice_no = generate_invoice_no();
-            $check_userinvoice_no = UserStockDistributionOrder::where('invoice_no',$gen_invoice_no)->first();
             $check_invoice_no = DistributionOrder::where('invoice_no',$gen_invoice_no)->first();
-            if(!empty($check_invoice_no) || !empty($check_userinvoice_no)){
+            if(!empty($check_invoice_no)){
                 return back()->with('error','Generated Invoice number is already taken. Change sequence from master.');
             }
 
             $billing_user = User::where('id',$input['user_id'])->first();
+
             $timestamp = date('Y-m-d H:i:s');
 
             $seller_user = Auth::user()->state_id;
@@ -106,10 +108,23 @@ class DistributionController extends Controller
             $total_cost = 0;
             foreach($input['item'] as $item_id => $qty){
                 $stock = Stock::with('item.gst_percent')->where('item_id',$item_id)->first();
-                $price_qty = $stock['price_for_user'] * $qty;
+
+                $prod_charge = ProductCharge::where(['state_id'=>$billing_user->state_id,'district_id'=>$billing_user->district,'area_id'=>$billing_user->area_id])->where('product_id',$item_id)->first();
+
+                $singlecharge = 0;
+                $charge = 0;
+                if(!empty($prod_charge)){
+                    $singlecharge = $prod_charge['charges'];
+                    $charge = $prod_charge['charges'] * $qty;
+                }
                 
-                $invoice[$item_id]['product_price'] = $stock['price_for_user'];
+                $price_with_charge = $stock['price_for_user'] + $singlecharge;
+                $price_qty = $price_with_charge * $qty;
+                
+                $invoice[$item_id]['product_price'] = $price_with_charge;
                 $invoice[$item_id]['distributed_quantity'] = $qty;
+                $invoice[$item_id]['charge'] = $singlecharge;
+                $invoice[$item_id]['gst_percent'] = $stock->item->gst_percent->percent;
 
                 $tax = ($price_qty * $stock->item->gst_percent->percent)/100;
                 $invoice[$item_id]['tax'] = $tax;
@@ -146,6 +161,8 @@ class DistributionController extends Controller
                 $invoice_insert->order_id             = $order->id;
                 $invoice_insert->item_id              = $item_id;
                 $invoice_insert->product_price        = $item_data['product_price'];
+                $invoice_insert->charge               = $item_data['charge'];
+                $invoice_insert->gst_percent          = $item_data['gst_percent'];
                 $invoice_insert->user_id              = $input['user_id'];
                 $invoice_insert->distributed_quantity = $item_data['distributed_quantity'];
 
@@ -188,8 +205,9 @@ class DistributionController extends Controller
     public function show($id)
     {   
         $dis = DistributionOrder::findOrFail($id);
-        $inv_no = getInvoiceNo($id);
-        return view('distributer.show',compact('dis','inv_no'));
+        $billing_add = BillingSetting::first();
+        
+        return view('distributer.show',compact('dis','billing_add'));
     }
 
     /**
@@ -266,16 +284,18 @@ class DistributionController extends Controller
     public function print_invoice($id){
         
         $dis = DistributionOrder::findOrFail($id);
-        $inv_no = getInvoiceNo($id);
-        return view('distributer.invoice',compact('dis','inv_no'));
+        $billing_add = BillingSetting::first();
+        
+        return view('distributer.invoice',compact('dis','billing_add'));
     }
 
 
     public function print_single_invoice($id){
         
         $dis = Distribution::findOrFail($id);
-        $inv_no = getInvoiceNo($dis->order_id);
-        return view('distributer.singleinvoice',compact('dis','inv_no'));
+        $billing_add = BillingSetting::first();
+        
+        return view('distributer.singleinvoice',compact('dis','billing_add'));
     }
 
     public function distribution_payment(Request $request){

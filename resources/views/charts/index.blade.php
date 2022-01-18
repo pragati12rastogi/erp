@@ -75,7 +75,15 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
       <div class="p-4 pr-5 border-bottom bg-light d-sm-flex justify-content-between">
-        <h4 class="card-title mb-0">Profit chart</h4>
+        <iframe src="{{route('profit-chart.pdf.download')}}" style="display:none;" name="frame"></iframe>
+
+        <h4 class="card-title mb-0">Profit chart</h4> 
+        <span>
+            <button title="Print Order" onclick="frames['frame'].print()" class="btn btn-dark btn-block">
+                Download PDF
+            </button>
+        </span>
+
         <div id="pie-chart-legend" class="mr-4"></div>
       </div>
       <div class="card-body d-flex">

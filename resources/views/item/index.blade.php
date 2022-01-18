@@ -15,7 +15,24 @@
 @push('custom-scripts')
     <script>
         $(function() {
-            $("#item_table").DataTable();
+            $("#item_table").DataTable({
+                dom: 'Blfrtip',
+                buttons: [
+                {
+                    extend:'excelHtml5',
+                    exportOptions: {
+                        columns: [ 0, 1, 2,4,5,6 ] 
+                    }
+                },
+                {
+                    extend:'pdfHtml5',
+                    exportOptions: {
+                        columns: [0, 1, 2,4,5,6  ] //Your Column value those you want
+                    }
+                }
+                
+                ]
+            });
             jQuery('#item_form').validate({ // initialize the plugin
               rules: {
                   name:{

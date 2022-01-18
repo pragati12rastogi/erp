@@ -8,7 +8,24 @@
 @push('custom-scripts')
     <script>
         $(function() {
-            $("#expense_table").DataTable();
+            $("#expense_table").DataTable({
+                dom: 'Blfrtip',
+                buttons: [
+                {
+                    extend:'excelHtml5',
+                    exportOptions: {
+                        columns: [ 0, 1, 2,3 ] 
+                    }
+                },
+                {
+                    extend:'pdfHtml5',
+                    exportOptions: {
+                        columns: [0, 1, 2,3  ] //Your Column value those you want
+                    }
+                }
+                
+                ]
+            });
             $.validator.addMethod('decimal', function(value, element) {
             return this.optional(element) || /^((\d+(\\.\d{0,2})?)|((\d*(\.\d{1,2}))))$/.test(value);
             }, "Please enter a correct number, format 0.00");

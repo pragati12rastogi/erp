@@ -90,7 +90,7 @@
   {!! Html::script('/plugins/daterangepicker/daterangepicker.js') !!}
   <!-- Tempusdominus Bootstrap 4 -->
   {!! Html::script('/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') !!}
-  <script src="https://cdn.ckeditor.com/4.16.0/full/ckeditor.js"></script>
+  <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
 
   {!! Html::script('plugins/bootstrap-tagsinput-latest/src/bootstrap-tagsinput.js') !!}
   <!-- base js -->
@@ -115,6 +115,7 @@
   {!! Html::script('/plugins/jquery-validation/additional-methods.min.js') !!}
   
   <script>
+    var admin_url = '{{url("/")}}';
     $(function() {
       // $.noConflict();
       $('.select2').select2();
@@ -126,6 +127,7 @@
       $('.datepicker').datetimepicker({
         format: 'L'
       });
+
     });
   </script>
   {!! Html::script('/assets/plugins/chartjs/chart.min.js') !!}

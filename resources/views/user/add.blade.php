@@ -102,7 +102,7 @@
                                         <label class="control-label" for="gst_no">
                                             State: <span class="required">*</span>
                                         </label>
-                                        <select name="state_id" class="form-control select2">
+                                        <select name="state_id" class="form-control select2" onchange="get_district(this)">
                                             <option value="">Select State</option>
                                             @foreach($states as $s)
                                             <option value="{{$s->id}}" {{ (old('state_id')==$s->id) ? 'selected':'' }}>{{$s->name}}</option>
@@ -119,15 +119,31 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label" for="district">
-                                            District: <span class="required">*</span>
+                                            Select District: <span class="required">*</span>
                                         </label>
-                                        <input  type="text" name="district" value="{{old('district')}}" class="form-control">
-                                        <small class="txt-desc">(Please Enter District)</small>
+                                        
+                                        <select name="district" id="district_id" class="form-control select2" onchange="get_area(this)">
+                                            <option value="">Select District</option>
+                                            
+                                        </select>
+
+                                        <small class="txt-desc">(Please Select District)</small>
                                         @error('district')
                                             <span class="invalid-feedback d-block" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label" for="first-name">
+                                        Select Area: <span class="required">*</span>
+                                        </label>
+                                        <select name="area_id" id="area_id" class="form-control select2" >
+                                            <option value="">Select Area</option>
+                                            
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -150,10 +166,79 @@
                                             Profile Picture: 
                                         </label>
                                         <br>
-                                        <input type="file" id="profile" name="image" accept="image/*">
+                                        <input type="file"  name="image" accept="image/*">
                                         <br>
                                         <small class="txt-desc">(Please Choose Profile image)</small>
                                         @error('profile')
+                                            <span class="invalid-feedback d-block" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <hr>
+                                    <h4>Bank Details</h4>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label" for="firm_name">
+                                            Bank Name: <span class="required">*</span>
+                                        </label>
+                                        <input name="bank_name" type="text" maxlength="255" value="" class="form-control " placeholder="xyz Company" >
+                                        @error('bank_name')
+                                            <span class="invalid-feedback d-block" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label" for="firm_name">
+                                            Name on passbook: <span class="required">*</span>
+                                        </label>
+                                        <input name="name_on_passbook" type="text" maxlength="255" value="" class="form-control " placeholder="xyz Company" >
+                                        @error('name_on_passbook')
+                                            <span class="invalid-feedback d-block" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label" for="firm_name">
+                                            IFSC: <span class="required">*</span>
+                                        </label>
+                                        <input name="ifsc" type="text" maxlength="255" value="" class="form-control " placeholder="xyz Company" >
+                                        @error('ifsc')
+                                            <span class="invalid-feedback d-block" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label" for="firm_name">
+                                            Account Number: <span class="required">*</span>
+                                        </label>
+                                        <input name="account_no" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" type="text" maxlength="255" value="" class="form-control " placeholder="xyz Company" >
+                                        @error('account_no')
+                                            <span class="invalid-feedback d-block" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label" for="firm_name">
+                                            PAN Number: <span class="required">*</span>
+                                        </label>
+                                        <input name="pan_no"  type="text" maxlength="255" value="" class="form-control " placeholder="xyz Company" >
+                                        @error('pan_no')
                                             <span class="invalid-feedback d-block" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>

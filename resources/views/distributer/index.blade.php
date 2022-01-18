@@ -21,6 +21,23 @@
     <script>
         $(function() {
             $("#distribution_table").DataTable({
+              dom: 'Blfrtip',
+              buttons: [
+              {
+                  extend:'excelHtml5',
+                  exportOptions: {
+                      columns: [ 0, 1, 2,3 ] 
+                  }
+              },
+              {
+                  extend:'pdfHtml5',
+                  exportOptions: {
+                      columns: [0, 1, 2,3  ] //Your Column value those you want
+                  }
+              }
+              
+              ],
+
               "order":[[0,'desc']]
             });
             
@@ -77,32 +94,32 @@
 @section('content')
 <div class="row">
   @if(is_admin(Auth::user()->role_id))
-  <div class="col-md-2 mb-2">
-    <div class="card card-inverse-info">
-      <div class="card-header">
-        Selling Amount
+    <div class="col-md-2 mb-2">
+      <div class="card card-inverse-info">
+        <div class="card-header">
+          Selling Amount
+        </div>
+        <div class="card-body p-3">Rs. {{empty($sell['sum_sell'])? 0:$sell['sum_sell']}}</div>
       </div>
-      <div class="card-body p-3">Rs. {{empty($sell['sum_sell'])? 0:$sell['sum_sell']}}</div>
     </div>
-  </div>
 
-  <div class="col-md-2 mb-2">
-    <div class="card card-inverse-info">
-      <div class="card-header">Receive Amount</div>
-      <div class="card-body p-3">Rs. {{empty($recieve['sum_recieve'])? 0:$recieve['sum_recieve']}}</div>
+    <div class="col-md-2 mb-2">
+      <div class="card card-inverse-info">
+        <div class="card-header">Receive Amount</div>
+        <div class="card-body p-3">Rs. {{empty($recieve['sum_recieve'])? 0:$recieve['sum_recieve']}}</div>
+      </div>
     </div>
-  </div>
-  
-  <div class="col-md-2 mb-2">
-    <div class="card card-inverse-info">
-      <div class="card-header">Balance Amount</div>
-      @php
-        $sale = (int) $sell['sum_sell'];
-        $recieve = (int) $recieve['sum_recieve'];
-      @endphp
-      <div class="card-body p-3">Rs. {{$sale-$recieve}}</div>
+    
+    <div class="col-md-2 mb-2">
+      <div class="card card-inverse-info">
+        <div class="card-header">Balance Amount</div>
+        @php
+          $sale = (int) $sell['sum_sell'];
+          $recieve = (int) $recieve['sum_recieve'];
+        @endphp
+        <div class="card-body p-3">Rs. {{$sale-$recieve}}</div>
+      </div>
     </div>
-  </div>
   @endif
   <div class="col-lg-12">
   @include('flash-msg')
@@ -141,7 +158,7 @@
               @foreach($distribution as $did =>$dv)
                 <tr>
                   
-                  <td>{{getInvoiceNo($dv->id)}}</td>
+                  <td>{{$dv->invoice_no}}</td>
                   <td>{{$dv->user->name}}</td>
                   
                   <td> Rs. {{$dv->total_cost}}</td>
@@ -186,7 +203,7 @@
         <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-heading">Payment</h4>
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <button type="button" class="close m-0 p-1" data-dismiss="modal">&times;</button>
               
             </div>
             <div class="modal-body text-center">

@@ -29,8 +29,16 @@ class User extends Authenticatable
         'mobile',
         'state_id',
         'district',
+        'area_id',
         'status',
         'password',
+        'bank_name',
+        'name_on_passbook',
+        'ifsc',
+        'account_no',
+        'pan_no',
+        'created_by',
+        'updated_by',
     ];
 
     /**
@@ -67,5 +75,13 @@ class User extends Authenticatable
 
     public function state(){
         return $this->belongsTo(State::class,'state_id');
+    }
+
+    public function district_data(){
+        return $this->belongsTo(District::class,'district');
+    }
+
+    public function area(){
+        return $this->belongsTo(Area::class,'area_id');
     }
 }

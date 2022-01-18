@@ -80,8 +80,8 @@ class UserDistributionController extends Controller
             
             $gen_invoice_no = generate_invoice_no();
             $check_userinvoice_no = UserStockDistributionOrder::where('invoice_no',$gen_invoice_no)->first();
-            $check_invoice_no = DistributionOrder::where('invoice_no',$gen_invoice_no)->first();
-            if(!empty($check_invoice_no) || !empty($check_userinvoice_no)){
+            
+            if(!empty($check_userinvoice_no)){
                 return back()->with('error','Generated Invoice number is already taken. Change sequence from master.');
             }
             
@@ -157,8 +157,8 @@ class UserDistributionController extends Controller
     public function show($id)
     {
         $dis = UserStockDistributionOrder::findOrFail($id);
-        $inv_no = getLocalInvoiceNo($id);
-        return view('user_stock.show',compact('dis','inv_no'));
+        
+        return view('user_stock.show',compact('dis'));
     }
 
     /**
@@ -215,17 +215,16 @@ class UserDistributionController extends Controller
     public function print_invoice($id){
         
         $dis = UserStockDistributionOrder::findOrFail($id);
-        $inv_no = getLocalInvoiceNo($id);
-        return view('user_stock.invoice',compact('dis','inv_no'));
+        
+        return view('user_stock.invoice',compact('dis'));
     }
 
 
     public function print_single_invoice($id){
         
         $dis = UserStockDistributionItem::findOrFail($id);
-        $inv_no = getLocalInvoiceNo($dis->order_id);
         
-        return view('user_stock.singleinvoice',compact('dis','inv_no'));
+        return view('user_stock.singleinvoice',compact('dis'));
     }
 
     public function distribution_payment(Request $request){

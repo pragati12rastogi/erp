@@ -3,15 +3,19 @@
     <div class="card">
       <div class="card-body">
         <div class="border-bottom mb-3 row">
-            <div class="col-md-10">
+            <div class="col-md-9">
                 <h4 class="card-title">User Summary</h4>
             </div>
             
-            @if(Auth::user()->hasPermissionTo('users.create') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-            <div class="col-md-2 text-right">  
-              <button onclick='return $("#add_user_modal").modal("show");' class="btn btn-inverse-primary btn-sm">{{__("Add User")}}</button>
-            </div>
+            <div class="col-md-3 text-right">
+              @if(Auth::user()->hasPermissionTo('users.create') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                <button onclick='return $("#add_user_modal").modal("show");' class="btn btn-inverse-primary btn-sm">{{__("Add User")}}</button>
               @endif
+              <div class="btn-group">
+                <a href="{{route('users.export','excel')}}" class="btn btn-dark btn-sm">{{__("Excel")}}</a>
+                <a href="{{route('users.export','pdf')}}" class="btn btn-dark btn-sm">{{__("PDF")}}</a>
+              </div>
+            </div>
         </div>
         
         <div class="table-responsive">
@@ -56,7 +60,7 @@
                   @if(Auth::user()->hasPermissionTo('users.edit') || Auth::user()->hasPermissionTo('users.destroy') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
                   <td>
                     @if(Auth::user()->hasPermissionTo('users.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                    <a onclick='return $("#{{$user->id}}_user_edit_modal").modal("show");' class="btn btn-success text-white">
+                    <a onclick='edit_users_modal({{$user->id}})' class="btn btn-success text-white">
                         <i class="mdi mdi-pen"></i>
                     </a>
                     @endif
