@@ -31,14 +31,21 @@ class DistributionController extends Controller
         if(is_admin(Auth::user()->role_id)){
             $distribution = DistributionOrder::get();
 
+            $sell = DistributionOrder::where('is_cancelled',0)->where('created_by',Auth::id())->select(DB::raw('SUM(total_cost) as sum_sell'))->first();
+            
+            $recieve = DistributionPayment::whereHas('admin_order',function($query){
+                return $query->where('created_by',Auth::id())->where('is_cancelled',0);
+            })->select(DB::raw('SUM(amount) as sum_recieve'))->first();
+
         }else{
             $distribution = DistributionOrder::where('user_id',Auth::id())->Orwhere('created_by',Auth::id())->get();
+
+            $sell = DistributionOrder::where('is_cancelled',0)->where('user_id',Auth::id())->select(DB::raw('SUM(total_cost) as sum_sell'))->first();
+            
+            $recieve = DistributionPayment::whereHas('admin_order',function($query){
+                return $query->where('user_id',Auth::id())->where('is_cancelled',0);
+            })->select(DB::raw('SUM(amount) as sum_recieve'))->first();
         }
-       
-        $sell = DistributionOrder::where('is_cancelled',0)->where('created_by',Auth::id())->select(DB::raw('SUM(total_cost) as sum_sell'))->first();
-        $recieve = DistributionPayment::whereHas('admin_order',function($query){
-            return $query->where('created_by',Auth::id())->where('is_cancelled',0);
-        })->select(DB::raw('SUM(amount) as sum_recieve'))->first();
         
         $items = Item::whereHas('stock')->get();
         $roles = Role::where('name','<>',Constants::ROLE_ADMIN)->get();
@@ -106,6 +113,8 @@ class DistributionController extends Controller
             $invoice =[];
             $total_tax = 0;
             $total_cost = 0;
+            $total_discount = 0;
+
             foreach($input['item'] as $item_id => $qty){
                 $stock = Stock::with('item.gst_percent')->where('item_id',$item_id)->first();
 
@@ -120,17 +129,22 @@ class DistributionController extends Controller
                 
                 $price_with_charge = $stock['price_for_user'] + $singlecharge;
                 $price_qty = $price_with_charge * $qty;
-                
+                $discount = $input['discount'][$item_id];
+
                 $invoice[$item_id]['product_price'] = $price_with_charge;
                 $invoice[$item_id]['distributed_quantity'] = $qty;
                 $invoice[$item_id]['charge'] = $singlecharge;
                 $invoice[$item_id]['gst_percent'] = $stock->item->gst_percent->percent;
 
-                $tax = ($price_qty * $stock->item->gst_percent->percent)/100;
-                $invoice[$item_id]['tax'] = $tax;
-
+                // If tax is already added in amount
+                $percent =100;
+                $gst_db = $stock->item->gst_percent->percent;
+                $percent_and_gst = $percent + $gst_db;
+                $tax = $price_qty / $percent_and_gst * $gst_db;
+                
                 $total_tax += round($tax,2);
-                $total_cost += round($price_qty,2);
+                $total_cost += round($price_qty-$discount,2);
+                $total_discount += round($discount,2);
 
                 if($billing_user['state_id'] == $seller_user){
                     // scgst
@@ -140,24 +154,27 @@ class DistributionController extends Controller
                     $invoice[$item_id]['igst'] = round($tax,2);
                 }
                 $invoice[$item_id]['product_total_price'] = $price_qty;
+                $invoice[$item_id]['discount'] = $discount;
                 $stock->decrement('prod_quantity',$qty);
             }
             
             
 
             $order = new DistributionOrder();
-            $order->invoice_no = $gen_invoice_no;
-            $order->role_id    = $input['role_id'];
-            $order->user_id    = $input['user_id'];
-            $order->total_cost = $total_cost;
-            $order->total_tax  = $total_tax;
-            $order->created_by = Auth::id();
-            $order->created_at = $timestamp;
+            $order->invoice_no        = $gen_invoice_no;
+            $order->role_id           = $input['role_id'];
+            $order->user_id           = $input['user_id'];
+            $order->total_cost        = $total_cost;
+            $order->total_tax         = $total_tax;
+            $order->total_discount    = $total_discount;
+            $order->created_by        = Auth::id();
+            $order->created_at        = $timestamp;
             $order->save();
             // order created
 
             foreach($invoice as $item_id => $item_data){
                 $invoice_insert = new Distribution();
+                
                 $invoice_insert->order_id             = $order->id;
                 $invoice_insert->item_id              = $item_id;
                 $invoice_insert->product_price        = $item_data['product_price'];
@@ -165,12 +182,13 @@ class DistributionController extends Controller
                 $invoice_insert->gst_percent          = $item_data['gst_percent'];
                 $invoice_insert->user_id              = $input['user_id'];
                 $invoice_insert->distributed_quantity = $item_data['distributed_quantity'];
-
+                
                 if(isset($item_data['scgst'])){
                     $invoice_insert->scgst            = $item_data['scgst'];
                 }else if(isset($item_data['igst'])){
                     $invoice_insert->igst             =  $item_data['igst'];
                 }
+                $invoice_insert->discount             = $item_data['discount'];
                 $invoice_insert->product_total_price  = $item_data['product_total_price'];
                 $invoice_insert->created_at = $timestamp;
                 $invoice_insert->save();
@@ -181,7 +199,7 @@ class DistributionController extends Controller
                     ],
                     [
                         'prod_quantity'=> DB::raw('prod_quantity + '.$item_data['distributed_quantity']),
-                        'price'=>$item_data['product_price']
+                        'price'=> round($item_data['product_price'] - $item_data['discount'],2)
                     ]
                 );
                 
@@ -207,7 +225,13 @@ class DistributionController extends Controller
         $dis = DistributionOrder::findOrFail($id);
         $billing_add = BillingSetting::first();
         
-        return view('distributer.show',compact('dis','billing_add'));
+        $sell = DistributionOrder::where('is_cancelled',0)->where('id',$id)->select(DB::raw('SUM(total_cost) as sum_sell'))->first();
+        $recieve = DistributionPayment::whereHas('admin_order',function($query) use($id) {
+            return $query->where('id',$id)->where('is_cancelled',0);
+        })->select(DB::raw('SUM(amount) as sum_recieve'))->first();
+        
+
+        return view('distributer.show',compact('dis','billing_add','sell','recieve'));
     }
 
     /**

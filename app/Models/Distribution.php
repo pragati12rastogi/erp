@@ -9,7 +9,7 @@ class Distribution extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['order_id','user_id','item_id','product_total_price','product_price','igst','scgst','distributed_quantity','created_by'];
+    protected $fillable = ['order_id','user_id','item_id','product_total_price','discount','product_price','igst','scgst','distributed_quantity','created_by'];
 
     public function order(){
         return $this->belongsTo(DistributionOrder::class,'order_id','id');

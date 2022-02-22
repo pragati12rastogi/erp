@@ -20,6 +20,7 @@ use App\Http\Controllers\StateController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\ProductChargeController;
+use App\Http\Controllers\PushNotificationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,10 +62,13 @@ Route::group(['middleware' => ['auth','has_permission']], function () {
     
     Route::get('invoice/setting',[SettingController::class, 'invoice_master'])->name('invoice.master');
     Route::get('billing/setting',[SettingController::class, 'billing_master'])->name('billing.master');
+    Route::get('email/setting',[SettingController::class, 'email_master'])->name('email-master.index');
+    Route::get('sms/setting',[SettingController::class, 'sms_master'])->name('sms.master');
+    Route::get('general/setting',[SettingController::class, 'general_master'])->name('general.master');
 
 });
 
-// apis or not included in permission
+// apis or not included url in permission
 Route::group(['middleware' => ['auth']],function(){
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
@@ -75,6 +79,9 @@ Route::group(['middleware' => ['auth']],function(){
     // invoice
     Route::post('invoice/setting',[SettingController::class, 'save_invoice_master'])->name('save.invoice.master');
     Route::post('billing/setting',[SettingController::class, 'save_billing_master'])->name('save.billing.master');
+    Route::post('email/setting',[SettingController::class, 'email_master_db'])->name('email.setting.save');
+    Route::post('sms/setting',[SettingController::class, 'sms_master_db'])->name('sms.setting.save');
+    Route::post('general/setting',[SettingController::class, 'general_master_db'])->name('general.setting.save');
 
     Route::get('get/users/by/role',[DistributionController::class,'get_user'])->name('role.user');
     Route::get('get/stock/item/details',[DistributionController::class,'get_stock_item_detail'])->name('stock.item.detail');
@@ -99,5 +106,10 @@ Route::group(['middleware' => ['auth']],function(){
     Route::get('state/district/api',[AreaController::class,'getDistrictByState'])->name('state.district.list');
     Route::get('district/area/api',[AreaController::class,'getAreaByDistrict'])->name('district.area.list');
     Route::get('get/item/charge/api',[ProductChargeController::class,'getItemCharge'])->name('district.area.list');
+    Route::get('get/user/invoice/setting/api',[SettingController::class,'getUserInvoiceSetting'])->name('user.invoice.setting');
+    
+
+    Route::post('request/product',[UserDistributionController::class,'request_product_from_admin'])->name('request.product');
+    Route::get('usermarkreadsingle',[PushNotificationsController::class,'usermarkreadsingle'])->name('unreadsinglenotification');
     
 });

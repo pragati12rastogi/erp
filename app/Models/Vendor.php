@@ -25,4 +25,12 @@ class Vendor extends Model
     public function stocks(){
         return $this->hasMany(Stock::class,'vendor_id');
     }
+
+    public function state_data(){
+        return $this->belongsTo(State::class,'state');
+    }
+
+    public function district_data(){
+        return $this->belongsTo(District::class,'district');
+    }
 }

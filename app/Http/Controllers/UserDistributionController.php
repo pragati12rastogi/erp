@@ -8,7 +8,12 @@ use App\Models\UserStockDistributionItem;
 use App\Models\UserStockDistributionOrder;
 use App\Models\DistributionOrder;
 use App\Models\DistributionPayment;
+use App\Models\RequestProduct;
+use App\Models\User;
+use App\Models\Item;
+use App\Notifications\ProductRequestNotification;
 use Crypt;
+use App\Custom\Constants;
 use DB;
 use Auth;
 use Validator;
@@ -91,6 +96,8 @@ class UserDistributionController extends Controller
             $invoice =[];
             $total_tax = 0;
             $total_cost = 0;
+            $total_discount = 0;
+
             foreach($input['item'] as $userstock_id => $qty){
                 $stock = UserStock::with('item.gst_percent')->where('id',$userstock_id)->first();
                 $item_id = $stock['item_id'];
@@ -102,15 +109,24 @@ class UserDistributionController extends Controller
                 
                 $invoice[$item_id]['product_price'] = $stock['price'];
                 $invoice[$item_id]['distributed_quantity'] = $qty;
+                $discount = $input['discount'][$userstock_id];
 
-                $tax = ($price_qty * $stock->item->gst_percent->percent)/100;
+                // $tax = ($price_qty * $stock->item->gst_percent->percent)/100;
+                $percent =100;
+                $gst_db = $stock->item->gst_percent->percent;
+                $percent_and_gst = $percent + $gst_db;
+                $tax = $price_qty / $percent_and_gst * $gst_db;
+
                 $invoice[$item_id]['gst'] = $tax;
 
+                
                 $total_tax += round($tax,2);
-                $total_cost += round($price_qty,2);
+                $total_cost += round($price_qty-$discount,2);
+                $total_discount += round($discount,2);
 
                 
                 $invoice[$item_id]['product_total_price'] = $price_qty;
+                $invoice[$item_id]['discount'] = $discount;
                 $stock->decrement('prod_quantity',$qty);
             }
             
@@ -121,6 +137,7 @@ class UserDistributionController extends Controller
             $order->phone    = $input['phone'];
             $order->total_cost = $total_cost;
             $order->total_tax  = $total_tax;
+            $order->total_discount    = $total_discount;
             $order->created_by = Auth::id();
             $order->created_at = $timestamp;
             $order->save();
@@ -133,6 +150,7 @@ class UserDistributionController extends Controller
                 $invoice_insert->product_price        = $item_data['product_price'];
                 $invoice_insert->gst                  = $item_data['gst'];
                 $invoice_insert->distributed_quantity = $item_data['distributed_quantity'];
+                $invoice_insert->discount             = $item_data['discount'];
                 $invoice_insert->product_total_price  = $item_data['product_total_price'];
                 $invoice_insert->created_at = $timestamp;
                 $invoice_insert->save();
@@ -157,8 +175,11 @@ class UserDistributionController extends Controller
     public function show($id)
     {
         $dis = UserStockDistributionOrder::findOrFail($id);
-        
-        return view('user_stock.show',compact('dis'));
+        $sell = UserStockDistributionOrder::where('is_cancelled',0)->where('id',$id)->select(DB::raw('SUM(total_cost) as sum_sell'))->first();
+        $recieve = DistributionPayment::whereHas('local_order',function($query)use($id){
+            return $query->where('id',$id)->where('is_cancelled',0);
+        })->select(DB::raw('SUM(amount) as sum_recieve'))->first();
+        return view('user_stock.show',compact('dis','sell','recieve'));
     }
 
     /**
@@ -215,7 +236,6 @@ class UserDistributionController extends Controller
     public function print_invoice($id){
         
         $dis = UserStockDistributionOrder::findOrFail($id);
-        
         return view('user_stock.invoice',compact('dis'));
     }
 
@@ -256,6 +276,49 @@ class UserDistributionController extends Controller
             $distribution->create($input);
             return back()->with('success',"Payment Amount updated");
         }
+
+    }
+
+    public function request_product_from_admin(Request $request){
+    
+        try{
+            $input = $request->all();
+            $validate = Validator::make($input,[
+                'item_id' => 'required',
+                'quantity'=> 'required'
+            ],[
+                'item_id.required' => 'Item not found',
+                'quantity.required' => 'Quantity not mentioned'
+            ]);
+
+            if($validate->fails()){
+                $validation_arr = $validate->errors();
+                $message = '';
+                foreach ($validation_arr->all() as $key => $value) {
+                    $message .= $value.', ';
+                }
+                return back()->with('error',$message);
+            }
+            DB::beginTransaction();
+            
+            $item = Item::findOrFail($input['item_id']);
+            $input['requested_by'] = Auth::id();
+            $requested_prod =  RequestProduct::create($input);
+
+        } catch (\Illuminate\Database\QueryException $th) {
+            DB::rollback();
+            return back()->with('error','Something went wrong: '.$th->getMessage());
+        }
+
+        DB::commit();
+        $item_name = $item->name;
+        $item_qty = $input['quantity'];
+        $distributer_name = Auth::user()->name;
+        $url = url('stock-distributions');
+        $get_admins = getUsers(Constants::ROLE_ADMIN);
+        
+        \Notification::send($get_admins, new ProductRequestNotification($item_name,$item_qty, $distributer_name,$url));
+        return back()->with('success','Request sent to admin');
 
     }
 }

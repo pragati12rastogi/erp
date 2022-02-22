@@ -43,11 +43,12 @@ class GstPercentController extends Controller
         try {
             $input = $request->all();
             $validation = Validator::make($input,[
-                'percent'=>'required|numeric'
+                'percent'=>'required|numeric|unique:gst_percents'
             ],[
                 
                 'percent.required' => 'Percent is required',
-                'percent.numeric' => 'Percent field only take numeric value'
+                'percent.numeric' => 'Percent field only take numeric value',
+                'percent.unique' => 'Entered Existing Gst Percentage'
             ]);
 
             if($validation->fails()){
@@ -111,11 +112,12 @@ class GstPercentController extends Controller
         try {
             $input = $request->all();
             $validation = Validator::make($input,[
-                'percent'=>'required|numeric'
+                'percent'=>'required|numeric|unique:gst_percents,percent,'.$id.',id'
             ],[
                 
                 'percent.required' => 'Percent is required',
-                'percent.numeric' => 'Percent field only take numeric value'
+                'percent.numeric' => 'Percent field only take numeric value',
+                'percent.unique' => 'Entered Existing Gst Percentage'
             ]);
 
             if($validation->fails()){

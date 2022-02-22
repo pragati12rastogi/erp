@@ -16,7 +16,6 @@
         } 
 	</style>
     
-    
 </head>
 <body>
 <div class="container-fluid">
@@ -133,7 +132,7 @@
                                         <small class="help-block">(Price Multiplied with Qty.)</small>
                                     </td>
                                     <td>
-                                        <p>Rs. {{ sprintf("%.2f",$inv->gst) }} (IGST)</p>
+                                        <p>Rs. {{ sprintf("%.2f",$inv->gst) }} (GST)</p>
                                         <small class="help-block">(Tax Multiplied with Qty.)</small>
                                     </td>
                                     <td>
@@ -146,6 +145,30 @@
                                     
                                 </tr>
                                 @endforeach
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <b>Sub Total:</b>
+                                    </td>
+                                    <td>
+                                    Rs.
+                                    {{ round($dis->total_cost+$dis->total_discount,2) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <b>Discount:</b>
+                                    </td>
+                                    <td>
+                                    (-) Rs.
+                                    {{ round($dis->total_discount,2) }}
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td></td>
                                     <td></td>

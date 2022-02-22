@@ -10,12 +10,15 @@
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "intervention/image": "^2.7",
+        "jackiedo/dotenv-editor": "^1.2",
+        "laravel-notification-channels/onesignal": "^2.3",
         "laravel/framework": "^8.65",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.4",
         "laravelcollective/html": "^6.2",
-        "spatie/laravel-permission": "^5.4"
+        "spatie/laravel-permission": "^5.4",
+        "twilio/sdk": "^6.33"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

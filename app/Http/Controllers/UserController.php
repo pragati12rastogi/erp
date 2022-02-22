@@ -109,7 +109,7 @@ class UserController extends Controller
             $input['role_id'] = $role->id;
             
             DB::beginTransaction();
-            $users = new User();
+            
     
             if ($file = $request->file('image')) {
     
@@ -129,18 +129,21 @@ class UserController extends Controller
             $dummy_password = str::random(8);
             $input['password'] = Hash::make($dummy_password);
             $input['created_by'] = Auth::id();
-            $user_id = $users->create($input);
-
+            $users = User::create($input);
+            
+            // assigning roles and its permission to users
+            $users->assignRole($request->input('role'));
+            
             /* -------------Creating Invoice Setting--------------- */
             $prefix = $this->random_inv_prefix(5);
             $new_inv_setting = InvoiceSetting::create([
-                'user_id' => $user_id->id,
+                'user_id' => $users->id,
                 'prefix' => $prefix,
                 'suffix_number_length' => '001',
                 'updated_by' => 0
             ]);
 
-            $users->assignRole($request->input('role'));
+            
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollback();

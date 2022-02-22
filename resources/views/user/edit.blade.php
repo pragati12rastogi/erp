@@ -125,7 +125,6 @@
                                         
                                         <select name="district" id="district_id_upd" class="form-control select2" onchange="get_area(this,'upd')">
                                             <option value="">Select District</option>
-                                            
                                         </select>
 
                                         <small class="txt-desc">(Please Select District)</small>

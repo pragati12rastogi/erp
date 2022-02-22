@@ -58,7 +58,7 @@
                             <button type="button" class="btn btn-block btn-dark mt-2" onclick="return $('#products_model').modal('show');">Add Product</button>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" name="prod" id="prod" style="opacity: 0;">
+                            <input type="text" name="prod" readonly id="prod" style="opacity: 0;">
                         </div>
 
                         <div class="col-md-12" id="prod-append-div">
@@ -96,6 +96,7 @@
                         <th>Name</th>
                         <th>Price</th>
                         <th>Charge</th>
+                        <th>Discount</th>
                         <th>Quantity</th>
                         <th>Add</th>
                     </tr>
@@ -113,7 +114,9 @@
                             </td>
                             
                             <td>
-                                Rs. {{$item->stock->price_for_user}}
+                                <b>Rs. {{$item->stock->price_for_user}}</b>
+                                <br>
+                                ({{$item->gst_percent->percent}} % Tax Included)
                                 <input type="hidden" id="modal_prod_price_{{$item->id}}" value="{{$item->stock->price_for_user}}">
                             </td>
                             <td>
@@ -121,19 +124,27 @@
                                 <input type="hidden" id="modal_prod_charge_{{$item->id}}" value="0">
                             </td>
                             <td>
+                                <div >
+                                    <input type="number" onchange="calculate_all_select()" min="0" id="modal_prod_discount_{{$item->id}}" class="form-control" value="0">
+                                </div>
+                                <span class="error" id="dicount_err_{{$item->id}}"></span>
+                            </td>
+                            <td>
                                 {{$item->stock->prod_quantity}}
                                 <input type="hidden" id="modal_prod_qty_{{$item->id}}" value="{{$item->stock->prod_quantity}}">
                             </td>
                             
                             <td>
-
-                                <div class="d-flex">
-                                    <button type="button" class="inc_dec_btn btn btn-dark btn-rounded">-</button>
-                                    <input type="number" value="0" min="0" max="{{$item->stock->prod_quantity}}" class="form-control col-md-2 ml-2 mr-2" id="item_prod_{{$item->id}}" onchange="qty_change_func(this)">
-                                    <button type="button" class="inc_dec_btn btn btn-dark btn-rounded">+</button>
-                                    
+                                <div class="col-12">
+                                    <div class="d-flex">
+                                        <button type="button" class="inc_dec_btn btn btn-dark btn-rounded">-</button>
+                                        <input type="number" value="0" min="0" max="{{$item->stock->prod_quantity}}" class="form-control ml-2 mr-2 w-auto" id="item_prod_{{$item->id}}" onchange="qty_change_func(this)">
+                                        <button type="button" class="inc_dec_btn btn btn-dark btn-rounded">+</button>
+                                        
+                                    </div>
+                                    <span class="error d-flex" id="qty_err_{{$item->id}}"></span>
                                 </div>
-                                <span class="error d-flex" id="qty_err_{{$item->id}}"></span>
+                                
                             </td>
                         </tr>
                     @endforeach
@@ -147,7 +158,17 @@
                 </div>
                 <div class="col-md-6">
                     <label class="m-0">Total Quantity:</label><span id="modal_total_quantity"></span><br>
-                    <label class="m-0">Final Price:</label><span id="modal_final_price"></span>
+                    <label class="m-0">Sub Total:</label><span id="modal_sub_total"></span>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="m-0">Total Discount:</label><span id="modal_total_discount"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="m-0">Grand Total:</label><span id="modal_final_price"></span> 
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

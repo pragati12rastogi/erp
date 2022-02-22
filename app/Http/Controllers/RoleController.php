@@ -46,7 +46,7 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $validation = Validator::make($request, [
+        $validation = Validator::make($request->all(), [
             'name' => 'required|unique:roles,name',
             'permission' => 'required',
         ],[
@@ -63,7 +63,8 @@ class RoleController extends Controller
             }
             return back()->with('error',$message);
             
-        }   
+        } 
+        
         $role = Role::create(['name' => $request->input('name')]);
         $role->syncPermissions($request->input('permission'));
     

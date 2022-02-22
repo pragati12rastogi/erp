@@ -144,6 +144,8 @@ $(".multiple_item_select").on('click',function(){
 function calculate_all_select(){
   var prod_price = 0;
   var prod_qty = 0;
+  var prod_discount = 0;
+  var final_total = 0;
   $(".multiple_item_select:checkbox:checked").each(function () {
       
       var checkbox_id = $(this).val();
@@ -151,20 +153,35 @@ function calculate_all_select(){
       var price = $('#modal_prod_price_'+checkbox_id).val();
       var max_qty = $('#modal_prod_qty_'+checkbox_id).val();
       var qty = $('#item_prod_'+checkbox_id).val();
+      var discount = $('#modal_prod_discount_'+checkbox_id).val();
+
+      var total_price=  (parseFloat(price) * parseInt(qty));
+      var after_discount = parseFloat(total_price) - parseFloat(discount);
       
       if(parseInt(max_qty) < parseInt(qty)){
           $("#qty_err_"+checkbox_id).text('Maximum qty is :'+max_qty);
-      }else{
+      }else if(discount<0){
+        $("#dicount_err_"+checkbox_id).text('Minimum value can be of 0');
+      }else if(after_discount < 0){
+        $("#dicount_err_"+checkbox_id).text('Maximum discount can be of :'+ parseFloat(total_price).toFixed(2));
+      } else{
           $("#qty_err_"+checkbox_id).text('');
-      }
-      prod_price += (parseFloat(price) * parseInt(qty));
+          $("#dicount_err_"+checkbox_id).text('');
 
-      prod_qty += parseInt(qty);
+          prod_price += total_price;
+          prod_qty += parseInt(qty);
+          prod_discount += parseFloat(discount);
+          final_total += parseFloat(after_discount);
+      }
+
+      
 
   });
 
   $("#modal_total_price").text(prod_price.toFixed(2));
   $("#modal_total_quantity").text(prod_qty);
+  $("#modal_total_discount").text(prod_discount.toFixed(2));
+  $("#modal_final_price").text(final_total.toFixed(2));
 }
 
 function modal_submit(){
@@ -181,27 +198,37 @@ function modal_submit(){
       var price = $('#modal_prod_price_'+checkbox_id).val();
       var max_qty = $('#modal_prod_qty_'+checkbox_id).val();
       var qty = $('#item_prod_'+checkbox_id).val();
+      var discount = $('#modal_prod_discount_'+checkbox_id).val();
+
+
+      var total_price = (parseFloat(price) * parseInt(qty));
+      var after_discount =  parseFloat(total_price) - parseFloat(discount);
 
       if(parseInt(max_qty) < parseInt(qty)){
           $("#qty_err_"+checkbox_id).text('Maximum qty is :'+max_qty);
           
-      }else{
+      }else if(after_discount < 0){
+        $("#dicount_err_"+checkbox_id).text('Maximum discount can be of :'+total_price);
+      }
+      else{
           $("#qty_err_"+checkbox_id).text('');
-          var total_price = (parseFloat(price) * parseInt(qty));
+          $("#dicount_err_"+checkbox_id).text('');
 
-          grand_total += parseFloat(total_price);
+          grand_total += parseFloat(after_discount);
           tr += '<tr><td> <input type="hidden" value="'+qty+'" name="item['+checkbox_id+']">'+
+          '<input type="hidden" value="'+discount+'" name="discount['+checkbox_id+']">'+
               $('#modal_prod_cat_'+checkbox_id).val()+'</td>'+
               '<td>'+$('#modal_prod_name_'+checkbox_id).val()+'</td>'+
               '<td> Rs. '+price+'</td>'+
+              '<td> (-) Rs. '+discount+'</td>'+
               '<td> '+qty+'</td>'+
-              '<td> Rs. '+total_price.toFixed(2)+'</td>'+
+              '<td> Rs. '+after_discount.toFixed(2)+'</td>'+
           '</tr>' ;
       }
       
   });
 
-  tr += '<tr><td colspan="4"><b>Grand Total:</b></td><td> Rs. '+grand_total.toFixed(2)+'</td></tr>';
+  tr += '<tr><td colspan="5"><b>Grand Total:</b></td><td> Rs. '+grand_total.toFixed(2)+'</td></tr>';
 
   var table = '<table class="table">'+
       '<thead>'+
@@ -209,6 +236,7 @@ function modal_submit(){
               '<th>Category</th>'+
               '<th>Item</th>'+
               '<th>Price</th>'+
+              '<th>Discount</th>'+
               '<th>Quantity</th>'+
               '<th>Total</th>'+
           '</tr>'+

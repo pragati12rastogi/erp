@@ -90,32 +90,6 @@
 
 @section('content')
 <div class="row">
-  <div class="col-md-2 mb-2">
-    <div class="card card-inverse-info">
-      <div class="card-header">
-        Selling Amount
-      </div>
-      <div class="card-body p-3">Rs. {{empty($sell['sum_sell'])? 0:$sell['sum_sell']}}</div>
-    </div>
-  </div>
-
-  <div class="col-md-2 mb-2">
-    <div class="card card-inverse-info">
-      <div class="card-header">Receive Amount</div>
-      <div class="card-body p-3">Rs. {{empty($recieve['sum_recieve'])? 0:$recieve['sum_recieve']}}</div>
-    </div>
-  </div>
-  <div class="col-md-2 mb-2">
-    <div class="card card-inverse-info">
-      <div class="card-header">Balance Amount</div>
-      @php
-        $sale = (float) $sell['sum_sell'];
-        $recieve = (float) $recieve['sum_recieve'];
-      @endphp
-      <div class="card-body p-3">Rs. {{$sale-$recieve}}</div>
-    </div>
-  </div> 
-  
   <div class="col-lg-12">
   @include('flash-msg')
   </div>
@@ -134,6 +108,22 @@
         </div>
         
         <div class="table-responsive">
+            <div class="row">
+              <div class="col-md-4">
+                  <b>Selling Amount: </b><span>Rs. {{empty($sell['sum_sell'])? 0:$sell['sum_sell']}}</span>
+              </div>
+              <div class="col-md-4">
+                  <b>Receive Amount: </b><span>Rs. {{empty($recieve['sum_recieve'])? 0:$recieve['sum_recieve']}}</span>
+              </div>
+              <div class="col-md-4">
+                  <b>Balance Amount: </b>
+                  @php
+                    $sale = (float) $sell['sum_sell'];
+                    $recieve = (float) $recieve['sum_recieve'];
+                  @endphp
+                  <span>Rs. {{$sale-$recieve}}</span>
+              </div>
+            </div>
             <table id="stock_table" class="table ">
                 <thead>
                     <tr>
@@ -148,7 +138,7 @@
                 <tbody>
                 @foreach($given_distribution as $key => $h)
                     <tr>
-                        <td>{{getLocalInvoiceNo($h->id)}}</td>
+                        <td>{{$h->invoice_no}}</td>
                         <td>{{$h->user_name}}</td>
                         <td>{{$h->phone}}</td>
                         <td>Rs. {{$h->total_cost}}</td>
@@ -229,7 +219,7 @@
                         <label class="control-label" for="first-name">
                           Amount: <span class="required">*</span>
                         </label>
-                        <input type="number" max="{{$dv->total_cost-$paid_amt}}" name="amount" id="amount" class="form-control">
+                        <input type="number" max="{{$dv->total_cost-$paid_amt}}" value="{{$dv->total_cost-$paid_amt}}" name="amount" id="amount" class="form-control">
                       </div>
                     </div>
                     <div class="col-md-6">

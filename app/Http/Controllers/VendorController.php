@@ -23,7 +23,8 @@ class VendorController extends Controller
     public function index()
     {
         $vendors = Vendor::all();
-        return view('vendor.index',compact('vendors'));
+        $states = State::all();
+        return view('vendor.index',compact('vendors','states'));
     }
 
     /**
@@ -54,7 +55,6 @@ class VendorController extends Controller
                 'email'            => ['required', 'string', 'email', 'max:255', 'unique:vendors'],
                 'phone'           => ['required','unique:vendors'],
                 'firm_name'        => ['required'],
-                
                 'state'            => ['required'],
                 'district'         => ['required'],
                 
@@ -120,9 +120,8 @@ class VendorController extends Controller
      */
     public function edit($id)
     {
-        $states = State::all();
         $vendor = Vendor::findOrFail($id);
-        return view('vendor.edit',compact('states','vendor'));
+        echo json_encode(compact('vendor'));
     }
 
     /**
@@ -215,9 +214,10 @@ class VendorController extends Controller
             'Id','Name','Email','Mobile','Firm Name','GST Number','State', 'District', 'Address'
         ];
 
-        $column =['id','name','email','phone','firm_name','gst_no','state','district','address'];
+        $column =['vendors.id','vendors.name','vendors.email','vendors.phone','vendors.firm_name','vendors.gst_no','states.name as state','districts.name as district','vendors.address'];
         
-        $users = Vendor::select($column)->get()->toArray();
+        $users = Vendor::leftjoin('states','states.id','vendors.state')
+        ->leftjoin('districts','districts.id','vendors.district')->select($column)->get()->toArray();
 
         if($type == 'excel'){
 

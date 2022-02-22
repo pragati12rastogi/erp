@@ -9,7 +9,7 @@ class UserStockDistributionOrder extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['invoice_no','user_name','address','phone','email','total_cost','total_tax','created_by','is_cancelled','updated_by'];
+    protected $fillable = ['invoice_no','user_name','address','phone','email','total_cost','total_tax','total_discount','created_by','is_cancelled','updated_by'];
 
     public function items(){
         return $this->hasMany(UserStockDistributionItem::class,'order_id');

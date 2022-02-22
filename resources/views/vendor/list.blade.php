@@ -46,7 +46,7 @@
                     
                   <td>
                   @if(Auth::user()->hasPermissionTo('vendors.edit') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                    <a  onclick='return $("#{{$vendor->id}}_vendor_edit_modal").modal("show");' class="btn btn-success text-white">
+                    <a  onclick='edit_vendor_modal("{{$vendor->id}}")' class="btn btn-success text-white">
                         <i class="mdi mdi-pen"></i>
                     </a>
                   @endif

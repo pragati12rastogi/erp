@@ -419,7 +419,7 @@
                                         <label class="control-label" for="first-name">
                                             Current Password: <span class="required">*</span>
                                         </label>
-                                        <input name="current_password" type="password" maxlength="255" class="form-control text-capitalize" placeholder="Jhon Doe" >
+                                        <input name="current_password" type="password" maxlength="255" class="form-control text-capitalize" placeholder="**********" >
                                         
                                         @error('current_password')
                                             <span class="invalid-feedback d-block" role="alert">
@@ -433,7 +433,7 @@
                                         <label class="control-label" for="first-name">
                                             New Password: <span class="required">*</span>
                                         </label>
-                                        <input name="new_password" id="new_password" type="password" maxlength="255" class="form-control text-capitalize" placeholder="Jhon Doe" >
+                                        <input name="new_password" id="new_password" type="password" maxlength="255" class="form-control text-capitalize" placeholder="**********" >
                                         
                                         @error('new_password')
                                             <span class="invalid-feedback d-block" role="alert">
@@ -447,7 +447,7 @@
                                         <label class="control-label" for="first-name">
                                             Confirm Password: <span class="required">*</span>
                                         </label>
-                                        <input name="password_confirmation" type="password" maxlength="255" class="form-control text-capitalize" placeholder="Jhon Doe" >
+                                        <input name="password_confirmation" type="password" maxlength="255" class="form-control text-capitalize" placeholder="**********" >
                                         
                                         @error('password_confirmation')
                                             <span class="invalid-feedback d-block" role="alert">

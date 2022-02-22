@@ -8,8 +8,12 @@
   
   <!-- CSRF Token -->
   <meta name="_token" content="{{ csrf_token() }}">
+    @if(!empty($general_settings) && !empty($general_settings['favicon']) && file_exists(public_path().'/images/general/'.$general_settings['favicon']) )
+      <link rel="shortcut icon" href="{{ asset('/images/general/'.$general_settings['favicon']) }}">
+    @else
+      <link rel="shortcut icon" href="{{ asset('/favicon.ico') }}">
+    @endif
   
-  <link rel="shortcut icon" href="{{ asset('/favicon.ico') }}">
   
   <!-- plugin css -->
   {!! Html::style('assets/plugins/@mdi/font/css/materialdesignicons.min.css') !!}
@@ -129,6 +133,30 @@
       });
 
     });
+
+    function markread(id) {
+      var a = $('#countNoti').text();
+      $.ajax({
+        type:"Get",
+        url:"{{route('unreadsinglenotification')}}",
+        data:{'id':id},
+        dataType:'JSON',
+        success:function(response) {
+          if(a > 0) {
+            var b = a - 1;
+            if(b > 0) {
+              $('#countNoti').text(b);
+              $('#' + id).css('background', 'white');
+            } else {
+              $('#countNoti').hide('fast');
+            }
+          }
+        },
+        error: function(error){
+          console.log(error.responseText);
+        }
+      });
+    }
   </script>
   {!! Html::script('/assets/plugins/chartjs/chart.min.js') !!}
   {!! Html::script('/assets/js/chart.js') !!}

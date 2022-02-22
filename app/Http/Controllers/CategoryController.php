@@ -46,10 +46,11 @@ class CategoryController extends Controller
 
             $input = $request->all();
             $validation = Validator::make($input,[
-                'name'=>'required',
+                'name'=>'required|unique:categories',
                 'photo'=>'mimes:jpeg,png,jpg'
             ],[
                 'name.required'=>'Name is required',
+                'name.unique'=>'Category name is already existing',
                 'photo.mimes' => 'Photo Accept only jpeg,png,jpg extensions'
             ]);
 
@@ -84,7 +85,7 @@ class CategoryController extends Controller
 
         } catch (\Illuminate\Database\QueryException $th) {
             DB::rollback();
-            return back()->with('error','some error occurred'.$ex->getMessage());
+            return back()->with('error','some error occurred'.$th->getMessage());
         }
 
         DB::commit();
@@ -128,10 +129,11 @@ class CategoryController extends Controller
 
             $input = $request->all();
             $validation = Validator::make($input,[
-                'name'=>'required',
+                'name'=>'required|unique:categories,name,'.$id.',id',
                 'photo'=>'mimes:jpeg,png,jpg,gif'
             ],[
                 'name.required'=>'Name is required',
+                'name.unique'=>'Category name is already existing',
                 'photo.mimes' => 'Photo Accepts only jpeg,png,jpg,gif extensions'
             ]);
 
@@ -172,7 +174,7 @@ class CategoryController extends Controller
 
         } catch (\Illuminate\Database\QueryException $th) {
             DB::rollback();
-            return back()->with('error','some error occurred'.$ex->getMessage());
+            return back()->with('error','some error occurred'.$th->getMessage());
         }
 
         DB::commit();

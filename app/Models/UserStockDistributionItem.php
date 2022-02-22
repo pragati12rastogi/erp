@@ -9,7 +9,7 @@ class UserStockDistributionItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['order_id','item_id','product_price','gst','distributed_quantity','product_total_price'];
+    protected $fillable = ['order_id','item_id','product_price','gst','discount','distributed_quantity','product_total_price'];
 
     public function order(){
         return $this->belongsTo(UserStockDistributionOrder::class,'order_id','id');

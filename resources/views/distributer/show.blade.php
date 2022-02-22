@@ -15,260 +15,294 @@
 @endpush
 
 @section('content')
+
 <div class="row">
-
-  <div class="col-lg-12 grid-margin stretch-card">
-      
-    <div class="card">
-    @include('flash-msg')
     
-      <div class="card-body">
-        <div class="border-bottom mb-3 row">
-            <div class="col-md-9">
-                <h4 class="card-title">Invoice - {{$dis->invoice_no}}</h4>
+        <div class="col-md-2 mb-2">
+            <div class="card card-inverse-info">
+                <div class="card-header">
+                Selling Amount
+                </div>
+                <div class="card-body p-3">Rs. {{empty($sell['sum_sell'])? 0:$sell['sum_sell']}}</div>
             </div>
-            <div class="col-md-2 text-right">
-            @if(empty($dis->is_cancelled))
-                @if(Auth::user()->hasPermissionTo('stock-distributions.payment') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
-                    
-                    <a onclick='return $("#pay").modal("show");'  class="btn  btn-warning text-white"><i class="m-0 mdi mdi-vote"></i> Pay </a>  
-                @endif
-            @endif
-                
-            </div>
-            <div class="col-md-1" id="hide-div">
-                <iframe src="{{route('print.invoice',$dis->id)}}" style="display:none;" name="frame"></iframe>
+        </div>
 
-                <button title="Print Order" onclick="frames['frame'].print()" class="btn btn-dark btn-block">
-                <i class="m-0 mdi mdi-printer"></i>
-                </button>
+        <div class="col-md-2 mb-2">
+            <div class="card card-inverse-info">
+                <div class="card-header">@if(is_admin(Auth::user()->role_id)) Receive @else Paid @endif Amount</div>
+                <div class="card-body p-3">Rs. {{empty($recieve['sum_recieve'])? 0:$recieve['sum_recieve']}}</div>
+            </div>
+        </div>
+        
+        <div class="col-md-2 mb-2">
+            <div class="card card-inverse-info">
+                <div class="card-header">Balance Amount</div>
+                @php
+                $sale = (float) $sell['sum_sell'];
+                $recieve = (float) $recieve['sum_recieve'];
+                @endphp
+                <div class="card-body p-3">Rs. {{$sale-$recieve}}</div>
+            </div>
+        </div>
+    
+    <div class="col-lg-12 grid-margin stretch-card">
+        
+        <div class="card">
+            @include('flash-msg')
+        
+        <div class="card-body">
+            <div class="border-bottom mb-3 row">
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-md-12"><b>Invoice No: </b>{{$dis->invoice_no}}</div>
+                        <div class="col-md-12"><b>Created   : </b>{{ date('d-m-Y',strtotime($dis->created_at)) }}</div>
+                    </div>
+                </div>
+                <div class="col-md-2 text-right">
+                @if(empty($dis->is_cancelled))
+                    @if(Auth::user()->hasPermissionTo('stock-distributions.payment') || Auth::user()->hasRole(App\Custom\Constants::ROLE_ADMIN))
+                        
+                        <a onclick='return $("#pay").modal("show");'  class="btn  btn-warning text-white"><i class="m-0 mdi mdi-vote"></i> Pay </a>  
+                    @endif
+                @endif
+                    
+                </div>
+                <div class="col-md-1" id="hide-div">
+                    <iframe src="{{route('print.invoice',$dis->id)}}" style="display:none;" name="frame"></iframe>
+
+                    <button title="Print Order" onclick="frames['frame'].print()" class="btn btn-dark btn-block">
+                    <i class="m-0 mdi mdi-printer"></i>
+                    </button>
+                    
+                </div>
                 
             </div>
             
-        </div>
-        
-        <div class="row" id="printarea">
-          <div class="col-md-12">
-                <table class="table table-striped">
+            <div class="row" id="printarea">
+            <div class="col-md-12">
+                    <table class="table table-borderless">
+                        
+                        <tr>
+                            <td width="50%">
+                                <div class="card border">
+                                    <div class="card-header"><h4>Supplier Details</h4></div>
+                                    <div class="card-body">{!!$billing_add->details!!}</div>
+                                </div>
+                            </td>
+
+                            <td width="50%" >
+                                <div class="card border">
+                                    <div class="card-header"><h4>Client Details</h4></div>
+                                    <div class="card-body ">
+                                        <h4>{{ $dis->user->firm_name }}</h4>
+                                        <div>{{  $dis->user->address }}</div>
+                                        <div><b>Area :</b>{{  $dis->user->area->name }}</div>
+                                        <div><b>District :</b>{{  $dis->user->district_data->name }}</div>
+                                        <div><b>State :</b>{{  $dis->user->state->name }}</div>
+                                        <div><b>Email :</b>{{  $dis->user->email }}</div>
+                                        <div><b>Mobile :</b>{{  $dis->user->mobile }}</div>
+                                    </div>
+                                </div>
+                                
+                            </td>
+                        </tr>
+                        
+                    </table>
+                    <div class="col-md-12">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Qty.</th>
+                                    <th>Price</th>
+                                    <th>Tax</th>
+                                    <th>Total Price</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                
+                                @foreach($dis->invoices as $in => $inv)
+                                <tr>
+                                    <td>
+                                        <b>{{$inv->item->name}}</b>
+                                        <br>
+                                        @php
+                                            $p =100;
+                                            $gst_percent_db = $inv->gst_percent;
+                                            $p_and_gst = $p + $gst_percent_db;
+                                            $tax = $inv->product_price/$p_and_gst*$gst_percent_db;
+                                            $tax = sprintf("%.2f",$tax);
+                                            $single_price = $inv->product_price-$tax;
+                                        
+                                        @endphp
+                                        <small class="tax"><b>Price:</b> Rs.
+                                            {{ number_format((float)$single_price, 2, '.', '')}}
+                                        </small>
+                                        &nbsp;
+                                        <small class="tax"><b>GST:</b> Rs.
+                                            
+                                            {{ number_format((float)$tax , 2, '.', '')}} ({{$inv->gst_percent}} %)
+                                            
+                                        </small>
+                                        <br>
+                                        <small class="help-block">(Displayed for single Qty.)</small>
+                                    </td>
+                                    <td valign="middle">
+                                        {{ $inv->distributed_quantity }}
+                                    </td>
+                                    <td>
+                                        <p><b>Price:</b> Rs.
+                                            
+                                            {{ round(($single_price*$inv->distributed_quantity),2) }}</p>
+                                        
+                                        <small class="help-block">(Price Multiplied with Qty.)</small>
+                                    </td>
+                                    <td>
+                                        @if(!empty($inv->igst))
+                                            <p>Rs. {{ sprintf("%.2f",$inv->igst) }} <b>(IGST)</b></p>
+                                        @endif
+                                        @if(!empty($inv->scgst))
+                                            <p>Rs. {{ sprintf("%.2f",$inv->scgst) }} <b>(SGST)</b></p>
+                                            <p>Rs. {{ sprintf("%.2f",$inv->scgst) }} <b>(CGST)</b></p>
+                                        @endif
+                                        <small class="help-block">(Tax Multiplied with Qty.)</small>
+                                    </td>
+                                    <td>
+                                        <p> Rs.
+                                            
+                                        {{ round(($inv->product_total_price),2) }}</p>
+                                        
+                                        <small class="help-block">(Inc of Tax and Quantity.)</small>
+                                    </td>
+                                    
+                                    
+                                </tr>
+                                @endforeach
+                                
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                    <table class="table table-borderless">
+                            <tr>
+                                <td>
+                                    <h4>Term &amp; Condition</h4>
+                                    <ul>
+                                        <li>
+                                            No Return Accepted.
+                                        </li>
+                                        <li>
+                                            Payable in 7 days from receipt.
+                                        </li>
+                                        <li>
+                                            Products once sold will not be taken back or exchange.
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <table class="table">
+                                        <tbody class="border">
+                                            <tr class="table-secondary">
+                                                <td class="border">
+                                                    <b>Sub Total:</b>
+                                                </td>
+                                                <td class="border">
+                                                Rs.{{ round($dis->total_cost+$dis->total_discount,2) }}
+                                                </td>
+                                            </tr>
+                                            <tr class="table-secondary">
+                                                <td class="border-right">
+                                                    <b>Discount:</b>
+                                                </td>
+                                                <td>
+                                                (-) Rs.{{ round($dis->total_discount,2) }}
+                                                </td>
+                                            </tr>
+                                            <tr class="table-active">
+                                                
+                                                <td class="border-right">
+                                                    <b>Grand Total:</b>
+                                                </td>
+                                                <td>
+                                                Rs.
+                                                {{ round($dis->total_cost,2) }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        
+                                    </table>
+                                </td>
+                            </tr>
+
+                        </table>
+            </div>
+            @if(count($dis->payment)>0)
+            <div class="col-md-12">
+                <hr>
+                <h6>Payment Activity History</h6>
+                <small>
+                
+                <table class="table">
                     <thead>
                         <tr>
-                            <th>
-                                <b>Date:</b> {{ date('d-m-Y',strtotime($dis->created_at)) }}
-                            </th>
-                            
-                            <th>
-                                <b>Invoice ID:</b> {{$dis->invoice_no}}
-								
-                            </th>
-                            
+                            <th>Transaction Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
                         </tr>
                     </thead>
                     <tbody>
-                        
+                    @foreach($dis->payment as $pid => $p)
                         <tr>
-                            <th>
-								<b>Seller Details</b>
-							</th>
-
-							<th></th>
-
-							<th>
-								<b>Billing Details</b>
-							</th>
-                        </tr>
-                        <tr>
-							<td colspan="2">
-								{!!$billing_add->details!!}
-							</td>
                             <td>
-                                <b>{{ $dis->user->firm_name }},</b>
-								<br><br>
-								{{  $dis->user->address }},
-								<br>
-                                {{  $dis->user->district_data->name }},{{  $dis->user->state->name }},
-                                <br>
-                                {{ $dis->user->email }}
-                                <br>
-                                {{ $dis->user->mobile }}
-								
-							</td>
+                                <small>
+                                    <span><b>{{ucwords($p->transaction_type)}}</b></span>
+                                    <div class="row">
+                                        @if(!empty($p->transaction_id))
+                                        <div class="col-md-4">
+                                            <b>Transaction ID:</b> <span>{{$p->transaction_id}}</span>
+                                        </div>
+                                        @endif
+                                        @if(!empty($p->cheque_no))
+                                        <div class="col-md-4">
+                                            <b>Cheque No:</b> <span>{{$p->cheque_no}}</span>
+                                        </div>
+                                        @endif
+                                        @if(!empty($p->bank_name))
+                                        <div class="col-md-4">
+                                            <b>Bank Name:</b> <span>{{$p->bank_name}}</span>
+                                        </div>
+                                        @endif
+                                        @if(!empty($p->ifsc))
+                                        <div class="col-md-4">
+                                            <b>IFSC:</b> <span>{{$p->ifsc}}</span>
+                                        </div>
+                                        @endif
+                                        @if(!empty($p->account_name))
+                                        <div class="col-md-4">
+                                            <b>Account Owner Name:</b> <span>{{$p->account_name}}</span>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </small>
+                            </td>
+                            <td>
+                                Rs. {{$p->amount}}
+                            </td>
+                            <td>
+                                {{date('d-m-Y',strtotime($p->created_at))}}
+                            </td>
                         </tr>
-                        
+                    @endforeach
                     </tbody>
                 </table>
-                <table class="table table-bordered">
-					<thead>
-						<tr>
-							<th>Item</th>
-							<th>GST</th>
-                            <th>Price</th>
-							<th>Qty.</th>
-							<th>Total Price</th>
-                            
-						</tr>
-					</thead>
-
-					<tbody>
-                        @php 
-                            $scgst = 0;
-                            $igst = 0;
-                        @endphp
-                        @foreach($dis->invoices as $in => $inv)
-						<tr>
-                            <td>
-                                <b>{{$inv->item->name}}</b>
-                                
-                                @php
-                                    $tax = ($inv->product_price * $inv->gst_percent)/100;
-                                    $single_price = $inv->product_price-$tax;
-                                    $scgst += $inv->scgst;
-                                    $igst += $inv->igst;
-                                @endphp
-                                
-                            </td>
-                            <td> {{$inv->gst_percent}}% </td>
-                            <td>
-                                Rs. {{ number_format((float)$single_price, 2, '.', '')}}
-                            </td>
-                            <td valign="middle">
-								{{ $inv->distributed_quantity }}
-							</td>
-                            <td>
-                                <p><b>Price:</b> Rs.
-                                    
-                                {{ round(($single_price*$inv->distributed_quantity),2) }}</p>
-                                
-                                <small class="help-block">(Price Multiplied with Qty.)</small>
-							</td>
-                            
-                            
-                        </tr>
-                        @endforeach
-                        @if(!empty($scgst))
-                        <tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							
-							<td>
-								<b>SGST:</b>
-							</td>
-							<td>
-                            Rs.
-                            {{ round($scgst,2) }}
-							</td>
-						</tr>
-                        <tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							
-							<td>
-								<b>CGST:</b>
-							</td>
-							<td>
-                            Rs.
-                            {{ round($scgst,2) }}
-							</td>
-						</tr>
-                        @endif
-                        @if(!empty($igst))
-                        <tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							
-							<td>
-								<b>IGST:</b>
-							</td>
-							<td>
-                            Rs.
-                            {{ round($igst,2) }}
-							</td>
-						</tr>
-                        @endif
-                        <tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							
-							<td>
-								<b>Grand Total:</b>
-							</td>
-							<td>
-                            Rs.
-                            {{ round($dis->total_cost,2) }}
-							</td>
-						</tr>
-                    </tbody>
-                </table>
-          </div>
-          @if(count($dis->payment)>0)
-          <div class="col-md-12">
-            <hr>
-            <h6>Payment Activity History</h6>
-            <small>
-            
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Transaction Type</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @foreach($dis->payment as $pid => $p)
-                    <tr>
-                        <td>
-                            <small>
-                                <span><b>{{ucwords($p->transaction_type)}}</b></span>
-                                <div class="row">
-                                    @if(!empty($p->transaction_id))
-                                    <div class="col-md-4">
-                                        <b>Transaction ID:</b> <span>{{$p->transaction_id}}</span>
-                                    </div>
-                                    @endif
-                                    @if(!empty($p->cheque_no))
-                                    <div class="col-md-4">
-                                        <b>Cheque No:</b> <span>{{$p->cheque_no}}</span>
-                                    </div>
-                                    @endif
-                                    @if(!empty($p->bank_name))
-                                    <div class="col-md-4">
-                                        <b>Bank Name:</b> <span>{{$p->bank_name}}</span>
-                                    </div>
-                                    @endif
-                                    @if(!empty($p->ifsc))
-                                    <div class="col-md-4">
-                                        <b>IFSC:</b> <span>{{$p->ifsc}}</span>
-                                    </div>
-                                    @endif
-                                    @if(!empty($p->account_name))
-                                    <div class="col-md-4">
-                                        <b>Account Owner Name:</b> <span>{{$p->account_name}}</span>
-                                    </div>
-                                    @endif
-                                </div>
-                            </small>
-                        </td>
-                        <td>
-                            Rs. {{$p->amount}}
-                        </td>
-                        <td>
-                            {{date('d-m-Y',strtotime($p->created_at))}}
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-            </small>
-          </div>
-          @endif
+                </small>
+            </div>
+            @endif
+            </div>
         </div>
-      </div>
+        </div>
     </div>
-  </div>
 </div>
 
 
@@ -319,7 +353,7 @@
                     <label class="control-label" for="first-name">
                         Amount: <span class="required">*</span>
                     </label>
-                    <input type="number" max="{{$dis->total_cost-$paid_amt}}" name="amount" id="amount" class="form-control">
+                    <input type="number" max="{{$dis->total_cost-$paid_amt}}" value="{{$dis->total_cost-$paid_amt}}" name="amount" id="amount" class="form-control">
                     </div>
                 </div>
                 <div class="col-md-6">

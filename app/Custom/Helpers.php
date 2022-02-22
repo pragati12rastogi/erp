@@ -2,6 +2,7 @@
 
   use App\Models\Role;
   use App\Custom\Constants;
+  use App\Models\User;
   use App\Models\DistributionOrder;
   use App\Models\UserStockDistributionOrder;
   use App\Models\InvoiceSetting;
@@ -61,4 +62,12 @@
     $distribution = UserStockDistributionOrder::where('id',$distribution_id)->first();
 
     return $inv['prefix'].$distribution['invoice_no'];
+  }
+
+  function getUsers($role = ''){
+    $user = User::whereHas('role', function($query) use($role){
+      return $query->where('name',$role);
+    })->get();
+
+    return $user;
   }

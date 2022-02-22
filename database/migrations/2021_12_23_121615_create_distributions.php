@@ -23,6 +23,7 @@ class CreateDistributions extends Migration
             $table->double('scgst')->nullable();
             $table->integer('distributed_quantity');
             $table->double('product_total_price');
+            $table->double('discount')->nullable()->default(0);
             $table->boolean('is_cancelled')->default('0');
             $table->integer('updated_by')->nullable();
             $table->softDeletes();

@@ -441,10 +441,7 @@ class PermissionTableSeeder extends Seeder
                 'name'=>'areas.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'areas'
-            ],
-            */
-        $permissions = [
-            [
+            ],[
                 'name'=>'product_charge.index',
                 'guard_name'=>'web',
                 'master_name'=>'product_charge'
@@ -473,10 +470,25 @@ class PermissionTableSeeder extends Seeder
                 'name'=>'product_charge.destroy',
                 'guard_name'=>'web',
                 'master_name'=>'product_charge'
+            ],
+            [
+                'name'=>'email-master.index',
+                'guard_name'=>'web',
+                'master_name'=>'master'
+            ],
+            [
+                'name'=>'sms.master',
+                'guard_name'=>'web',
+                'master_name'=>'master'
+            ],
+            [
+                'name'=>'general.master',
+                'guard_name'=>'web',
+                'master_name'=>'master'
             ]
+            */
+        $permissions = [
             
-
-
         ];
       
         foreach ($permissions as $permission) {

@@ -11,8 +11,6 @@
             
             jQuery('#invoice_master_form').validate({ // initialize the plugin
                 rules: {
-
-                    
                     prefix:{
                         required:true,
                     },
@@ -40,6 +38,28 @@
             });
         });
         
+        $("#user_id").change(function(){
+            var user_id = $("#user_id").val();
+            $.ajax({
+                type:"Get",
+                url:"{{route('user.invoice.setting')}}",
+                data:{'user_id':user_id},
+                dataType:'JSON',
+                success:function(response){
+                    if(response.status == 'success'){
+                        var input = response.data;
+                        
+                        $("#prefix").val(input.prefix);
+                        $("#suffix_number_length").val(input.suffix_number_length);
+                    }else{
+                        alert('some error occured');
+                    }
+                },
+                error:function(error){
+                    alert(error.responseText);
+                }
+            })
+        })
     </script>
 @endpush
 
@@ -64,18 +84,33 @@
             <form id="invoice_master_form" method="post" enctype="multipart/form-data" action="{{route('save.invoice.master')}}" data-parsley-validate class="form-horizontal form-label-left">
                 {{csrf_field()}}
                 
-                @foreach($invoice_setting as $in => $setting)
+                
                 <div class="row">
-                    <div class="col-md-12">
-                        <b>Invoice Master for {{$setting->user->name}} :</b>
+                    
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" for="first-name">
+                                Select User: <span class="required">*</span>
+                            </label>
+                            <select name="user_id" id="user_id" class="form-control select2" >
+                                @foreach($users as $r)
+                                <option value="{{$r->user->id}}" {{!empty($invoice_setting)? (($invoice_setting->user_id==$r->user->id) ? 'selected':'' ):''}}>{{$r->user->name}}</option>
+                                @endforeach
+                            </select>
+                            @error('user_id')
+                                <span class="invalid-feedback d-block" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label" for="first-name">
                                 Invoice Number Prefix: <span class="required">*</span>
                             </label>
-                            <input name="prefix[{{$setting['id']}}]" value="{{!empty($setting['prefix'])?$setting['prefix']:''}}" type="text" maxlength="255" class="form-control text-capitalize" >
-                            @error('prefix.'.$setting->id)
+                            <input name="prefix" id="prefix" value="{{!empty($invoice_setting)?$invoice_setting['prefix']:''}}" type="text" maxlength="255" class="form-control text-capitalize" >
+                            @error('prefix')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -88,8 +123,8 @@
                             <label class="control-label" for="first-name">
                                 Suffix Invoice Number: <span class="required">*</span>
                             </label>
-                            <input name="suffix_number_length[{{$setting['id']}}]" value="{{!empty($setting['suffix_number_length'])?$setting['suffix_number_length']:''}}" type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" class="form-control" >
-                            @error('suffix_number_length.'.$setting->id)
+                            <input name="suffix_number_length" id="suffix_number_length" value="{{!empty($invoice_setting)?$invoice_setting['suffix_number_length']:''}}" type="text" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" class="form-control" >
+                            @error('suffix_number_length')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -100,7 +135,7 @@
                     
 
                 </div>
-                @endforeach
+                
 
                 <div class="col-xs-12">
                     <hr>

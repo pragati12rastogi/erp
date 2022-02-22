@@ -12,7 +12,7 @@ class UserStock extends Model
     protected $fillable = ['item_id','prod_quantity','price','user_id'];
 
     public function item(){
-        return $this->belongsTo(Item::class,'item_id');
+        return $this->belongsTo(Item::class,'item_id')->withTrashed();
     }
 
     public function user(){

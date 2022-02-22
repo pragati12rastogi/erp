@@ -84,9 +84,14 @@
                                         <label class="control-label" for="gst_no">
                                             State: <span class="required">*</span>
                                         </label>
-                                        <input type="text" name="state" placeholder="Delhi" class="form-control text-capitalize">
-                                        
-                                        <small class="txt-desc">(Please Enter State)</small>
+                                        <select name="state" class="form-control select2" onchange="get_district(this)">
+                                            <option value="">Select State</option>
+                                            @foreach($states as $s)
+                                            <option value="{{$s->id}}" {{ (old('state')==$s->id) ? 'selected':'' }}>{{$s->name}}</option>
+                                            @endforeach
+                                        </select>
+
+                                        <small class="txt-desc">(Please select state)</small>
                                         @error('state')
                                             <span class="invalid-feedback d-block" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -99,8 +104,11 @@
                                         <label class="control-label" for="district">
                                             District: <span class="required">*</span>
                                         </label>
-                                        <input  type="text" name="district" value="{{old('district')}}" class="form-control">
-                                        <small class="txt-desc">(Please Enter District)</small>
+                                        <select name="district" id="district_id" class="form-control select2" >
+                                            <option value="">Select District</option>
+                                            
+                                        </select>
+                                        <small class="txt-desc">(Please select district)</small>
                                         @error('district')
                                             <span class="invalid-feedback d-block" role="alert">
                                                 <strong>{{ $message }}</strong>
